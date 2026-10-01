@@ -24,6 +24,7 @@ public static class ServiceRegistration
         services.AddSingleton<SqliteConnectionFactory>();
         services.AddSingleton<DatabaseInitializer>();
         services.AddSingleton<IClipRepository, ClipRepository>();
+        services.AddSingleton<ICategoryRepository, CategoryRepository>();
 
         // Clipboard capture and the tray-driven lifetime.
         services.AddSingleton<ClipCaptureService>();

@@ -17,7 +17,7 @@ public sealed class ClipExportServiceTests : IDisposable
     {
         var path = TempPath(".json");
         _repository.GetRecentAsync(null, 2, Arg.Any<CancellationToken>())
-            .Returns(new List<ClipListItem> { Item(3, "c"), Item(2, "b") });
+            .Returns(new List<ClipListItem> { Item(3, "c", category: "Work"), Item(2, "b") });
         _repository.GetRecentAsync(new PageCursor("k2", 2), 2, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "a") });
         var service = new ClipExportService(_repository, pageSize: 2);
@@ -30,6 +30,7 @@ public sealed class ClipExportServiceTests : IDisposable
         var texts = document.RootElement.EnumerateArray()
             .Select(element => element.GetProperty("text").GetString());
         Assert.Equal("c,b,a", string.Join(",", texts));
+        Assert.Equal("Work", document.RootElement[0].GetProperty("categoryName").GetString());
     }
 
     [Fact]
@@ -72,8 +73,8 @@ public sealed class ClipExportServiceTests : IDisposable
         return path;
     }
 
-    private static ClipListItem Item(long id, string text, bool pinned = false) =>
+    private static ClipListItem Item(long id, string text, bool pinned = false, string? category = null) =>
         new(id, text, "Notepad", pinned,
             new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero).AddSeconds(id),
-            new PageCursor($"k{id}", id));
+            new PageCursor($"k{id}", id), category is null ? null : 1, category);
 }

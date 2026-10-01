@@ -7,4 +7,6 @@ public sealed record ClipListItem(
     string? AppName,
     bool IsPinned,
     DateTimeOffset CreatedAtUtc,
-    PageCursor Cursor);
+    PageCursor Cursor,
+    long? CategoryId = null,
+    string? CategoryName = null);

@@ -18,12 +18,13 @@ public static class ClipExportSerializer
 
     private static string ToCsv(IReadOnlyList<ClipExportRow> rows)
     {
-        var builder = new StringBuilder("text,app_name,pinned,copied_at");
+        var builder = new StringBuilder("text,app_name,category,pinned,copied_at");
         foreach (var row in rows)
         {
             builder.Append("\r\n")
                 .Append(Escape(row.Text)).Append(',')
                 .Append(Escape(row.AppName ?? string.Empty)).Append(',')
+                .Append(Escape(row.CategoryName ?? string.Empty)).Append(',')
                 .Append(row.Pinned ? "true" : "false").Append(',')
                 .Append(row.CopiedAtUtc.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture));
         }

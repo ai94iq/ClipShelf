@@ -217,6 +217,142 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task Assigning_a_category_shows_it_on_the_clip()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("keep", null, T0, ct);
+        var id = (await repo.GetRecentAsync(null, 50, ct))[0].Id;
+        var category = await categories.GetOrAddAsync("Work", ct);
+
+        await repo.AssignCategoryAsync(id, category.Id, ct);
+
+        var item = Assert.Single(await repo.GetRecentAsync(null, 50, ct));
+        Assert.Equal(category.Id, item.CategoryId);
+        Assert.Equal("Work", item.CategoryName);
+    }
+
+    [Fact]
+    public async Task Leaving_a_category_hides_it_from_the_clip()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("x", null, T0, ct);
+        var id = (await repo.GetRecentAsync(null, 50, ct))[0].Id;
+        await repo.AssignCategoryAsync(id, (await categories.GetOrAddAsync("Work", ct)).Id, ct);
+
+        await repo.AssignCategoryAsync(id, null, ct);
+
+        var item = Assert.Single(await repo.GetRecentAsync(null, 50, ct));
+        Assert.Null(item.CategoryId);
+        Assert.Null(item.CategoryName);
+    }
+
+    [Fact]
+    public async Task Clear_unpinned_keeps_categorized_items()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("drop", null, T0, ct);
+        await repo.AddOrBumpAsync("keep", null, T0.AddMinutes(1), ct);
+        var keep = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "keep");
+        await repo.AssignCategoryAsync(keep.Id, (await categories.GetOrAddAsync("Work", ct)).Id, ct);
+
+        await repo.ClearUnpinnedAsync(ct);
+
+        Assert.Equal("keep", Assert.Single(await repo.GetRecentAsync(null, 50, ct)).Text);
+    }
+
+    [Fact]
+    public async Task Prune_keeps_categorized_items()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("saved", null, T0, ct);
+        await repo.AddOrBumpAsync("mid", null, T0.AddMinutes(1), ct);
+        await repo.AddOrBumpAsync("new", null, T0.AddMinutes(2), ct);
+        var saved = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "saved");
+        await repo.AssignCategoryAsync(saved.Id, (await categories.GetOrAddAsync("Work", ct)).Id, ct);
+
+        var removed = await repo.PruneAsync(keepUnpinned: 1, ct);
+
+        Assert.Equal(1, removed);
+        Assert.Equal(
+            "new,saved", string.Join(',', (await repo.GetRecentAsync(null, 50, ct)).Select(i => i.Text)));
+    }
+
+    [Fact]
+    public async Task Prune_older_than_keeps_categorized_items()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("old-plain", null, T0, ct);
+        await repo.AddOrBumpAsync("old-saved", null, T0.AddMinutes(1), ct);
+        await repo.AddOrBumpAsync("new", null, T0.AddDays(10), ct);
+        var saved = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "old-saved");
+        await repo.AssignCategoryAsync(saved.Id, (await categories.GetOrAddAsync("Work", ct)).Id, ct);
+
+        var removed = await repo.PruneOlderThanAsync(T0.AddDays(5), ct);
+
+        Assert.Equal(1, removed);
+        Assert.Equal(
+            "new,old-saved", string.Join(',', (await repo.GetRecentAsync(null, 50, ct)).Select(i => i.Text)));
+    }
+
+    [Fact]
+    public async Task Recent_can_be_narrowed_to_one_category()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("plain", null, T0, ct);
+        await repo.AddOrBumpAsync("saved", null, T0.AddMinutes(1), ct);
+        var saved = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "saved");
+        var work = await categories.GetOrAddAsync("Work", ct);
+        await repo.AssignCategoryAsync(saved.Id, work.Id, ct);
+
+        var items = await repo.GetRecentAsync(null, 50, ct, work.Id);
+
+        Assert.Equal("saved", Assert.Single(items).Text);
+    }
+
+    [Fact]
+    public async Task Search_can_be_narrowed_to_one_category()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("apple plain", null, T0, ct);
+        await repo.AddOrBumpAsync("apple saved", null, T0.AddMinutes(1), ct);
+        var saved = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "apple saved");
+        var work = await categories.GetOrAddAsync("Work", ct);
+        await repo.AssignCategoryAsync(saved.Id, work.Id, ct);
+
+        var items = await repo.SearchAsync("apple", null, 50, ct, work.Id);
+
+        Assert.Equal("apple saved", Assert.Single(items).Text);
+    }
+
+    [Fact]
     public async Task Writes_notify_open_views()
     {
         using var db = new TempDatabase();

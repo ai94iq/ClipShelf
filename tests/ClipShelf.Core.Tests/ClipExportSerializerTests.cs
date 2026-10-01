@@ -16,6 +16,16 @@ public sealed class ClipExportSerializerTests
         Assert.Equal("Notepad", item.GetProperty("appName").GetString());
         Assert.False(item.GetProperty("pinned").GetBoolean());
         Assert.Equal("2026-01-02T03:04:05+00:00", item.GetProperty("copiedAtUtc").GetString());
+        Assert.Equal(JsonValueKind.Null, item.GetProperty("categoryName").ValueKind);
+    }
+
+    [Fact]
+    public void Json_includes_the_category_name()
+    {
+        var json = ClipExportSerializer.Serialize([Row("hello", category: "Work")], ClipExportFormat.Json);
+
+        using var document = JsonDocument.Parse(json);
+        Assert.Equal("Work", document.RootElement[0].GetProperty("categoryName").GetString());
     }
 
     [Fact]
@@ -30,12 +40,13 @@ public sealed class ClipExportSerializerTests
     [Fact]
     public void Csv_lists_a_header_and_one_row_per_clip()
     {
-        var csv = ClipExportSerializer.Serialize([Row("one"), Row("two", pinned: true)], ClipExportFormat.Csv);
+        var csv = ClipExportSerializer.Serialize(
+            [Row("one"), Row("two", pinned: true, category: "Work")], ClipExportFormat.Csv);
 
         var lines = csv.Split("\r\n");
-        Assert.Equal("text,app_name,pinned,copied_at", lines[0]);
-        Assert.Equal("one,Notepad,false,2026-01-02T03:04:05.0000000+00:00", lines[1]);
-        Assert.Equal("two,Notepad,true,2026-01-02T03:04:05.0000000+00:00", lines[2]);
+        Assert.Equal("text,app_name,category,pinned,copied_at", lines[0]);
+        Assert.Equal("one,Notepad,,false,2026-01-02T03:04:05.0000000+00:00", lines[1]);
+        Assert.Equal("two,Notepad,Work,true,2026-01-02T03:04:05.0000000+00:00", lines[2]);
         Assert.Equal(3, lines.Length);
     }
 
@@ -50,6 +61,6 @@ public sealed class ClipExportSerializerTests
         Assert.Contains("\"line1\nline2\"", csv);
     }
 
-    private static ClipExportRow Row(string text, bool pinned = false) =>
-        new(text, "Notepad", pinned, new DateTimeOffset(2026, 1, 2, 3, 4, 5, TimeSpan.Zero));
+    private static ClipExportRow Row(string text, bool pinned = false, string? category = null) =>
+        new(text, "Notepad", pinned, new DateTimeOffset(2026, 1, 2, 3, 4, 5, TimeSpan.Zero), category);
 }

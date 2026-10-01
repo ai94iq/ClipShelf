@@ -1,5 +1,6 @@
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
@@ -28,6 +29,7 @@ internal sealed class ClipboardPanelActions
         _viewModel.ItemActivated += OnItemActivated;
         _viewModel.OpenHistoryRequested += OnOpenHistoryRequested;
         _viewModel.SelectionCopied += (_, _) => _window.Hide();
+        _viewModel.CategoryMenuRequested += OnCategoryMenuRequested;
     }
 
     public void OnItemClick(ItemClickEventArgs e)
@@ -61,4 +63,7 @@ internal sealed class ClipboardPanelActions
         _window.Hide();
         _shell.Value.ShowHistory();
     }
+
+    private void OnCategoryMenuRequested(ClipItemViewModel item) =>
+        _ = CategoryMenu.ShowAsync(_window.RowAnchor(item), item, _viewModel);
 }

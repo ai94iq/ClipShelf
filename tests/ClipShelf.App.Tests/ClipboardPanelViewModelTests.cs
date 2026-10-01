@@ -10,6 +10,7 @@ namespace ClipShelf.App.Tests;
 public sealed class ClipboardPanelViewModelTests
 {
     private readonly IClipRepository _repository = Substitute.For<IClipRepository>();
+    private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
     private readonly IClipboardWriter _clipboard = Substitute.For<IClipboardWriter>();
     private readonly IDateFormatter _dates = Substitute.For<IDateFormatter>();
 
@@ -395,8 +396,95 @@ public sealed class ClipboardPanelViewModelTests
         Assert.False(vm.IsSelecting);
     }
 
+    [Fact]
+    public async Task Assigning_a_category_calls_the_repository()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        await vm.AssignCategoryAsync(vm.Items[0], 7);
+
+        await _repository.Received(1).AssignCategoryAsync(1, 7, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Creating_a_category_trims_the_name()
+    {
+        var vm = Create();
+
+        await vm.GetOrAddCategoryAsync("  Work  ");
+
+        await _categories.Received(1).GetOrAddAsync("Work", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Requesting_the_category_menu_hands_over_the_row()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        ClipItemViewModel? requested = null;
+        vm.CategoryMenuRequested += item => requested = item;
+
+        vm.RequestCategoryMenu(vm.Items[0]);
+
+        Assert.Same(vm.Items[0], requested);
+    }
+
+    [Fact]
+    public async Task Loading_the_filter_lists_all_categories_plus_all_clips()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work") });
+        var vm = Create();
+
+        await vm.RefreshCategoryFilterAsync();
+
+        Assert.Equal(2, vm.CategoryFilterOptions.Count);
+        Assert.Null(vm.CategoryFilterOptions[0].Value);
+        Assert.Equal(7, vm.CategoryFilterOptions[1].Value);
+        Assert.Equal("Work", vm.CategoryFilterOptions[1].Label);
+    }
+
+    [Fact]
+    public async Task Picking_a_category_filter_narrows_the_query()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work") });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7)
+            .Returns(new List<ClipListItem> { Item(1, "saved") });
+        var vm = Create();
+        await vm.RefreshCategoryFilterAsync();
+
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+        await vm.RefreshAsync();
+
+        Assert.Equal("saved", Assert.Single(vm.Items).Text);
+        await _repository.Received().GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7);
+    }
+
+    [Fact]
+    public async Task An_empty_filtered_view_explains_itself()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work") });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7)
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+        await vm.RefreshCategoryFilterAsync();
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+
+        await vm.RefreshAsync();
+
+        Assert.Equal(LoadState.Empty, vm.State);
+        Assert.Equal(Tr.Get("Panel_EmptyCategory"), vm.EmptyTitle);
+    }
+
     private ClipboardPanelViewModel Create() =>
-        new(_repository, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
+        new(_repository, _categories, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
 
     private static ClipListItem Item(long id, string text, bool pinned = false) =>
         new(id, text, "Notepad", pinned, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", id));

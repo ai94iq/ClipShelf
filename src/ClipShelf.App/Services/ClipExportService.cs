@@ -16,7 +16,7 @@ public sealed class ClipExportService(IClipRepository repository, int pageSize =
         {
             var page = await repository.GetRecentAsync(after, pageSize, ct);
             rows.AddRange(page.Select(item =>
-                new ClipExportRow(item.Text, item.AppName, item.IsPinned, item.CreatedAtUtc)));
+                new ClipExportRow(item.Text, item.AppName, item.IsPinned, item.CreatedAtUtc, item.CategoryName)));
 
             if (page.Count < pageSize) break;
 

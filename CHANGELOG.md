@@ -22,6 +22,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - A placeholder in the flyout and the history page when there are no clips, with a separate message when a search finds nothing; search is disabled until there are clips.
 - Export the saved clips from Settings as a JSON or CSV file.
 - Select several clips in the list and copy them all at once.
+- Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
 
 ### Changed
 - The installer shows the MIT license, an installation folder page, creates a desktop shortcut, and offers to run ClipShelf when finished; its artwork matches the app.

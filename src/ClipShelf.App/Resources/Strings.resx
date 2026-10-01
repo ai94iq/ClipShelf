@@ -19,6 +19,11 @@
   <data name="Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
   <data name="Backdrop_MicaAlt" xml:space="preserve"><value>Mica Alt</value></data>
   <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
+  <data name="Category_Create" xml:space="preserve"><value>Create</value></data>
+  <data name="Category_New" xml:space="preserve"><value>New category…</value></data>
+  <data name="Category_NewPlaceholder" xml:space="preserve"><value>Category name</value></data>
+  <data name="Category_NewTitle" xml:space="preserve"><value>New category</value></data>
+  <data name="Category_None" xml:space="preserve"><value>No category</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
@@ -62,16 +67,21 @@
   <data name="History_Count_two" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_zero" xml:space="preserve"><value>No clips</value></data>
   <data name="History_Description" xml:space="preserve"><value>Everything you copied, newest first</value></data>
+  <data name="History_Filter" xml:space="preserve"><value>Category filter</value></data>
+  <data name="History_FilterAll" xml:space="preserve"><value>All categories</value></data>
   <data name="History_Pinned" xml:space="preserve"><value>Pinned</value></data>
   <data name="History_Recent" xml:space="preserve"><value>Recent</value></data>
   <data name="History_Title" xml:space="preserve"><value>History</value></data>
   <data name="Nav_History" xml:space="preserve"><value>History</value></data>
   <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Panel_Category" xml:space="preserve"><value>Add to category</value></data>
   <data name="Panel_ClearAll" xml:space="preserve"><value>Clear all</value></data>
-  <data name="Panel_ClearConfirm" xml:space="preserve"><value>Clear unpinned clips?</value></data>
+  <data name="Panel_ClearConfirm" xml:space="preserve"><value>Clear unpinned clips? Clips pinned or saved in a category are kept.</value></data>
   <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
   <data name="Panel_Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Panel_Empty" xml:space="preserve"><value>Nothing copied yet</value></data>
+  <data name="Panel_EmptyCategory" xml:space="preserve"><value>No clips in this category</value></data>
+  <data name="Panel_EmptyCategoryHint" xml:space="preserve"><value>Pick the folder button on a row to add one.</value></data>
   <data name="Panel_EmptyHint" xml:space="preserve"><value>Copy text and it will show up here.</value></data>
   <data name="Panel_NoResults" xml:space="preserve"><value>No matching clips</value></data>
   <data name="Panel_NoResultsHint" xml:space="preserve"><value>Try a different search term.</value></data>
@@ -104,10 +114,10 @@
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
   <data name="Settings_MaxItems" xml:space="preserve"><value>Maximum history items</value></data>
-  <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Older unpinned clips are removed once the limit is passed.</value></data>
+  <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
-  <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips are never removed.</value></data>
+  <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>
   <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the notification area.</value></data>
   <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>Search settings</value></data>

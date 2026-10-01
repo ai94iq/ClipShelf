@@ -19,14 +19,26 @@
                  Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
     </StackPanel>
 
-    <!-- Search. The default field chrome makes the control read as a search box. -->
-    <Grid Grid.Row="1" Margin="24,12,24,6">
+    <!-- Search and the category filter -->
+    <Grid Grid.Row="1" Margin="24,12,24,6" ColumnSpacing="8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
       <TextBox x:Name="SearchBox"
                Height="36"
                CornerRadius="{StaticResource CardRadius}"
                IsEnabled="{x:Bind ViewModel.CanSearch, Mode=OneWay}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+      <ComboBox Grid.Column="1"
+                MinWidth="180"
+                MinHeight="36"
+                AutomationProperties.Name="{l:Tr Key=History_Filter}"
+                ItemsSource="{x:Bind ViewModel.CategoryFilterOptions}"
+                DisplayMemberPath="Label"
+                SelectedItem="{x:Bind ViewModel.SelectedCategoryFilter, Mode=TwoWay}" />
     </Grid>
 
     <!-- Grouped history (Pinned, then Recent) on a card surface, with its loading/empty/error overlay -->

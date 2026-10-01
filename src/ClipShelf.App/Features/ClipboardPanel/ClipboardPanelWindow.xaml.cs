@@ -1,5 +1,6 @@
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 
@@ -34,6 +35,10 @@ public sealed partial class ClipboardPanelWindow : Window
 
     public ClipboardPanelViewModel ViewModel { get; }
     internal IntPtr PreviousWindowHandle => _previousWindow;
+
+    // Where a row's category menu should appear.
+    internal FrameworkElement RowAnchor(ClipItemViewModel item) =>
+        ClipList.ContainerFromItem(item) as FrameworkElement ?? Root;
 
     public Task ToggleAsync()
     {

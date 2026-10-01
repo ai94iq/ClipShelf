@@ -19,37 +19,45 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             changes.Notify(new DataChanged("clip"));
         }, ct);
 
-    public Task<IReadOnlyList<ClipListItem>> GetRecentAsync(PageCursor? after, int pageSize, CancellationToken ct) =>
+    public Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
+        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null) =>
         Task.Run<IReadOnlyList<ClipListItem>>(() =>
         {
             using var connection = factory.Open();
             return Read(connection,
                 """
-                SELECT Id, Text, AppName, IsPinned, CreatedAtUtc
-                FROM Clip
-                WHERE @key IS NULL
-                   OR CreatedAtUtc < @key
-                   OR (CreatedAtUtc = @key AND Id < @id)
-                ORDER BY CreatedAtUtc DESC, Id DESC
+                SELECT c.Id, c.Text, c.AppName, c.IsPinned, c.CreatedAtUtc, c.CategoryId,
+                       cat.Name AS CategoryName
+                FROM Clip c
+                LEFT JOIN Category cat ON cat.Id = c.CategoryId
+                WHERE (@key IS NULL
+                   OR c.CreatedAtUtc < @key
+                   OR (c.CreatedAtUtc = @key AND c.Id < @id))
+                  AND (@categoryId IS NULL OR c.CategoryId = @categoryId)
+                ORDER BY c.CreatedAtUtc DESC, c.Id DESC
                 LIMIT @pageSize
                 """,
-                Paging(after, pageSize));
+                Paging(after, pageSize, categoryId));
         }, ct);
 
-    public Task<IReadOnlyList<ClipListItem>> SearchAsync(string query, PageCursor? after, int pageSize, CancellationToken ct) =>
+    public Task<IReadOnlyList<ClipListItem>> SearchAsync(
+        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null) =>
         Task.Run<IReadOnlyList<ClipListItem>>(() =>
         {
             using var connection = factory.Open();
             return Read(connection,
                 """
-                SELECT Id, Text, AppName, IsPinned, CreatedAtUtc
-                FROM Clip
-                WHERE Text LIKE @like ESCAPE '\'
-                  AND (@key IS NULL OR CreatedAtUtc < @key OR (CreatedAtUtc = @key AND Id < @id))
-                ORDER BY CreatedAtUtc DESC, Id DESC
+                SELECT c.Id, c.Text, c.AppName, c.IsPinned, c.CreatedAtUtc, c.CategoryId,
+                       cat.Name AS CategoryName
+                FROM Clip c
+                LEFT JOIN Category cat ON cat.Id = c.CategoryId
+                WHERE c.Text LIKE @like ESCAPE '\'
+                  AND (@key IS NULL OR c.CreatedAtUtc < @key OR (c.CreatedAtUtc = @key AND c.Id < @id))
+                  AND (@categoryId IS NULL OR c.CategoryId = @categoryId)
+                ORDER BY c.CreatedAtUtc DESC, c.Id DESC
                 LIMIT @pageSize
                 """,
-                Paging(after, pageSize, like: $"%{EscapeLike(query)}%"));
+                Paging(after, pageSize, categoryId, like: $"%{EscapeLike(query)}%"));
         }, ct);
 
     public Task SetPinnedAsync(long id, bool pinned, CancellationToken ct) =>
@@ -58,6 +66,15 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             using var connection = factory.Open();
             connection.Execute("UPDATE Clip SET IsPinned = @pinned WHERE Id = @id;", new { id, pinned = pinned ? 1 : 0 });
             changes.Notify(new DataChanged("clip", id));
+        }, ct);
+
+    public Task AssignCategoryAsync(long clipId, long? categoryId, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            connection.Execute(
+                "UPDATE Clip SET CategoryId = @categoryId WHERE Id = @id;", new { id = clipId, categoryId });
+            changes.Notify(new DataChanged("clip", clipId));
         }, ct);
 
     public Task DeleteAsync(long id, CancellationToken ct) =>
@@ -72,7 +89,7 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
         Task.Run(() =>
         {
             using var connection = factory.Open();
-            connection.Execute("DELETE FROM Clip WHERE IsPinned = 0;");
+            connection.Execute("DELETE FROM Clip WHERE IsPinned = 0 AND CategoryId IS NULL;");
             changes.Notify(new DataChanged("clip"));
         }, ct);
 
@@ -84,9 +101,11 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 """
                 DELETE FROM Clip
                 WHERE IsPinned = 0
+                  AND CategoryId IS NULL
                   AND Id NOT IN (
                       SELECT Id FROM Clip
                       WHERE IsPinned = 0
+                        AND CategoryId IS NULL
                       ORDER BY CreatedAtUtc DESC, Id DESC
                       LIMIT @keepUnpinned
                   );
@@ -101,7 +120,7 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
         {
             using var connection = factory.Open();
             var removed = connection.Execute(
-                "DELETE FROM Clip WHERE IsPinned = 0 AND CreatedAtUtc < @cutoff;",
+                "DELETE FROM Clip WHERE IsPinned = 0 AND CategoryId IS NULL AND CreatedAtUtc < @cutoff;",
                 new { cutoff = Iso(cutoffUtc) });
             if (removed > 0) changes.Notify(new DataChanged("clip"));
             return removed;
@@ -110,7 +129,7 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
     public int ClearUnpinned()
     {
         using var connection = factory.Open();
-        var removed = connection.Execute("DELETE FROM Clip WHERE IsPinned = 0;");
+        var removed = connection.Execute("DELETE FROM Clip WHERE IsPinned = 0 AND CategoryId IS NULL;");
         if (removed > 0) changes.Notify(new DataChanged("clip"));
         return removed;
     }
@@ -123,11 +142,13 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 r.AppName,
                 r.IsPinned != 0,
                 DateTimeOffset.Parse(r.CreatedAtUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
-                new PageCursor(r.CreatedAtUtc, r.Id)))
+                new PageCursor(r.CreatedAtUtc, r.Id),
+                r.CategoryId,
+                r.CategoryName))
             .ToList();
 
-    private static object Paging(PageCursor? after, int pageSize, string? like = null) =>
-        new { key = after?.Key, id = after?.Id ?? 0L, pageSize, like };
+    private static object Paging(PageCursor? after, int pageSize, long? categoryId, string? like = null) =>
+        new { key = after?.Key, id = after?.Id ?? 0L, pageSize, like, categoryId };
 
     private static string Iso(DateTimeOffset value) =>
         value.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture);
@@ -136,5 +157,6 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
         value.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
 
     // Row records use only long/string so Dapper's constructor mapping matches SQLite types.
-    private sealed record ClipRow(long Id, string Text, string? AppName, long IsPinned, string CreatedAtUtc);
+    private sealed record ClipRow(
+        long Id, string Text, string? AppName, long IsPinned, string CreatedAtUtc, long? CategoryId, string? CategoryName);
 }

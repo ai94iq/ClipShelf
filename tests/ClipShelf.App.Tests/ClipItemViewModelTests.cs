@@ -28,15 +28,33 @@ public sealed class ClipItemViewModelTests
         Assert.Equal("now", item.SourceText);
     }
 
-    private ClipItemViewModel Create(string? appName)
+    [Fact]
+    public void The_category_is_shown_before_the_app_name()
+    {
+        var item = Create("chrome", categoryId: 1, categoryName: "Work");
+
+        Assert.Equal("Work · Chrome · now", item.SourceText);
+    }
+
+    [Fact]
+    public void A_category_without_an_app_name_still_shows()
+    {
+        var item = Create(null, categoryId: 1, categoryName: "Work");
+
+        Assert.Equal("Work · now", item.SourceText);
+    }
+
+    private ClipItemViewModel Create(string? appName, long? categoryId = null, string? categoryName = null)
     {
         var panel = new ClipboardPanelViewModel(
             Substitute.For<IClipRepository>(),
+            Substitute.For<ICategoryRepository>(),
             Substitute.For<IClipboardWriter>(),
             _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);
         var model = new ClipListItem(
-            1, "text", appName, false, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", 1));
+            1, "text", appName, false, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero),
+            new PageCursor("k", 1), categoryId, categoryName);
 
         return new ClipItemViewModel(model, _dates, panel);
     }

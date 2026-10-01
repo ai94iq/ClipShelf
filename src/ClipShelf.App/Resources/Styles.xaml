@@ -62,6 +62,8 @@
                    TextWrapping="NoWrap" />
         <TextBlock Text="{Binding SourceText}"
                    FontSize="11"
+                   TextTrimming="CharacterEllipsis"
+                   TextWrapping="NoWrap"
                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
       </StackPanel>
 
@@ -76,6 +78,17 @@
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
           <common:AppIcon Kind="{Binding IsPinned, Converter={StaticResource PinIcon}}" Width="16" Height="16" />
+        </Button>
+        <Button Background="Transparent"
+                BorderThickness="0"
+                Width="30"
+                Height="30"
+                Padding="0"
+                AllowFocusOnInteraction="False"
+                Command="{Binding CategoryCommand}"
+                ToolTipService.ToolTip="{l:Tr Key=Panel_Category}"
+                AutomationProperties.Name="{l:Tr Key=Panel_Category}">
+          <common:AppIcon Kind="Folder" Width="16" Height="16" />
         </Button>
         <Button Background="Transparent"
                 BorderThickness="0"

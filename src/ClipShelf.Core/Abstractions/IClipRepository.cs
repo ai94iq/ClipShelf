@@ -7,11 +7,16 @@ public interface IClipRepository
 {
     Task AddOrBumpAsync(string text, string? appName, DateTimeOffset copiedAtUtc, CancellationToken ct);
 
-    Task<IReadOnlyList<ClipListItem>> GetRecentAsync(PageCursor? after, int pageSize, CancellationToken ct);
+    Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
+        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null);
 
-    Task<IReadOnlyList<ClipListItem>> SearchAsync(string query, PageCursor? after, int pageSize, CancellationToken ct);
+    Task<IReadOnlyList<ClipListItem>> SearchAsync(
+        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null);
 
     Task SetPinnedAsync(long id, bool pinned, CancellationToken ct);
+
+    // Moves a clip into a category, or out of every category when categoryId is null.
+    Task AssignCategoryAsync(long clipId, long? categoryId, CancellationToken ct);
 
     Task DeleteAsync(long id, CancellationToken ct);
 

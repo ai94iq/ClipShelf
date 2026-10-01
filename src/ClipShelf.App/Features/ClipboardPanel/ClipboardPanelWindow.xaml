@@ -33,7 +33,8 @@
 
     <!-- History with its loading/empty/error overlay -->
     <Grid Grid.Row="1">
-      <ListView Padding="12,0"
+      <ListView x:Name="ClipList"
+                Padding="12,0"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 ItemTemplate="{StaticResource ClipItemTemplate}"
                 SelectionMode="None"

@@ -10,6 +10,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     private const int SearchDebounceMs = 300;
 
     private readonly IClipRepository _repository;
+    private readonly ICategoryRepository _categories;
     private readonly IClipboardWriter _clipboard;
     private readonly IDateFormatter _dates;
     private CancellationTokenSource? _searchCts;
@@ -18,11 +19,13 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public ClipboardPanelViewModel(
         IClipRepository repository,
+        ICategoryRepository categories,
         IClipboardWriter clipboard,
         IDateFormatter dates,
         ILogger<ClipboardPanelViewModel> log) : base(log)
     {
         _repository = repository;
+        _categories = categories;
         _clipboard = clipboard;
         _dates = dates;
         ReloadQuietlyOnChange("clip");
@@ -44,6 +47,44 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public string CountText => Tr.Plural("History_Count", Items.Count);
 
+    // The full-history category filter: "All categories" plus one entry per category.
+    public ObservableCollection<Option<long?>> CategoryFilterOptions { get; } = [];
+
+    [ObservableProperty]
+    public partial Option<long?>? SelectedCategoryFilter { get; set; }
+
+    private bool _updatingFilter;
+
+    public bool IsCategoryFilterActive => SelectedCategoryFilter?.Value is not null;
+
+    public async Task RefreshCategoryFilterAsync()
+    {
+        var categories = await _categories.GetCategoriesAsync(CancellationToken.None);
+        var previous = SelectedCategoryFilter?.Value;
+
+        CategoryFilterOptions.Clear();
+        CategoryFilterOptions.Add(new Option<long?>(null, Tr.Get("History_FilterAll")));
+        foreach (var category in categories)
+            CategoryFilterOptions.Add(new Option<long?>(category.Id, category.Name));
+
+        var match = CategoryFilterOptions.FirstOrDefault(option => option.Value == previous) ?? CategoryFilterOptions[0];
+        if (!Equals(match, SelectedCategoryFilter))
+        {
+            _updatingFilter = true;
+            SelectedCategoryFilter = match;
+            _updatingFilter = false;
+        }
+    }
+
+    partial void OnSelectedCategoryFilterChanged(Option<long?>? value)
+    {
+        OnPropertyChanged(nameof(EmptyTitle));
+        OnPropertyChanged(nameof(EmptyHint));
+        if (_updatingFilter) return;
+
+        _ = RefreshAsync();
+    }
+
     // Multi-select: rows are checked, then copied together in one go.
     public int SelectedCount => Items.Count(item => item.IsSelected);
 
@@ -55,10 +96,16 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public bool ShowSelectButton => !IsSelecting;
 
-    // Placeholder copy: an empty history and an empty search result read differently.
-    public string EmptyTitle => IsSearchActive ? Tr.Get("Panel_NoResults") : Tr.Get("Panel_Empty");
+    // Placeholder copy: an empty history, an empty search and an empty filter read differently.
+    public string EmptyTitle =>
+        IsSearchActive ? Tr.Get("Panel_NoResults")
+        : IsCategoryFilterActive ? Tr.Get("Panel_EmptyCategory")
+        : Tr.Get("Panel_Empty");
 
-    public string EmptyHint => IsSearchActive ? Tr.Get("Panel_NoResultsHint") : Tr.Get("Panel_EmptyHint");
+    public string EmptyHint =>
+        IsSearchActive ? Tr.Get("Panel_NoResultsHint")
+        : IsCategoryFilterActive ? Tr.Get("Panel_EmptyCategoryHint")
+        : Tr.Get("Panel_EmptyHint");
 
     // No clips means there is nothing to search; a typed query keeps the box usable so it can be edited.
     public bool CanSearch => Items.Count > 0 || IsSearchActive;
@@ -85,6 +132,21 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     [RelayCommand]
     private void OpenHistory() => OpenHistoryRequested?.Invoke(this, EventArgs.Empty);
+
+    // Raised when a row asks for its category menu; the window shows it next to the row.
+    public event Action<ClipItemViewModel>? CategoryMenuRequested;
+
+    public void RequestCategoryMenu(ClipItemViewModel item) => CategoryMenuRequested?.Invoke(item);
+
+    // Assignment comes back as a "clip" change, so open lists refresh themselves.
+    public Task AssignCategoryAsync(ClipItemViewModel item, long? categoryId) =>
+        _repository.AssignCategoryAsync(item.Id, categoryId, CancellationToken.None);
+
+    public Task<IReadOnlyList<Category>> GetCategoriesAsync() =>
+        _categories.GetCategoriesAsync(CancellationToken.None);
+
+    public Task<Category> GetOrAddCategoryAsync(string name) =>
+        _categories.GetOrAddAsync(name.Trim(), CancellationToken.None);
 
     public Task RefreshAsync() => ReloadCommand.ExecuteAsync(null);
 
@@ -154,9 +216,10 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     private async Task<IReadOnlyList<ClipListItem>> LoadItemsAsync(CancellationToken ct)
     {
+        var categoryId = SelectedCategoryFilter?.Value;
         return string.IsNullOrWhiteSpace(SearchText)
-            ? await _repository.GetRecentAsync(null, PageSize, ct)
-            : await _repository.SearchAsync(SearchText, null, PageSize, ct);
+            ? await _repository.GetRecentAsync(null, PageSize, ct, categoryId)
+            : await _repository.SearchAsync(SearchText, null, PageSize, ct, categoryId);
     }
 
     private void ReplaceItems(IEnumerable<ClipListItem> items)
