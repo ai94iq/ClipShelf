@@ -1,6 +1,0 @@
-<!-- MSI databases aren't Unicode: Arabic needs codepage 1256 -->
-<WixLocalization Culture="ar-SA" Codepage="1256" xmlns="http://wixtoolset.org/schemas/v4/wxl">
-  <String Id="ProductName" Value="ClipShelf" />
-  <String Id="Manufacturer" Value="Abdulwahb Isam" />
-  <String Id="DowngradeError" Value="يوجد إصدار أحدث من التطبيق مثبت بالفعل." />
-</WixLocalization>

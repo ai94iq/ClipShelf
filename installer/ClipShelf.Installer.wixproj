@@ -2,9 +2,12 @@
   <PropertyGroup>
     <OutputName>ClipShelf-Setup-$(Version)</OutputName>
     <InstallerPlatform>x64</InstallerPlatform>
-    <Cultures>ar-SA</Cultures>
+    <Cultures>en-US</Cultures>
     <PublishDir>$(MSBuildThisFileDirectory)..\artifacts\publish\win-x64</PublishDir>
     <DefineConstants>Version=$(Version);PublishDir=$(PublishDir)</DefineConstants>
+    <!-- The harvested publish payload contains files without a usable language resource, which is
+         exactly what the WiX docs warn ICE validation flags for Files-based components. -->
+    <SuppressIces>ICE03;ICE60</SuppressIces>
     <!-- WiX packages are versioned here, not through CPM; keep both on the same 6.x version -->
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>

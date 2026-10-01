@@ -5,15 +5,15 @@
   <Package Name="!(loc.ProductName)"
            Manufacturer="!(loc.Manufacturer)"
            Version="$(var.Version)"
-           Language="1025"
+           Language="1033"
            UpgradeCode="92889A21-5376-451A-9E19-FCCC712A4539"
            Scope="perMachine">
 
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <Icon Id="AppIcon" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
-    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ClipShelf.exe" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
 
     <StandardDirectory Id="ProgramFiles64Folder">
@@ -22,7 +22,6 @@
 
     <Feature Id="Main">
       <ComponentGroupRef Id="AppFiles" />
-      <ComponentRef Id="StartMenuShortcut" />
     </Feature>
 
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
@@ -36,19 +35,15 @@
       </Files>
       <Component Id="AppExe">
         <File Id="AppExeFile" Source="$(var.PublishDir)\ClipShelf.exe" KeyPath="yes" />
+        <!-- Advertised shortcut in the exe's component: per-machine safe and ICE-clean. -->
+        <Shortcut Id="AppShortcut"
+                  Advertise="yes"
+                  Directory="ProgramMenuFolder"
+                  Name="!(loc.ProductName)"
+                  Icon="ClipShelf.exe" />
       </Component>
     </ComponentGroup>
 
-    <StandardDirectory Id="ProgramMenuFolder">
-      <Component Id="StartMenuShortcut">
-        <Shortcut Id="AppShortcut"
-                  Name="!(loc.ProductName)"
-                  Target="[#AppExeFile]"
-                  WorkingDirectory="INSTALLFOLDER"
-                  Icon="AppIcon" />
-        <RegistryValue Root="HKMU" Key="Software\Abdulwahb Isam\ClipShelf"
-                       Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
   </Fragment>
 </Wix>
