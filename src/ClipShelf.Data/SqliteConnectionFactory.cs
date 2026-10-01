@@ -25,8 +25,12 @@ public sealed class SqliteConnectionFactory
     {
         var connection = new SqliteConnection(_connectionString);
         connection.Open();
-        // Per-connection settings; cache_size negative = KiB (~20 MB).
-        connection.Execute("PRAGMA synchronous = NORMAL; PRAGMA busy_timeout = 5000; PRAGMA cache_size = -20000;");
+        // Per-connection settings; cache_size negative = KiB (~20 MB). temp_store stays in memory
+        // so no clip text can reach a plaintext temp file, and SQLCipher scrubs pages and keys
+        // from freed memory.
+        connection.Execute(
+            "PRAGMA synchronous = NORMAL; PRAGMA busy_timeout = 5000; PRAGMA cache_size = -20000; " +
+            "PRAGMA temp_store = MEMORY; PRAGMA cipher_memory_security = ON;");
         return connection;
     }
 }

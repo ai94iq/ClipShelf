@@ -31,6 +31,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Settings use grouped cards with taller rows, small section headings, and Enabled/Disabled toggles; the sidebar is an icon rail with Settings at the bottom, and the title bar holds a settings search that hides groups that do not match.
 - The History page search box is a regular rounded field, and history rows no longer hover-highlight like a selection (the pin and delete buttons keep their own hover).
 - Flyout monitor placement is centralized with the platform window helpers.
+- Database hardening: temporary storage stays in memory, SQLCipher scrubs freed memory, and a test proves the database, its sidecars and backups contain no readable clip text.
 - Clip rows show readable app names: capitalized, with friendly names for common apps (Chrome, Edge, Word…).
 
 ### Fixed

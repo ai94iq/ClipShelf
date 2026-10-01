@@ -25,4 +25,7 @@ protected with Windows DPAPI (`DataProtectionScope.CurrentUser`), and passed to 
 - SQLCipher runs its key derivation when a physical connection is opened; connection pooling keeps
   this to a handful of opens per process.
 - Restoring a backup on another machine or user account requires the matching `key.bin`.
+- Every connection keeps SQLite temporary storage in memory, and SQLCipher scrubs pages and keys
+  from freed memory. A dedicated test inserts a sentinel clip and scans `data.db`, its sidecars and
+  a fresh backup to prove no clip text is stored in a readable form.
 - Tests stay unencrypted by default; encryption is covered by dedicated repository and migration tests.
