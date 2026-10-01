@@ -30,5 +30,6 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
 - Changing the history size no longer trims on every keystroke or spin click, and the tray icon or shortcut are only re-applied when their own settings change.
 - The history footer reads "1 clip" instead of "1 clips" for a single item.
+- Installing a rebuilt installer now replaces the previous installation instead of adding another entry.
 
 ### Removed

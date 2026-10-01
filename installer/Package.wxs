@@ -9,7 +9,7 @@
            UpgradeCode="92889A21-5376-451A-9E19-FCCC712A4539"
            Scope="perMachine">
 
-    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="!(loc.DowngradeError)" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
