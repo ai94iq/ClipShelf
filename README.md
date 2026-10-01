@@ -1,5 +1,7 @@
 # ClipShelf
 
+[![CI](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml/badge.svg)](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml)
+
 ClipShelf is a Windows clipboard-history app that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
 
 ## Features
@@ -67,6 +69,7 @@ The UI is currently English-only. `Strings.resx` (neutral) and `Strings.en.resx`
 
 - Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `app`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
 - Commit body: what changed and why, wrapped at 72 characters.
+- CI runs `test.bat` on every push to `main` and every pull request.
 - Before committing, `build.bat` and `test.bat` must pass, and the affected docs must be updated.
 - Decisions: [docs/decisions](docs/decisions).
 
