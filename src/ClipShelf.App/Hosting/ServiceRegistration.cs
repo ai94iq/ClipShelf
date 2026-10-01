@@ -1,4 +1,6 @@
 using ClipShelf.App.Shell;
+using ClipShelf.Core.Services;
+using ClipShelf.Data.Repositories;
 
 namespace ClipShelf.App.Hosting;
 
@@ -7,6 +9,7 @@ public static class ServiceRegistration
     public static IServiceCollection AddAppServices(this IServiceCollection services, AppSettings settings)
     {
         services.AddSingleton(settings);
+        services.AddSingleton<SettingsService>();
         services.AddMemoryCache(o => o.SizeLimit = 2_000);
         services.AddTransient(typeof(Lazy<>), typeof(LazyService<>));
 
@@ -14,6 +17,13 @@ public static class ServiceRegistration
         services.AddSingleton(new DataOptions(AppPaths.Database, AppPaths.Backups));
         services.AddSingleton<SqliteConnectionFactory>();
         services.AddSingleton<DatabaseInitializer>();
+        services.AddSingleton<IClipRepository, ClipRepository>();
+
+        // Clipboard capture and the tray-driven lifetime.
+        services.AddSingleton<ClipCaptureService>();
+        services.AddSingleton<ClipboardService>();
+        services.AddSingleton<AppLifetime>();
+        services.AddSingleton<AppShellService>();
 
         // App services
         services.AddSingleton<IDialogService, DialogService>();

@@ -10,7 +10,7 @@ App → Core, Data. Data → Core. Core → nothing.
 
 ## Startup flow
 
-Settings → culture → logging → single instance → host → backup and migrate → main window. Pages load their own data when navigated to.
+Settings → culture → logging → single instance → host → backup and migrate → tray icon + clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
 
 ## Data flow
 
@@ -29,3 +29,5 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 | Feature | Folder | Notes |
 |---|---|---|
 | Clipboard history storage | src/ClipShelf.Data/Repositories/ClipRepository.cs | Text clips in SQLite; upsert by SHA-256 hash; keyset paging, search, pin, prune |
+| Clipboard capture | src/ClipShelf.App/Services/ClipboardService.cs | Win32 clipboard listener; ignores the app's own writes; stores text with the source app name |
+| Tray icon and lifetime | src/ClipShelf.App/Shell/AppShellService.cs | H.NotifyIcon tray icon and menu; closing a window hides it until the user exits |

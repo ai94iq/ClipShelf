@@ -44,4 +44,6 @@
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
 </root>

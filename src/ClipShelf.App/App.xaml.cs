@@ -47,9 +47,11 @@ public partial class App : Application
             var database = _host.Services.GetRequiredService<DatabaseInitializer>();
             await Task.Run(database.BackupAndMigrate);
 
-            var window = _host.Services.GetRequiredService<MainWindow>();
-            window.Closed += (_, _) => Shutdown();
-            window.Activate();
+            // Tray-first: nothing opens at startup. The tray icon and the clipboard watcher keep
+            // the app alive in the notification area until the user exits from the tray menu.
+            var shell = _host.Services.GetRequiredService<AppShellService>();
+            shell.ExitRequested += (_, _) => ExitApplication();
+            _host.Services.GetRequiredService<ClipboardService>();
         }
         catch (Exception ex)
         {
@@ -57,6 +59,12 @@ public partial class App : Application
             Shutdown();
             Exit();
         }
+    }
+
+    private void ExitApplication()
+    {
+        Shutdown();     // disposes the host, which disposes the tray icon and the clipboard watcher
+        Exit();
     }
 
     private void Shutdown()

@@ -19,5 +19,7 @@
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <!-- Tray icon for WinUI 3, which has none built in (see docs/decisions/0001). -->
+    <PackageVersion Include="H.NotifyIcon.WinUI" Version="2.4.1" />
   </ItemGroup>
 </Project>
