@@ -69,7 +69,7 @@ The UI is currently English-only. `Strings.resx` (neutral) and `Strings.en.resx`
 
 - Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `app`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
 - Commit body: what changed and why, wrapped at 72 characters.
-- CI runs `test.bat` on every push to `main` and every pull request.
+- CI runs `test.bat` on every push to `main` and every pull request, and publishes a GitHub release with the MSI when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
 - Before committing, `build.bat` and `test.bat` must pass, and the affected docs must be updated.
 - Decisions: [docs/decisions](docs/decisions).
 

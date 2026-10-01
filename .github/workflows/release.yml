@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Check the tag matches the version
+        shell: pwsh
+        run: |
+          [xml]$props = Get-Content -Raw Directory.Build.props
+          $version = $props.SelectSingleNode('/Project/PropertyGroup/Version').InnerText
+          if ("v$version" -ne $env:GITHUB_REF_NAME) {
+            throw "Tag $env:GITHUB_REF_NAME does not match Directory.Build.props Version $version"
+          }
+
+      - name: Package
+        run: .\package.bat --no-pause
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $msi = (Get-ChildItem artifacts\installer\*.msi).FullName
+          gh release create "$env:GITHUB_REF_NAME" $msi --title "$env:GITHUB_REF_NAME" --generate-notes
