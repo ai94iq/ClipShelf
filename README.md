@@ -79,4 +79,4 @@ Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/relea
 
 ## License
 
-No license has been specified for the repository yet. Bundled fonts are under the SIL Open Font License (`src/ClipShelf.App/Assets/Fonts/OFL.txt`).
+MIT — see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.App/Assets/Fonts/OFL.txt`).

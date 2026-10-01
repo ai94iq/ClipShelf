@@ -21,6 +21,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Keep clips for 1, 7 or 30 days (or forever), and optionally clear unpinned history when you sign out or shut down.
 
 ### Changed
+- The installer shows the MIT license, an installation folder page, creates a desktop shortcut, and offers to run ClipShelf when finished; its artwork matches the app.
 - Settings use grouped cards with taller rows, small section headings, and Enabled/Disabled toggles; the sidebar is an icon rail with Settings at the bottom, and the title bar holds a settings search that hides groups that do not match.
 - The History page search box is a regular rounded field, and history rows no longer hover-highlight like a selection (the pin and delete buttons keep their own hover).
 - Flyout monitor placement is centralized with the platform window helpers.

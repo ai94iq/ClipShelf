@@ -3,4 +3,5 @@
   <String Id="ProductName" Value="ClipShelf" />
   <String Id="Manufacturer" Value="Abdulwahb Isam" />
   <String Id="DowngradeError" Value="A newer version of ClipShelf is already installed." />
+  <String Id="LaunchProduct" Value="Run ClipShelf" />
 </WixLocalization>

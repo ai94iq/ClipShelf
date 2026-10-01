@@ -15,12 +15,23 @@
     <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
     <Property Id="ARPPRODUCTICON" Value="ClipShelf.exe" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Dialog.bmp" />
+
+    <!-- Finish page: run ClipShelf when the checked option is left in place. -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchProduct)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+
+    <UI>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchClipShelf"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
+    </UI>
 
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="ClipShelf" />
     </StandardDirectory>
 
-    <Feature Id="Main">
+    <Feature Id="Main" Title="!(loc.ProductName)" Level="1">
       <ComponentGroupRef Id="AppFiles" />
     </Feature>
 
@@ -35,15 +46,25 @@
       </Files>
       <Component Id="AppExe">
         <File Id="AppExeFile" Source="$(var.PublishDir)\ClipShelf.exe" KeyPath="yes" />
-        <!-- Advertised shortcut in the exe's component: per-machine safe and ICE-clean. -->
+        <!-- Advertised shortcuts in the exe's component: per-machine safe and ICE-clean. -->
         <Shortcut Id="AppShortcut"
                   Advertise="yes"
                   Directory="ProgramMenuFolder"
+                  Name="!(loc.ProductName)"
+                  Icon="ClipShelf.exe" />
+        <Shortcut Id="DesktopShortcutShortcut"
+                  Advertise="yes"
+                  Directory="DesktopFolder"
                   Name="!(loc.ProductName)"
                   Icon="ClipShelf.exe" />
       </Component>
     </ComponentGroup>
 
     <StandardDirectory Id="ProgramMenuFolder" />
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- Type 2 custom action: launches the installed exe from the finish page. -->
+    <CustomAction Id="LaunchClipShelf" FileRef="AppExeFile" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
   </Fragment>
 </Wix>
