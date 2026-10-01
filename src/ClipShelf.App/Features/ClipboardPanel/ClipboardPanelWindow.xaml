@@ -90,19 +90,58 @@
           <common:AppIcon Kind="Clipboard" Width="16" Height="16" />
         </Button>
 
-        <Button Grid.Column="1"
-                x:Name="ClearAllButton"
-                Background="Transparent"
-                BorderThickness="0"
-                Width="32"
-                Height="28"
-                Padding="0"
-                IsEnabled="{x:Bind ViewModel.HasItems, Mode=OneWay}"
-                ToolTipService.ToolTip="{l:Tr Key=Panel_ClearAll}"
-                AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
-                Command="{x:Bind ViewModel.RequestClearCommand}">
-          <common:AppIcon Kind="Delete" Width="16" Height="16" />
-        </Button>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+          <Button Background="Transparent"
+                  BorderThickness="0"
+                  Width="32"
+                  Height="28"
+                  Padding="0"
+                  ToolTipService.ToolTip="{l:Tr Key=Selection_Select}"
+                  AutomationProperties.Name="{l:Tr Key=Selection_Select}"
+                  Command="{x:Bind ViewModel.ToggleSelectionCommand}"
+                  Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.ShowSelectButton), Mode=OneWay}">
+            <common:AppIcon Kind="Checkmark" Width="16" Height="16" />
+          </Button>
+
+          <Button Background="Transparent"
+                  BorderThickness="0"
+                  Width="32"
+                  Height="28"
+                  Padding="0"
+                  ToolTipService.ToolTip="{l:Tr Key=Common_Cancel}"
+                  AutomationProperties.Name="{l:Tr Key=Common_Cancel}"
+                  Command="{x:Bind ViewModel.ToggleSelectionCommand}"
+                  Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsSelecting), Mode=OneWay}">
+            <common:AppIcon Kind="Dismiss" Width="16" Height="16" />
+          </Button>
+
+          <Button Background="Transparent"
+                  BorderThickness="0"
+                  Width="32"
+                  Height="28"
+                  Padding="0"
+                  IsEnabled="{x:Bind ViewModel.CanCopySelection, Mode=OneWay}"
+                  ToolTipService.ToolTip="{l:Tr Key=Selection_Copy}"
+                  AutomationProperties.Name="{l:Tr Key=Selection_Copy}"
+                  Command="{x:Bind ViewModel.CopySelectedCommand}"
+                  Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsSelecting), Mode=OneWay}">
+            <common:AppIcon Kind="Copy" Width="16" Height="16" />
+          </Button>
+
+          <Button x:Name="ClearAllButton"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Width="32"
+                  Height="28"
+                  Padding="0"
+                  IsEnabled="{x:Bind ViewModel.HasItems, Mode=OneWay}"
+                  ToolTipService.ToolTip="{l:Tr Key=Panel_ClearAll}"
+                  AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
+                  Command="{x:Bind ViewModel.RequestClearCommand}"
+                  Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.ShowSelectButton), Mode=OneWay}">
+            <common:AppIcon Kind="Delete" Width="16" Height="16" />
+          </Button>
+        </StackPanel>
       </Grid>
     </Border>
 

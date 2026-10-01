@@ -36,13 +36,26 @@
   <!-- One history row, used by the flyout and the full history window.
        Classic {Binding} because x:Bind needs a code-behind class in a resource dictionary. -->
   <DataTemplate x:Key="ClipItemTemplate">
-    <Grid ColumnSpacing="6">
+    <Grid>
       <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <StackPanel Grid.Column="0" VerticalAlignment="Center">
+      <!-- Select mode indicator: the row itself is the hit target, so the box only shows state. -->
+      <CheckBox Grid.Column="0"
+                MinWidth="0"
+                Padding="0"
+                Margin="0,0,6,0"
+                VerticalAlignment="Center"
+                AllowFocusOnInteraction="False"
+                IsTabStop="False"
+                IsHitTestVisible="False"
+                IsChecked="{Binding IsSelected, Mode=OneWay}"
+                Visibility="{Binding ShowSelection, Converter={StaticResource BoolVisible}}" />
+
+      <StackPanel Grid.Column="1" VerticalAlignment="Center">
         <TextBlock Text="{Binding Preview}"
                    FontSize="13"
                    TextTrimming="CharacterEllipsis"
@@ -52,7 +65,7 @@
                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
       </StackPanel>
 
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0" Margin="6,0,0,0" VerticalAlignment="Center">
         <Button Background="Transparent"
                 BorderThickness="0"
                 Width="30"

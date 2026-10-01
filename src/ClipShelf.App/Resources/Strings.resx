@@ -82,6 +82,9 @@
   <data name="Retention_Forever" xml:space="preserve"><value>Forever</value></data>
   <data name="Retention_Month" xml:space="preserve"><value>30 days</value></data>
   <data name="Retention_Week" xml:space="preserve"><value>7 days</value></data>
+  <data name="Selection_Count" xml:space="preserve"><value>{0} selected</value></data>
+  <data name="Selection_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Selection_Select" xml:space="preserve"><value>Select</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>

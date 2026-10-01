@@ -27,6 +27,7 @@ internal sealed class ClipboardPanelActions
 
         _viewModel.ItemActivated += OnItemActivated;
         _viewModel.OpenHistoryRequested += OnOpenHistoryRequested;
+        _viewModel.SelectionCopied += (_, _) => _window.Hide();
     }
 
     public void OnItemClick(ItemClickEventArgs e)
@@ -38,8 +39,10 @@ internal sealed class ClipboardPanelActions
     {
         if (e.Key != VirtualKey.Escape) return;
 
-        // Esc cancels the confirmation first, and only then closes the flyout.
-        if (_viewModel.IsConfirmingClear)
+        // Esc leaves select mode first, then cancels the confirmation, and only then closes the flyout.
+        if (_viewModel.IsSelecting)
+            _viewModel.ToggleSelectionCommand.Execute(null);
+        else if (_viewModel.IsConfirmingClear)
             _viewModel.CancelClearCommand.Execute(null);
         else
             _window.Hide();

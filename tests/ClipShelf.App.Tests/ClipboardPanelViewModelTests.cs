@@ -298,6 +298,103 @@ public sealed class ClipboardPanelViewModelTests
         Assert.True(vm.CanSearch);
     }
 
+    [Fact]
+    public async Task Copying_selected_clips_joins_them_in_list_order()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(3, "one"), Item(2, "two"), Item(1, "three") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        vm.Items[2].IsSelected = true;
+        vm.Items[0].IsSelected = true;
+
+        vm.CopySelectedCommand.Execute(null);
+
+        _clipboard.Received(1).WriteText("one\r\nthree");
+        Assert.False(vm.IsSelecting);
+        Assert.All(vm.Items, item => Assert.False(item.IsSelected));
+    }
+
+    [Fact]
+    public async Task Clicking_a_row_while_selecting_toggles_it_and_copies_nothing()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+
+        vm.Activate(vm.Items[0]);
+
+        Assert.True(vm.Items[0].IsSelected);
+        _clipboard.DidNotReceive().WriteText(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task The_selection_count_and_copy_availability_follow_the_checked_rows()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello"), Item(2, "world") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        Assert.False(vm.CanCopySelection);
+
+        vm.Items[1].IsSelected = true;
+
+        Assert.True(vm.CanCopySelection);
+        Assert.Equal("1 selected", vm.FooterText);
+
+        vm.Items[0].IsSelected = true;
+
+        Assert.Equal("2 selected", vm.FooterText);
+    }
+
+    [Fact]
+    public async Task Leaving_selection_clears_the_checked_rows()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        vm.Items[0].IsSelected = true;
+
+        vm.ToggleSelectionCommand.Execute(null);
+
+        Assert.False(vm.Items[0].IsSelected);
+        Assert.Equal(vm.CountText, vm.FooterText);
+    }
+
+    [Fact]
+    public async Task Copying_selected_clips_signals_the_window()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        vm.Items[0].IsSelected = true;
+        var signalled = false;
+        vm.SelectionCopied += (_, _) => signalled = true;
+
+        vm.CopySelectedCommand.Execute(null);
+
+        Assert.True(signalled);
+    }
+
+    [Fact]
+    public void Reset_transient_state_leaves_select_mode()
+    {
+        var vm = Create();
+        vm.ToggleSelectionCommand.Execute(null);
+
+        vm.ResetTransientState();
+
+        Assert.False(vm.IsSelecting);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
 

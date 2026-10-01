@@ -31,6 +31,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
             OnPropertyChanged(nameof(HasItems));
             OnPropertyChanged(nameof(CountText));
             OnPropertyChanged(nameof(CanSearch));
+            OnPropertyChanged(nameof(FooterText));
         };
     }
 
@@ -42,6 +43,17 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     public bool HasItems => Items.Count > 0;
 
     public string CountText => Tr.Plural("History_Count", Items.Count);
+
+    // Multi-select: rows are checked, then copied together in one go.
+    public int SelectedCount => Items.Count(item => item.IsSelected);
+
+    public string SelectionCountText => Tr.Format("Selection_Count", SelectedCount);
+
+    public bool CanCopySelection => SelectedCount > 0;
+
+    public string FooterText => IsSelecting ? SelectionCountText : CountText;
+
+    public bool ShowSelectButton => !IsSelecting;
 
     // Placeholder copy: an empty history and an empty search result read differently.
     public string EmptyTitle => IsSearchActive ? Tr.Get("Panel_NoResults") : Tr.Get("Panel_Empty");
@@ -59,8 +71,14 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     [ObservableProperty]
     public partial bool IsConfirmingClear { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsSelecting { get; set; }
+
     // Raised when the user picks an item; the window hides and optionally pastes.
     public event EventHandler? ItemActivated;
+
+    // Raised after the selected clips were copied; the flyout hides.
+    public event EventHandler? SelectionCopied;
 
     // Raised when the user asks for the full history window.
     public event EventHandler? OpenHistoryRequested;
@@ -70,7 +88,11 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public Task RefreshAsync() => ReloadCommand.ExecuteAsync(null);
 
-    public void ResetTransientState() => IsConfirmingClear = false;
+    public void ResetTransientState()
+    {
+        IsConfirmingClear = false;
+        IsSelecting = false;
+    }
 
     // Quiet refresh for opening the flyout: keeps the previous list on screen while the
     // fresh query runs, and skips repainting entirely when nothing changed since last open.
@@ -107,6 +129,12 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public void Activate(ClipItemViewModel item)
     {
+        if (IsSelecting)
+        {
+            item.IsSelected = !item.IsSelected;
+            return;
+        }
+
         _clipboard.WriteText(item.Text);
         ItemActivated?.Invoke(this, EventArgs.Empty);
     }
@@ -222,11 +250,45 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     [RelayCommand]
     private void CancelClear() => IsConfirmingClear = false;
 
+    // One command for both the Select and Cancel buttons.
+    [RelayCommand]
+    private void ToggleSelection() => IsSelecting = !IsSelecting;
+
+    [RelayCommand]
+    private void CopySelected()
+    {
+        var texts = Items.Where(item => item.IsSelected).Select(item => item.Text).ToArray();
+        if (texts.Length == 0) return;
+
+        _clipboard.WriteText(string.Join("\r\n", texts));
+        IsSelecting = false;
+        SelectionCopied?.Invoke(this, EventArgs.Empty);
+    }
+
+    // Called by a row when its check changes so the footer count keeps up.
+    internal void NotifySelectionChanged()
+    {
+        OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(SelectionCountText));
+        OnPropertyChanged(nameof(CanCopySelection));
+        OnPropertyChanged(nameof(FooterText));
+    }
+
     [RelayCommand]
     private async Task ConfirmClearAsync()
     {
         await _repository.ClearUnpinnedAsync(CancellationToken.None);
         IsConfirmingClear = false;
+    }
+
+    partial void OnIsSelectingChanged(bool value)
+    {
+        if (!value)
+            foreach (var item in Items) item.IsSelected = false;
+
+        foreach (var item in Items) item.NotifySelectionModeChanged();
+        OnPropertyChanged(nameof(ShowSelectButton));
+        OnPropertyChanged(nameof(FooterText));
     }
 
     // Debounced: the previous query is cancelled as soon as a newer one arrives.

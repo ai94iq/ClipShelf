@@ -40,6 +40,16 @@ public sealed partial class ClipItemViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsPinned { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+
+    // The checkbox only exists while the panel is in select mode.
+    public bool ShowSelection => _panel.IsSelecting;
+
+    public void NotifySelectionModeChanged() => OnPropertyChanged(nameof(ShowSelection));
+
+    partial void OnIsSelectedChanged(bool value) => _panel.NotifySelectionChanged();
+
     [RelayCommand]
     private void Activate() => _panel.Activate(this);
 
