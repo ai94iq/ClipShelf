@@ -47,16 +47,27 @@ public sealed partial class HistoryPage : UserControl
             return;
         }
 
-        var id = selected.Value!.Value;
-        if (await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyLockPassword))
-        {
-            await ViewModel.UnlockCategoryAsync(id);
-            _lastFilterValue = id;
-            return;
-        }
+        if (await UnlockSelectedFilterAsync()) return;
 
         ViewModel.SelectedCategoryFilter =
             ViewModel.CategoryFilterOptions.FirstOrDefault(option => option.Value == _lastFilterValue)
             ?? ViewModel.CategoryFilterOptions[0];
+    }
+
+    // Picking the category that is already selected raises no selection change, so ask again
+    // whenever the list closes on a locked category.
+    private async void OnCategoryFilterDropDownClosed(object sender, object e) =>
+        await UnlockSelectedFilterAsync();
+
+    private async Task<bool> UnlockSelectedFilterAsync()
+    {
+        if (ViewModel.SelectedCategoryFilter?.Value is not long id || !ViewModel.IsCategoryFilterLocked)
+            return false;
+
+        if (!await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyLockPassword)) return false;
+
+        await ViewModel.UnlockCategoryAsync(id);
+        _lastFilterValue = id;
+        return true;
     }
 }

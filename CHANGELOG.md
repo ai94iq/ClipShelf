@@ -31,11 +31,13 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Settings use grouped cards with taller rows, small section headings, and Enabled/Disabled toggles; the sidebar is an icon rail with Settings at the bottom, and the title bar holds a settings search that hides groups that do not match.
 - The History page search box is a regular rounded field, and history rows no longer hover-highlight like a selection (the pin and delete buttons keep their own hover).
 - Flyout monitor placement is centralized with the platform window helpers.
+- The app icon is a stacked clipboard on a gradient tile, and the installer artwork uses it.
 - The flyout opens next to the mouse pointer instead of the corner of the screen; with the pointer at the taskbar it still tucks into the corner.
 - Database hardening: temporary storage stays in memory, SQLCipher scrubs freed memory, and a test proves the database, its sidecars and backups contain no readable clip text.
 - Clip rows show readable app names: capitalized, with friendly names for common apps (Chrome, Edge, Word…).
 
 ### Fixed
+- Locking categories (for example on minimize) updates the history filter at once, and picking the locked category again asks for the password; unlocking from the filter keeps the filter applied instead of falling back to the whole list.
 - The flyout no longer flashes black when it opens — it is parked off-screen instead of hidden, so Windows never re-creates its acrylic surface — it closes when you click anywhere outside it, even when it never became the active window, and it hands focus back to the app you came from when it closes.
 - Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
 - Changing the history size no longer trims on every keystroke or spin click, and the tray icon or shortcut are only re-applied when their own settings change.

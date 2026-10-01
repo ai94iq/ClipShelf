@@ -72,22 +72,28 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         var categories = await _categories.GetCategoriesAsync(CancellationToken.None);
         var previous = SelectedCategoryFilter?.Value;
 
-        _lockedCategoryIds.Clear();
-        CategoryFilterOptions.Clear();
-        CategoryFilterOptions.Add(new Option<long?>(null, Tr.Get("History_FilterAll")));
-        foreach (var category in categories)
+        // Rebuilding the list resets the combo's selection for a moment; guard the whole rebuild
+        // so that never triggers a refresh without the filter.
+        _updatingFilter = true;
+        try
         {
-            var locked = category.IsLocked && !_locks.UnlockedCategoryIds.Contains(category.Id);
-            if (locked) _lockedCategoryIds.Add(category.Id);
-            CategoryFilterOptions.Add(new Option<long?>(
-                category.Id, locked ? Tr.Format("History_FilterLocked", category.Name) : category.Name));
-        }
+            _lockedCategoryIds.Clear();
+            CategoryFilterOptions.Clear();
+            CategoryFilterOptions.Add(new Option<long?>(null, Tr.Get("History_FilterAll")));
+            foreach (var category in categories)
+            {
+                var locked = category.IsLocked && !_locks.UnlockedCategoryIds.Contains(category.Id);
+                if (locked) _lockedCategoryIds.Add(category.Id);
+                CategoryFilterOptions.Add(new Option<long?>(
+                    category.Id, locked ? Tr.Format("History_FilterLocked", category.Name) : category.Name));
+            }
 
-        var match = CategoryFilterOptions.FirstOrDefault(option => option.Value == previous) ?? CategoryFilterOptions[0];
-        if (!Equals(match, SelectedCategoryFilter))
+            var match = CategoryFilterOptions.FirstOrDefault(option => option.Value == previous)
+                ?? CategoryFilterOptions[0];
+            if (!Equals(match, SelectedCategoryFilter)) SelectedCategoryFilter = match;
+        }
+        finally
         {
-            _updatingFilter = true;
-            SelectedCategoryFilter = match;
             _updatingFilter = false;
         }
     }
@@ -212,6 +218,9 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         {
             _quietRefreshInProgress = false;
         }
+
+        // A lock change also moves categories between locked and unlocked, which the filter shows.
+        await RefreshCategoryFilterAsync();
     }
 
     protected override Task ReloadQuietlyAsync() => RefreshQuietAsync();

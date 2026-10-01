@@ -539,6 +539,52 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Equal("secret", Assert.Single(vm.Items).Text);
     }
 
+    [Fact]
+    public async Task A_lock_change_marks_the_filter_and_keeps_the_selection()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work", true) });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7, null)
+            .Returns(new List<ClipListItem>());
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7,
+                Arg.Is<IReadOnlyCollection<long>>(ids => ids.Contains(7)))
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+        _locks.Unlock(7);
+        await vm.RefreshCategoryFilterAsync();
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+
+        _locks.Reset();                      // what lock-on-minimize does
+        await vm.RefreshQuietAsync();
+
+        Assert.Equal(7, vm.SelectedCategoryFilter?.Value);
+        Assert.True(vm.IsCategoryFilterLocked);
+        Assert.Equal(Tr.Format("History_FilterLocked", "Work"), vm.CategoryFilterOptions[1].Label);
+        Assert.Equal(Tr.Get("Panel_EmptyLocked"), vm.EmptyTitle);
+    }
+
+    [Fact]
+    public async Task Refreshing_the_filter_never_reloads_the_whole_list()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work", true) });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7,
+                Arg.Is<IReadOnlyCollection<long>>(ids => ids.Contains(7)))
+            .Returns(new List<ClipListItem> { Item(1, "saved") });
+        var vm = Create();
+        _locks.Unlock(7);
+        await vm.RefreshCategoryFilterAsync();
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+        await vm.RefreshAsync();
+
+        await vm.RefreshCategoryFilterAsync();
+
+        await _repository.DidNotReceive().GetRecentAsync(
+            null, 50, Arg.Any<CancellationToken>(), null, null);
+        Assert.Equal(7, vm.SelectedCategoryFilter?.Value);
+        Assert.Equal("saved", Assert.Single(vm.Items).Text);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

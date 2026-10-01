@@ -40,7 +40,8 @@
                 ItemsSource="{x:Bind ViewModel.CategoryFilterOptions}"
                 DisplayMemberPath="Label"
                 SelectedItem="{x:Bind ViewModel.SelectedCategoryFilter, Mode=TwoWay}"
-                SelectionChanged="OnCategoryFilterChanged" />
+                SelectionChanged="OnCategoryFilterChanged"
+                DropDownClosed="OnCategoryFilterDropDownClosed" />
     </Grid>
 
     <!-- Grouped history (Pinned, then Recent) on a card surface, with its loading/empty/error overlay -->
