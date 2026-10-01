@@ -5,7 +5,7 @@ namespace ClipShelf.App.Services;
 
 // Turns clipboard changes into history entries and writes items back. Writes made by this app are
 // counted so the resulting clipboard-changed message does not get captured as a new item.
-public sealed class ClipboardService : IDisposable
+public sealed class ClipboardService : IClipboardWriter, IDisposable
 {
     private readonly ClipCaptureService _capture;
     private readonly SettingsService _settings;

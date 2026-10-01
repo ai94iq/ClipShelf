@@ -15,6 +15,10 @@
   <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
+  <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
+  <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
+  <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
+  <data name="Clip_Time_Now" xml:space="preserve"><value>now</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
   <data name="Common_Ok" xml:space="preserve"><value>OK</value></data>
@@ -41,9 +45,17 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
+  <data name="Panel_ClearAll" xml:space="preserve"><value>Clear all</value></data>
+  <data name="Panel_ClearConfirm" xml:space="preserve"><value>Clear unpinned clips?</value></data>
+  <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
+  <data name="Panel_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Panel_Empty" xml:space="preserve"><value>Nothing copied yet</value></data>
+  <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
+  <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
 </root>

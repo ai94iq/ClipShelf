@@ -15,6 +15,10 @@
   <data name="App_AlreadyRunning" xml:space="preserve"><value>التطبيق يعمل بالفعل.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
+  <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
+  <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
+  <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
+  <data name="Clip_Time_Now" xml:space="preserve"><value>now</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>إلغاء</value></data>
   <data name="Common_No" xml:space="preserve"><value>لا</value></data>
   <data name="Common_Ok" xml:space="preserve"><value>حسنًا</value></data>
@@ -41,9 +45,17 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>رجب</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>شعبان</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>رمضان</value></data>
+  <data name="Panel_ClearAll" xml:space="preserve"><value>Clear all</value></data>
+  <data name="Panel_ClearConfirm" xml:space="preserve"><value>Clear unpinned clips?</value></data>
+  <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
+  <data name="Panel_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Panel_Empty" xml:space="preserve"><value>Nothing copied yet</value></data>
+  <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
+  <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>داكن</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>فاتح</value></data>
   <data name="Theme_System" xml:space="preserve"><value>حسب النظام</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
 </root>

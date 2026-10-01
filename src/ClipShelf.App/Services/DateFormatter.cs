@@ -13,6 +13,16 @@ public sealed class DateFormatter(AppSettings settings) : IDateFormatter
         return settings.UseHijri ? FormatHijri(value, precision) : FormatGregorian(value, precision);
     }
 
+    public string FormatSince(DateTimeOffset valueUtc)
+    {
+        var elapsed = DateTimeOffset.UtcNow - valueUtc;
+        if (elapsed < TimeSpan.FromMinutes(1)) return Tr.Get("Clip_Time_Now");
+        if (elapsed < TimeSpan.FromHours(1)) return Tr.Format("Clip_Time_Minutes", (int)elapsed.TotalMinutes);
+        if (elapsed < TimeSpan.FromDays(1)) return Tr.Format("Clip_Time_Hours", (int)elapsed.TotalHours);
+        if (elapsed < TimeSpan.FromDays(7)) return Tr.Format("Clip_Time_Days", (int)elapsed.TotalDays);
+        return Format(DateOnly.FromDateTime(valueUtc.ToLocalTime().DateTime), DatePrecision.Day);
+    }
+
     private static string FormatGregorian(DateTime value, DatePrecision precision) => precision switch
     {
         DatePrecision.Day => value.ToString("d MMMM yyyy", CultureInfo.CurrentCulture),

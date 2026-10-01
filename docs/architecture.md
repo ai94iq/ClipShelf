@@ -31,3 +31,4 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 | Clipboard history storage | src/ClipShelf.Data/Repositories/ClipRepository.cs | Text clips in SQLite; upsert by SHA-256 hash; keyset paging, search, pin, prune |
 | Clipboard capture | src/ClipShelf.App/Services/ClipboardService.cs | Win32 clipboard listener; ignores the app's own writes; stores text with the source app name |
 | Tray icon and lifetime | src/ClipShelf.App/Shell/AppShellService.cs | H.NotifyIcon tray icon and menu; closing a window hides it until the user exits |
+| Clipboard history panel | src/ClipShelf.App/Features/ClipboardPanel/ | Borderless flyout above the taskbar; Win+Shift+V or the tray toggles it; search, pin, delete, clear, paste on select |

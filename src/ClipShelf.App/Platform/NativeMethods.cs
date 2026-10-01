@@ -63,6 +63,34 @@ internal static class NativeMethods
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern bool UnregisterHotKey(IntPtr window, int id);
 
+    internal const int GwlExStyle = -20;
+    internal const long WsExToolWindow = 0x00000080;
+    internal const uint MonitorDefaultToNearest = 0x00000002;
+    internal const byte VirtualKeyControl = 0x11;
+    internal const byte VirtualKeyV = 0x56;
+    internal const uint KeyEventKeyUp = 0x0002;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern IntPtr GetWindowLongPtr(IntPtr window, int index);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern IntPtr SetWindowLongPtr(IntPtr window, int index, IntPtr value);
+
+    [DllImport("user32.dll")]
+    internal static extern uint GetDpiForWindow(IntPtr window);
+
+    [DllImport("user32.dll")]
+    internal static extern bool GetCursorPos(out Point point);
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr MonitorFromPoint(Point point, uint flags);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    internal static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
+
+    [DllImport("user32.dll")]
+    internal static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, UIntPtr extraInfo);
+
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr GetForegroundWindow();
 
@@ -99,5 +127,30 @@ internal static class NativeMethods
         [MarshalAs(UnmanagedType.LPWStr)] internal string? LpszMenuName;
         [MarshalAs(UnmanagedType.LPWStr)] internal string LpszClassName;
         internal IntPtr HIconSm;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct Point
+    {
+        internal int X;
+        internal int Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct Rect
+    {
+        internal int Left;
+        internal int Top;
+        internal int Right;
+        internal int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    internal struct MonitorInfo
+    {
+        internal uint CbSize;
+        internal Rect Monitor;
+        internal Rect Work;
+        internal uint Flags;
     }
 }

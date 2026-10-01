@@ -8,7 +8,9 @@ chevron_down
 chevron_left
 chevron_right
 chevron_up
+clipboard
 color
+copy
 delete
 dismiss
 document
@@ -28,6 +30,8 @@ navigation
 people
 person
 person_add
+pin
+pin_off
 print
 save
 search

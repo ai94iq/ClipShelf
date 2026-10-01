@@ -1,3 +1,4 @@
+using ClipShelf.App.Features.ClipboardPanel;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Services;
 using ClipShelf.Data.Repositories;
@@ -22,8 +23,12 @@ public static class ServiceRegistration
         // Clipboard capture and the tray-driven lifetime.
         services.AddSingleton<ClipCaptureService>();
         services.AddSingleton<ClipboardService>();
+        services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<ClipboardService>());
+        services.AddSingleton<GlobalHotkey>();
         services.AddSingleton<AppLifetime>();
         services.AddSingleton<AppShellService>();
+        services.AddSingleton<ClipboardPanelWindow>();
+        services.AddSingleton<ClipboardPanelViewModel>();
 
         // App services
         services.AddSingleton<IDialogService, DialogService>();
