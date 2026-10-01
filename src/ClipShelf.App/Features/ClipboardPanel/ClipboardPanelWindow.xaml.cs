@@ -15,12 +15,7 @@ namespace ClipShelf.App.Features.ClipboardPanel;
 public sealed partial class ClipboardPanelWindow : Window
 {
     private const int WidthLogical = 400;
-    private const int MinHeightLogical = 200;
-    private const int MaxHeightLogical = 560;
-    private const int SearchRowLogical = 62;
-    private const int FooterLogical = 46;
-    private const int ItemLogical = 56;
-    private const int VisibleRowsLogical = 8;
+    private const int HeightLogical = 520;
     private const int MarginLogical = 12;
     private const int PasteDelayMs = 60;
 
@@ -41,10 +36,6 @@ public sealed partial class ClipboardPanelWindow : Window
         ConfigureSurface();
         Activated += OnActivated;
         ViewModel.ItemActivated += OnItemActivated;
-        ViewModel.Items.CollectionChanged += (_, _) =>
-        {
-            if (AppWindow.IsVisible) FitToContent();
-        };
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -64,7 +55,7 @@ public sealed partial class ClipboardPanelWindow : Window
     {
         _previousWindow = NativeMethods.GetForegroundWindow();
         await ViewModel.RefreshAsync();
-        FitToContent();
+        Reposition();
         AppWindow.Show();
         Activate();
         ApplyFrame();   // activating can restore the default frame, so re-apply it
@@ -133,24 +124,14 @@ public sealed partial class ClipboardPanelWindow : Window
         Root.Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"];
     }
 
-    private void FitToContent()
-    {
-        var count = ViewModel.Items.Count;
-        var height = count == 0
-            ? MinHeightLogical
-            : SearchRowLogical + Math.Min(count, VisibleRowsLogical) * ItemLogical + FooterLogical;
-
-        Reposition(Math.Clamp(height, MinHeightLogical, MaxHeightLogical));
-    }
-
     // Anchors the flyout to the bottom-right of the monitor under the cursor.
-    private void Reposition(int heightLogical)
+    private void Reposition()
     {
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
         var dpi = NativeMethods.GetDpiForWindow(handle);
         var scale = dpi == 0 ? 1.0 : dpi / 96.0;
         var width = (int)(WidthLogical * scale);
-        var height = (int)(heightLogical * scale);
+        var height = (int)(HeightLogical * scale);
         var margin = (int)(MarginLogical * scale);
 
         NativeMethods.GetCursorPos(out var cursor);
