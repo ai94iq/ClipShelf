@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 
 #pragma warning disable SYSLIB1054 // DllImport is intentional: the app ships self-contained, not Native AOT.
 
@@ -42,6 +43,7 @@ internal static class NativeMethods
     internal static extern bool SetWindowPos(IntPtr window, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
     internal const uint MonitorDefaultToNearest = 0x00000002;
     internal const byte VirtualKeyControl = 0x11;
+    internal const byte VirtualKeyMenu = 0x12;
     internal const byte VirtualKeyV = 0x56;
     internal const uint KeyEventKeyUp = 0x0002;
 
@@ -132,6 +134,19 @@ internal static class NativeMethods
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr GetForegroundWindow();
+
+    internal const uint EventSystemForeground = 0x0003;
+    internal const uint WineventOutOfContext = 0x0000;
+
+    internal delegate void WinEventProc(
+        IntPtr hook, uint eventType, IntPtr window, int idObject, int idChild, uint thread, uint time);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern IntPtr SetWinEventHook(
+        uint eventMin, uint eventMax, IntPtr module, WinEventProc callback, uint processId, uint threadId, uint flags);
+
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    internal static extern int GetClassName(IntPtr window, StringBuilder className, int maxCount);
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern uint GetWindowThreadProcessId(IntPtr window, out uint processId);

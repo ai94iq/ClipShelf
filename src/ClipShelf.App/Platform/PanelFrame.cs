@@ -9,6 +9,8 @@ internal static class PanelFrame
     private const int WidthLogical = 360;
     private const int HeightLogical = 480;
     private const int MarginLogical = 12;
+    private const int CursorGapLogical = 8;
+    private const int OffscreenCoordinate = -32000;
 
     public static void Configure(Window window)
     {
@@ -40,10 +42,16 @@ internal static class PanelFrame
             NativeMethods.SwpFrameChanged | NativeMethods.SwpNoMove | NativeMethods.SwpNoSize | NativeMethods.SwpNoZOrder);
 
         ApplyTheme(window);
+
+        // DWM restores the default frame when the window activates, so re-apply the theme then.
+        window.Activated += (_, args) =>
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated) ApplyTheme(window);
+        };
     }
 
-    // Anchor the flyout to the bottom-right of the monitor under the cursor.
-    public static void PositionBottomRightOfCursor(Window window)
+    // Anchor the flyout next to the mouse pointer, kept inside the monitor's work area.
+    public static void PositionNearCursor(Window window)
     {
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
         var dpi = NativeMethods.GetDpiForWindow(handle);
@@ -51,17 +59,17 @@ internal static class PanelFrame
         var width = (int)(WidthLogical * scale);
         var height = (int)(HeightLogical * scale);
         var margin = (int)(MarginLogical * scale);
+        var gap = (int)(CursorGapLogical * scale);
 
         NativeMethods.GetCursorPos(out var cursor);
         var monitor = NativeMethods.MonitorFromPoint(cursor, NativeMethods.MonitorDefaultToNearest);
         var info = new NativeMethods.MonitorInfo { CbSize = (uint)Marshal.SizeOf<NativeMethods.MonitorInfo>() };
         if (!NativeMethods.GetMonitorInfo(monitor, ref info)) return;
 
-        var bounds = new Windows.Graphics.RectInt32(
-            info.Work.Right - margin - width,
-            info.Work.Bottom - margin - height,
-            width,
-            height);
+        var (x, y) = PanelPlacement.NearCursor(
+            cursor.X, cursor.Y, width, height,
+            info.Work.Left, info.Work.Top, info.Work.Right, info.Work.Bottom, margin, gap);
+        var bounds = new Windows.Graphics.RectInt32(x, y, width, height);
         var position = window.AppWindow.Position;
         var size = window.AppWindow.Size;
         if (position.X != bounds.X || position.Y != bounds.Y ||
@@ -69,18 +77,34 @@ internal static class PanelFrame
             window.AppWindow.MoveAndResize(bounds);
     }
 
-    public static void WatchActivation(Window window, Action onDeactivated)
+    // Keeps the window alive out of sight instead of hiding it: Windows re-creates the surface of
+    // a hidden acrylic window on the next show, which flashes black.
+    public static void MoveOffscreen(Window window)
     {
-        window.Activated += (_, args) =>
-        {
-            if (args.WindowActivationState == WindowActivationState.Deactivated)
-            {
-                onDeactivated();
-                return;
-            }
+        var size = window.AppWindow.Size;
+        window.AppWindow.MoveAndResize(
+            new Windows.Graphics.RectInt32(OffscreenCoordinate, OffscreenCoordinate, size.Width, size.Height));
+    }
 
-            ApplyTheme(window);
-        };
+    // Windows refuses SetForegroundWindow while another app owns the foreground (a hotkey or a
+    // tray click are not enough), so tap ALT first, the standard way to lift that restriction.
+    public static void ForceForeground(Window window)
+    {
+        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+        if (NativeMethods.GetForegroundWindow() == handle) return;
+
+        NativeMethods.keybd_event(NativeMethods.VirtualKeyMenu, 0, 0, UIntPtr.Zero);
+        NativeMethods.SetForegroundWindow(handle);
+        NativeMethods.keybd_event(NativeMethods.VirtualKeyMenu, 0, NativeMethods.KeyEventKeyUp, UIntPtr.Zero);
+    }
+
+    // Give the foreground back to the app the user came from, so keystrokes do not land on the
+    // parked window.
+    public static void RestoreForeground(Window window, IntPtr previous)
+    {
+        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+        if (previous != IntPtr.Zero && NativeMethods.GetForegroundWindow() == handle)
+            NativeMethods.SetForegroundWindow(previous);
     }
 
     // DWM restores the default frame when the window activates, so this runs again on activation.
