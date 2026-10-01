@@ -1,5 +1,8 @@
 using Microsoft.UI;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using ClipShelf.App.Common;
+using ClipShelf.App.Platform;
 using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Services;
@@ -18,6 +21,7 @@ public sealed class ThemeService(SettingsService settings) : IThemeService
 
     public void Apply(AppSettings next)
     {
+        ThemeSurfaces.Apply(next.Theme);
         foreach (var window in _windows.ToArray()) ApplyTo(window);
     }
 
@@ -29,32 +33,32 @@ public sealed class ThemeService(SettingsService settings) : IThemeService
         {
             root.RequestedTheme = current.Theme switch
             {
-                AppTheme.Light => ElementTheme.Light,
-                AppTheme.Dark => ElementTheme.Dark,
+                AppTheme.Light or AppTheme.White => ElementTheme.Light,
+                AppTheme.Dark or AppTheme.Black => ElementTheme.Dark,
                 _ => ElementTheme.Default,
             };
         }
 
-        if (window.Content is Panel panel) WindowSurface.ApplyBackdrop(window, panel, current.Backdrop);
-    }
+        // The frame follows the theme setting, not the system: white themes need light caption
+        // buttons even when Windows itself is dark.
+        PanelFrame.SetDarkFrame(window, current.Theme switch
+        {
+            AppTheme.Light or AppTheme.White => false,
+            AppTheme.Dark or AppTheme.Black => true,
+            _ => (window.Content as FrameworkElement)?.ActualTheme == ElementTheme.Dark,
+        });
 
-    // Call from the App constructor, after InitializeComponent. Null keeps the Windows accent.
-    public static void ApplyAccentResources(ResourceDictionary resources, string? accentHex)
-    {
-        if (accentHex is null) return;
-        var shades = AccentPalette.Shades(accentHex);
-        resources["SystemAccentColor"] = ToColor(shades.Base);
-        resources["SystemAccentColorLight1"] = ToColor(shades.Light1);
-        resources["SystemAccentColorLight2"] = ToColor(shades.Light2);
-        resources["SystemAccentColorLight3"] = ToColor(shades.Light3);
-        resources["SystemAccentColorDark1"] = ToColor(shades.Dark1);
-        resources["SystemAccentColorDark2"] = ToColor(shades.Dark2);
-        resources["SystemAccentColorDark3"] = ToColor(shades.Dark3);
-    }
+        if (window.Content is not Panel panel) return;
 
-    private static Windows.UI.Color ToColor(string hex)
-    {
-        var (r, g, b) = AccentPalette.Parse(hex);
-        return ColorHelper.FromArgb(255, r, g, b);
+        // Light and full black are opaque by definition; the backdrop setting applies otherwise.
+        if (current.Theme is AppTheme.Light or AppTheme.White or AppTheme.Black)
+        {
+            window.SystemBackdrop = null;
+            panel.Background = new SolidColorBrush(
+                current.Theme == AppTheme.Black ? Colors.Black : Colors.White);
+            return;
+        }
+
+        WindowSurface.ApplyBackdrop(window, panel, current.Backdrop);
     }
 }

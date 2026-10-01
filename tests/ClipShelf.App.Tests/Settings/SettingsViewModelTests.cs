@@ -480,6 +480,27 @@ public sealed class SettingsViewModelTests
         Assert.Equal(Tr.Get("LockWhen_Minimize"), viewModel.LockWhenText);
     }
 
+    [Fact]
+    public void Full_black_is_offered_and_saved()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedTheme = viewModel.ThemeOptions.Single(o => o.Value == AppTheme.Black);
+
+        Assert.True(_store.Saved is { Theme: AppTheme.Black });
+        _theme.Received(1).Apply(Arg.Is<AppSettings>(s => s.Theme == AppTheme.Black));
+    }
+
+    [Fact]
+    public void A_saved_full_white_theme_loads_as_light()
+    {
+        _service.Update(_service.Current with { Theme = AppTheme.White });
+
+        var viewModel = Create();
+
+        Assert.Equal(AppTheme.Light, viewModel.SelectedTheme.Value);
+    }
+
     private SettingsViewModel Create() =>
         new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords,
             NullLogger<SettingsViewModel>.Instance);

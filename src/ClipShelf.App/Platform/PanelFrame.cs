@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 
 namespace ClipShelf.App.Platform;
@@ -108,17 +109,36 @@ internal static class PanelFrame
     }
 
     // DWM restores the default frame when the window activates, so this runs again on activation.
-    public static void ApplyTheme(Window window)
+    public static void ApplyTheme(Window window) =>
+        SetDarkFrame(window, (window.Content as FrameworkElement)?.ActualTheme == ElementTheme.Dark);
+
+    // The caption buttons follow the immersive-dark flag, so a white theme needs it off even when
+    // the system itself is dark.
+    public static void SetDarkFrame(Window window, bool dark)
     {
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
-
-        var dark = Application.Current.RequestedTheme == ApplicationTheme.Dark ? 1 : 0;
-        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmImmersiveDarkMode, ref dark, sizeof(int));
+        var value = dark ? 1 : 0;
+        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmImmersiveDarkMode, ref value, sizeof(int));
 
         var corner = NativeMethods.DwmWindowCornerRound;
         NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowCornerPreference, ref corner, sizeof(int));
 
         var border = NativeMethods.DwmColorNone;
         NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowBorderColor, ref border, sizeof(int));
+
+        // On a custom title bar the buttons are coloured here; the DWM flag alone leaves them white.
+        var titleBar = window.AppWindow.TitleBar;
+        titleBar.ButtonBackgroundColor = Colors.Transparent;
+        titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+        titleBar.ButtonForegroundColor = dark ? Colors.White : Colors.Black;
+        titleBar.ButtonInactiveForegroundColor = dark ? Colors.Gray : Colors.DimGray;
+        titleBar.ButtonHoverBackgroundColor = dark
+            ? Windows.UI.Color.FromArgb(24, 255, 255, 255)
+            : Windows.UI.Color.FromArgb(24, 0, 0, 0);
+        titleBar.ButtonHoverForegroundColor = dark ? Colors.White : Colors.Black;
+        titleBar.ButtonPressedBackgroundColor = dark
+            ? Windows.UI.Color.FromArgb(48, 255, 255, 255)
+            : Windows.UI.Color.FromArgb(48, 0, 0, 0);
+        titleBar.ButtonPressedForegroundColor = dark ? Colors.White : Colors.Black;
     }
 }

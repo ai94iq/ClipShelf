@@ -48,7 +48,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         _passwords = passwords;
         _log = log;
 
-        SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
+        SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
+            ?? ThemeOptions.First(o => o.Value == AppTheme.Light);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
         SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
         SelectedRetention = RetentionOptions.FirstOrDefault(o => o.Value == settings.Current.RetentionDays)
@@ -76,6 +77,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         new(AppTheme.System, Tr.Get("Theme_System")),
         new(AppTheme.Light, Tr.Get("Theme_Light")),
         new(AppTheme.Dark, Tr.Get("Theme_Dark")),
+        new(AppTheme.Black, Tr.Get("Theme_Black")),
     ];
 
     public IReadOnlyList<Option<BackdropKind>> BackdropOptions { get; } =
@@ -250,7 +252,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     // Resx keys per settings group, in the page's order, so a search can hide whole groups.
     private static readonly string[][] Groups =
     [
-        ["Settings_Theme", "Settings_Backdrop"],
+        ["Settings_Theme", "Settings_Backdrop", "Theme_Black"],
         ["Settings_TrayIcon", "Settings_ShowTrayIcon", "Settings_DoubleClickTray"],
         [
             "Settings_RunAtStartup", "Settings_RunAtStartupHint",

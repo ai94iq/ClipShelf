@@ -14,6 +14,11 @@
     <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
   </Style>
 
+  <!-- Icons take the secondary text color on every theme (destructive buttons tint them on hover). -->
+  <Style TargetType="common:AppIcon">
+    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+  </Style>
+
   <!-- Spacing tokens (4 px grid). Use these instead of literal margins. -->
   <Thickness x:Key="PagePadding">24</Thickness>
   <Thickness x:Key="SectionSpacing">0,0,0,32</Thickness>

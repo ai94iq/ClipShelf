@@ -40,7 +40,7 @@ public sealed partial class App : Application
 
         try
         {
-            if (_settings.Accent is not null) ThemeService.ApplyAccentResources(Resources, _settings.Accent);
+            ThemeSurfaces.Apply(_settings.Theme);
 
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddSerilog();        // uses the static Log.Logger

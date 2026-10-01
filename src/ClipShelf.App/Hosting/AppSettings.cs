@@ -23,9 +23,6 @@ public sealed record AppSettings
     [JsonConverter(typeof(JsonStringEnumConverter<BackdropKind>))]
     public BackdropKind Backdrop { get; init; } = BackdropKind.Mica;
 
-    // Null = follow the Windows accent; otherwise one of AccentPresets (hex, e.g. "#0F6CBD").
-    public string? Accent { get; init; }
-
     // How many uncategorized clips to keep; pinned and categorized clips are never pruned.
     public int MaxItems { get; init; } = 100;
 

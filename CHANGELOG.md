@@ -25,6 +25,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
 - Set a password in Settings; it is asked before exporting the history and before opening a locked category.
 - Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return — on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
+- Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed
 - The installer shows the MIT license, an installation folder page, creates a desktop shortcut, and offers to run ClipShelf when finished; its artwork matches the app.
@@ -37,6 +38,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Clip rows show readable app names: capitalized, with friendly names for common apps (Chrome, Edge, Word…).
 
 ### Fixed
+- The minimize, maximize and close buttons and the row action icons stay visible in the light theme: the window frame and caption buttons follow the theme setting, and icons take the theme's secondary color (destructive buttons still tint red on hover).
 - Locking categories (for example on minimize) updates the history filter at once, and picking the locked category again asks for the password; unlocking from the filter keeps the filter applied instead of falling back to the whole list.
 - The flyout no longer flashes black when it opens — it is parked off-screen instead of hidden, so Windows never re-creates its acrylic surface — it closes when you click anywhere outside it, even when it never became the active window, and it hands focus back to the app you came from when it closes.
 - Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
