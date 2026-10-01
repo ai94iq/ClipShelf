@@ -14,6 +14,9 @@ public sealed partial class LoadStateOverlay : UserControl
     public static readonly DependencyProperty EmptyTextProperty = DependencyProperty.Register(
         nameof(EmptyText), typeof(string), typeof(LoadStateOverlay), new PropertyMetadata(null));
 
+    public static readonly DependencyProperty EmptyHintProperty = DependencyProperty.Register(
+        nameof(EmptyHint), typeof(string), typeof(LoadStateOverlay), new PropertyMetadata(null));
+
     public static readonly DependencyProperty RetryCommandProperty = DependencyProperty.Register(
         nameof(RetryCommand), typeof(ICommand), typeof(LoadStateOverlay), new PropertyMetadata(null));
 
@@ -35,6 +38,12 @@ public sealed partial class LoadStateOverlay : UserControl
     {
         get => (string?)GetValue(EmptyTextProperty);
         set => SetValue(EmptyTextProperty, value);
+    }
+
+    public string? EmptyHint
+    {
+        get => (string?)GetValue(EmptyHintProperty);
+        set => SetValue(EmptyHintProperty, value);
     }
 
     public ICommand? RetryCommand

@@ -1,4 +1,5 @@
 using ClipShelf.App.Features.ClipboardPanel;
+using ClipShelf.App.Localization;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Models;
@@ -210,6 +211,91 @@ public sealed class ClipboardPanelViewModelTests
         await vm.RefreshAsync();
 
         Assert.Equal("1 clip", vm.CountText);
+    }
+
+    [Fact]
+    public async Task Empty_history_shows_the_no_clips_placeholder()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.Equal(LoadState.Empty, vm.State);
+        Assert.Equal(Tr.Get("Panel_Empty"), vm.EmptyTitle);
+        Assert.Equal(Tr.Get("Panel_EmptyHint"), vm.EmptyHint);
+    }
+
+    [Fact]
+    public async Task Empty_search_shows_the_no_results_placeholder()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+        vm.SearchText = "zzz";
+        _repository.SearchAsync("zzz", null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>());
+
+        await vm.RefreshAsync();
+
+        Assert.Equal(LoadState.Empty, vm.State);
+        Assert.Equal(Tr.Get("Panel_NoResults"), vm.EmptyTitle);
+        Assert.Equal(Tr.Get("Panel_NoResultsHint"), vm.EmptyHint);
+    }
+
+    [Fact]
+    public void Typing_a_search_updates_the_placeholder_text()
+    {
+        var vm = Create();
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, args) => changed.Add(args.PropertyName);
+
+        vm.SearchText = "mail";
+
+        Assert.Contains(nameof(ClipboardPanelViewModel.EmptyTitle), changed);
+        Assert.Contains(nameof(ClipboardPanelViewModel.EmptyHint), changed);
+    }
+
+    [Fact]
+    public async Task Search_is_disabled_while_the_history_is_empty()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.False(vm.CanSearch);
+    }
+
+    [Fact]
+    public async Task Search_stays_enabled_when_a_query_has_no_results()
+    {
+        var vm = Create();
+        vm.SearchText = "zzz";
+        _repository.SearchAsync("zzz", null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>());
+
+        await vm.RefreshAsync();
+
+        Assert.True(vm.CanSearch);
+    }
+
+    [Fact]
+    public async Task Search_enables_when_clips_arrive()
+    {
+        IReadOnlyList<ClipListItem> results = [];
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult(results));
+        var vm = Create();
+        await vm.RefreshAsync();
+        Assert.False(vm.CanSearch);
+
+        results = [Item(1, "one")];
+        await vm.RefreshQuietAsync();
+
+        Assert.True(vm.CanSearch);
     }
 
     private ClipboardPanelViewModel Create() =>

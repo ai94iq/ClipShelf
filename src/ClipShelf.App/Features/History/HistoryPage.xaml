@@ -24,6 +24,7 @@
       <TextBox x:Name="SearchBox"
                Height="36"
                CornerRadius="{StaticResource CardRadius}"
+               IsEnabled="{x:Bind ViewModel.CanSearch, Mode=OneWay}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
@@ -78,7 +79,8 @@
 
       <common:LoadStateOverlay State="{x:Bind ViewModel.State, Mode=OneWay}"
                                ErrorMessage="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
-                               EmptyText="{l:Tr Key=Panel_Empty}"
+                               EmptyText="{x:Bind ViewModel.EmptyTitle, Mode=OneWay}"
+                               EmptyHint="{x:Bind ViewModel.EmptyHint, Mode=OneWay}"
                                RetryCommand="{x:Bind ViewModel.ReloadCommand, Mode=OneWay}" />
     </Grid>
 

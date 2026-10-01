@@ -1,7 +1,8 @@
 <UserControl x:Class="ClipShelf.App.Common.LoadStateOverlay"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:l="using:ClipShelf.App.Localization">
+             xmlns:l="using:ClipShelf.App.Localization"
+             xmlns:common="using:ClipShelf.App.Common">
   <!-- Put this on top of the page content in the same Grid cell. Usage: see PageViewModel. -->
   <Grid>
     <ProgressRing IsActive="True"
@@ -9,11 +10,29 @@
                   VerticalAlignment="Center"
                   Visibility="{x:Bind State, Mode=OneWay, Converter={StaticResource LoadStateVisible}, ConverterParameter=Loading}" />
 
-    <TextBlock Text="{x:Bind EmptyText, Mode=OneWay}"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               TextWrapping="Wrap"
-               Visibility="{x:Bind State, Mode=OneWay, Converter={StaticResource LoadStateVisible}, ConverterParameter=Empty}" />
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="10"
+                MaxWidth="280"
+                Visibility="{x:Bind State, Mode=OneWay, Converter={StaticResource LoadStateVisible}, ConverterParameter=Empty}">
+      <common:AppIcon Kind="Clipboard"
+                      Width="32"
+                      Height="32"
+                      HorizontalAlignment="Center"
+                      Opacity="0.7"
+                      Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+      <TextBlock Text="{x:Bind EmptyText, Mode=OneWay}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+      <TextBlock Text="{x:Bind EmptyHint, Mode=OneWay}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 Style="{StaticResource CaptionTextBlockStyle}"
+                 Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+    </StackPanel>
 
     <StackPanel HorizontalAlignment="Center"
                 VerticalAlignment="Center"

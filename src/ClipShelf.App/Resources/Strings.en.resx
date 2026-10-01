@@ -69,6 +69,9 @@
   <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
   <data name="Panel_Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Panel_Empty" xml:space="preserve"><value>Nothing copied yet</value></data>
+  <data name="Panel_EmptyHint" xml:space="preserve"><value>Copy text and it will show up here.</value></data>
+  <data name="Panel_NoResults" xml:space="preserve"><value>No matching clips</value></data>
+  <data name="Panel_NoResultsHint" xml:space="preserve"><value>Try a different search term.</value></data>
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>

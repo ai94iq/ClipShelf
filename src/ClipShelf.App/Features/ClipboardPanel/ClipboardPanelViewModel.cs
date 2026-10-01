@@ -30,6 +30,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         {
             OnPropertyChanged(nameof(HasItems));
             OnPropertyChanged(nameof(CountText));
+            OnPropertyChanged(nameof(CanSearch));
         };
     }
 
@@ -41,6 +42,16 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     public bool HasItems => Items.Count > 0;
 
     public string CountText => Tr.Plural("History_Count", Items.Count);
+
+    // Placeholder copy: an empty history and an empty search result read differently.
+    public string EmptyTitle => IsSearchActive ? Tr.Get("Panel_NoResults") : Tr.Get("Panel_Empty");
+
+    public string EmptyHint => IsSearchActive ? Tr.Get("Panel_NoResultsHint") : Tr.Get("Panel_EmptyHint");
+
+    // No clips means there is nothing to search; a typed query keeps the box usable so it can be edited.
+    public bool CanSearch => Items.Count > 0 || IsSearchActive;
+
+    private bool IsSearchActive => !string.IsNullOrWhiteSpace(SearchText);
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
@@ -221,6 +232,9 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     // Debounced: the previous query is cancelled as soon as a newer one arrives.
     partial void OnSearchTextChanged(string value)
     {
+        OnPropertyChanged(nameof(EmptyTitle));
+        OnPropertyChanged(nameof(EmptyHint));
+        OnPropertyChanged(nameof(CanSearch));
         _searchCts?.Cancel();
         var cts = _searchCts = new CancellationTokenSource();
         _ = SearchDebouncedAsync(cts.Token);
