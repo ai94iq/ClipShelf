@@ -14,6 +14,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Full app window (NavigationView) with History and Settings pages; the history list is grouped into Pinned and Recent.
 - Double-click the tray icon opens the full app; this can be turned off on the Settings page.
 - New app icon, and a light/dark tray icon that follows the taskbar theme.
+- Theme (system/light/dark) and background (Mica, Mica Alt, Acrylic, None) settings applied live on every window.
+- Tray icon style (filled or outline) and a switch to hide the tray icon; an Exit button in Settings keeps the app reachable when the tray is hidden.
 
 ### Changed
 ### Fixed

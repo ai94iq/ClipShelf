@@ -1,4 +1,5 @@
 using ClipShelf.App.Platform;
+using ClipShelf.Core.Theming;
 using H.NotifyIcon;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -32,14 +33,12 @@ public sealed class AppShellService : IDisposable
         Lifetime = lifetime;
 
         _trayIcon.ToolTipText = Tr.Get("App_Name");
-        _trayIcon.IconSource = new BitmapImage(new Uri(Path.Combine(
-            AppContext.BaseDirectory,
-            "Assets",
-            SystemTheme.TaskbarIsLight() ? "tray-light.ico" : "tray-dark.ico")));
         _trayIcon.LeftClickCommand = new AsyncRelayCommand(TogglePanelAsync);
         _trayIcon.DoubleClickCommand = new RelayCommand(OpenHistoryOnDoubleClick);
         _trayIcon.ContextFlyout = BuildMenu();
         _trayIcon.ForceCreate();
+        ApplyTraySettings();
+        _settings.Changed += (_, _) => ApplyTraySettings();
 
         _hotkey.Pressed += (_, _) => _ = TogglePanelAsync();
         _hotkey.Register(NativeMethods.ModWin | NativeMethods.ModShift, HotkeyVirtualKey);
@@ -52,6 +51,8 @@ public sealed class AppShellService : IDisposable
     public void ShowHistory() => _mainWindow.Value.ShowHistory();
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
+
+    public void Exit() => ExitRequested?.Invoke(this, EventArgs.Empty);
 
     public void Dispose()
     {
@@ -66,18 +67,34 @@ public sealed class AppShellService : IDisposable
         if (_settings.Current.OpenHistoryOnDoubleClick) ShowHistory();
     }
 
+    // Picks the tray variant from the icon style and the taskbar theme, and honours show/hide.
+    private void ApplyTraySettings()
+    {
+        var current = _settings.Current;
+        _trayIcon.Visibility = current.ShowTrayIcon ? Visibility.Visible : Visibility.Collapsed;
+        _trayIcon.IconSource = new BitmapImage(new Uri(Path.Combine(
+            AppContext.BaseDirectory, "Assets", TrayIconFile(current.TrayIcon))));
+    }
+
+    private static string TrayIconFile(TrayIconKind kind)
+    {
+        var variant = SystemTheme.TaskbarIsLight()
+            ? kind == TrayIconKind.Outline ? "tray-outline-light.ico" : "tray-light.ico"
+            : kind == TrayIconKind.Outline ? "tray-outline-dark.ico" : "tray-dark.ico";
+
+        return variant;
+    }
+
     private MenuFlyout BuildMenu()
     {
         var menu = new MenuFlyout();
         menu.Items.Add(Item("Tray_OpenHistory", ShowHistory));
         menu.Items.Add(Item("Tray_Settings", ShowSettings));
         menu.Items.Add(new MenuFlyoutSeparator());
-        menu.Items.Add(Item("Tray_Exit", RequestExit));
+        menu.Items.Add(Item("Tray_Exit", Exit));
         return menu;
     }
 
     private static MenuFlyoutItem Item(string textKey, Action action) =>
         new() { Text = Tr.Get(textKey), Command = new RelayCommand(action) };
-
-    private void RequestExit() => ExitRequested?.Invoke(this, EventArgs.Empty);
 }

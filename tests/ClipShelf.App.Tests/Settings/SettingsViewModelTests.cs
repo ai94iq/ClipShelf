@@ -47,6 +47,26 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public void Changing_the_tray_icon_style_saves_it()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedTrayIcon = viewModel.TrayIconOptions.Single(o => o.Value == TrayIconKind.Outline);
+
+        Assert.True(_store.Saved is { TrayIcon: TrayIconKind.Outline });
+    }
+
+    [Fact]
+    public void Hiding_the_tray_icon_saves_it()
+    {
+        var viewModel = Create();
+
+        viewModel.ShowTrayIcon = false;
+
+        Assert.True(_store.Saved is { ShowTrayIcon: false });
+    }
+
+    [Fact]
     public void Existing_settings_are_preselected()
     {
         var viewModel = Create();

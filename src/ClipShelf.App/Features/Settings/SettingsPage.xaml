@@ -27,8 +27,18 @@
       <TextBlock Text="{l:Tr Key=Settings_Tray}"
                  Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,12,0,0" />
+      <ComboBox Header="{l:Tr Key=Settings_TrayIcon}"
+                MinWidth="220"
+                HorizontalAlignment="Left"
+                ItemsSource="{x:Bind ViewModel.TrayIconOptions}"
+                DisplayMemberPath="Label"
+                SelectedItem="{x:Bind ViewModel.SelectedTrayIcon, Mode=TwoWay}" />
+      <ToggleSwitch Header="{l:Tr Key=Settings_ShowTrayIcon}"
+                    IsOn="{x:Bind ViewModel.ShowTrayIcon, Mode=TwoWay}" />
       <ToggleSwitch Header="{l:Tr Key=Settings_DoubleClickTray}"
                     IsOn="{x:Bind ViewModel.DoubleClickOpensHistory, Mode=TwoWay}" />
+
+      <Button Content="{l:Tr Key=Settings_ExitApp}" Click="OnExit" Margin="0,12,0,0" />
     </StackPanel>
   </ScrollViewer>
 </UserControl>

@@ -32,4 +32,9 @@ public sealed record AppSettings
 
     // When true, double-clicking the tray icon opens the full history window.
     public bool OpenHistoryOnDoubleClick { get; init; } = true;
+
+    [JsonConverter(typeof(JsonStringEnumConverter<TrayIconKind>))]
+    public TrayIconKind TrayIcon { get; init; } = TrayIconKind.Filled;
+
+    public bool ShowTrayIcon { get; init; } = true;
 }

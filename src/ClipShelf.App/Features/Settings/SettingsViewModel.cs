@@ -17,6 +17,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
+        SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
+        ShowTrayIcon = settings.Current.ShowTrayIcon;
         DoubleClickOpensHistory = settings.Current.OpenHistoryOnDoubleClick;
 
         _loading = false;
@@ -37,11 +39,23 @@ public sealed partial class SettingsViewModel : ObservableObject
         new(BackdropKind.None, Tr.Get("Backdrop_None")),
     ];
 
+    public IReadOnlyList<Option<TrayIconKind>> TrayIconOptions { get; } =
+    [
+        new(TrayIconKind.Filled, Tr.Get("TrayIcon_Filled")),
+        new(TrayIconKind.Outline, Tr.Get("TrayIcon_Outline")),
+    ];
+
     [ObservableProperty]
     public partial Option<AppTheme> SelectedTheme { get; set; }
 
     [ObservableProperty]
     public partial Option<BackdropKind> SelectedBackdrop { get; set; }
+
+    [ObservableProperty]
+    public partial Option<TrayIconKind> SelectedTrayIcon { get; set; }
+
+    [ObservableProperty]
+    public partial bool ShowTrayIcon { get; set; }
 
     [ObservableProperty]
     public partial bool DoubleClickOpensHistory { get; set; }
@@ -52,12 +66,14 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnSelectedBackdropChanged(Option<BackdropKind> value) =>
         ApplyTheme(_settings.Current with { Backdrop = value.Value });
 
-    partial void OnDoubleClickOpensHistoryChanged(bool value)
-    {
-        if (_loading) return;
+    partial void OnSelectedTrayIconChanged(Option<TrayIconKind> value) =>
+        Save(_settings.Current with { TrayIcon = value.Value });
 
-        _settings.Update(_settings.Current with { OpenHistoryOnDoubleClick = value });
-    }
+    partial void OnShowTrayIconChanged(bool value) =>
+        Save(_settings.Current with { ShowTrayIcon = value });
+
+    partial void OnDoubleClickOpensHistoryChanged(bool value) =>
+        Save(_settings.Current with { OpenHistoryOnDoubleClick = value });
 
     // Theme and backdrop show on screen right away, so they are re-applied as well as saved.
     private void ApplyTheme(AppSettings next)
@@ -66,5 +82,12 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         _settings.Update(next);
         _theme.Apply(next);
+    }
+
+    private void Save(AppSettings next)
+    {
+        if (_loading) return;
+
+        _settings.Update(next);
     }
 }
