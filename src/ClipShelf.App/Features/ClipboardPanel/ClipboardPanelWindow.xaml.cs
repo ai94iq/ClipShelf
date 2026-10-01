@@ -14,8 +14,8 @@ namespace ClipShelf.App.Features.ClipboardPanel;
 // that fits the content. It hides when it loses focus or the user presses Esc.
 public sealed partial class ClipboardPanelWindow : Window
 {
-    private const int WidthLogical = 400;
-    private const int HeightLogical = 520;
+    private const int WidthLogical = 360;
+    private const int HeightLogical = 480;
     private const int MarginLogical = 12;
     private const int PasteDelayMs = 60;
 

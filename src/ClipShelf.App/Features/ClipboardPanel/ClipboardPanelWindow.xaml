@@ -11,18 +11,37 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <!-- Search -->
-    <AutoSuggestBox x:Name="SearchBox"
-                    Grid.Row="0"
-                    Margin="12,12,12,4"
-                    QueryIcon="Find"
-                    PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
-                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+    <!-- Search: no background, no underline, just the glyph and the text -->
+    <Grid Grid.Row="0" Margin="12,10,12,4">
+      <TextBox x:Name="SearchBox"
+               Height="34"
+               Padding="26,0,8,0"
+               PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
+               Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        <TextBox.Resources>
+          <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+          <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+          <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+          <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+          <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
+          <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
+          <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
+          <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+        </TextBox.Resources>
+      </TextBox>
+      <common:AppIcon Kind="Search"
+                      Width="15"
+                      Height="15"
+                      Margin="8,0,0,0"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+    </Grid>
 
     <!-- History with its loading/empty/error overlay -->
-    <Grid Grid.Row="1" Margin="0,4,0,0">
+    <Grid Grid.Row="1">
       <ListView x:Name="ItemList"
-                Padding="4,0"
+                Padding="2,0"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 SelectionMode="None"
                 IsItemClickEnabled="True"
@@ -30,13 +49,14 @@
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Padding" Value="8,5" />
             <Setter Property="MinHeight" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
           </Style>
         </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
           <DataTemplate x:DataType="features:ClipItemViewModel">
-            <Grid ColumnSpacing="8">
+            <Grid ColumnSpacing="6">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -44,34 +64,39 @@
 
               <StackPanel Grid.Column="0" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind Preview}"
+                           FontSize="13"
                            TextTrimming="CharacterEllipsis"
                            TextWrapping="NoWrap" />
                 <TextBlock Text="{x:Bind SourceText}"
-                           Style="{StaticResource CaptionTextBlockStyle}"
+                           FontSize="11"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
               </StackPanel>
 
               <StackPanel Grid.Column="1"
                           Orientation="Horizontal"
-                          Spacing="2"
+                          Spacing="0"
                           VerticalAlignment="Center">
                 <Button Background="Transparent"
                         BorderThickness="0"
-                        Padding="6"
+                        Width="28"
+                        Height="28"
+                        Padding="0"
                         Command="{x:Bind TogglePinCommand}"
                         ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                         AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
                   <common:AppIcon Kind="{x:Bind features:ClipItemIcons.Pin(IsPinned), Mode=OneWay}"
-                                  Width="16"
-                                  Height="16" />
+                                  Width="14"
+                                  Height="14" />
                 </Button>
                 <Button Background="Transparent"
                         BorderThickness="0"
-                        Padding="6"
+                        Width="28"
+                        Height="28"
+                        Padding="0"
                         Command="{x:Bind DeleteCommand}"
                         ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"
                         AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
-                  <common:AppIcon Kind="Delete" Width="16" Height="16" />
+                  <common:AppIcon Kind="Delete" Width="14" Height="14" />
                 </Button>
               </StackPanel>
             </Grid>
@@ -89,15 +114,19 @@
     <Border Grid.Row="2"
             BorderThickness="0,1,0,0"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-      <Grid Padding="8,6">
+      <Grid Padding="6,4">
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Visibility="{x:Bind common:BoolToVisibility.Collapsed(ViewModel.IsConfirmingClear), Mode=OneWay}">
-          <Button Background="Transparent" BorderThickness="0" Padding="10,6"
+          <Button Background="Transparent"
+                  BorderThickness="0"
+                  MinHeight="28"
+                  Padding="8,4"
+                  IsEnabled="{x:Bind ViewModel.HasItems, Mode=OneWay}"
                   Command="{x:Bind ViewModel.RequestClearCommand}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <common:AppIcon Kind="Delete" Width="16" Height="16" />
-              <TextBlock Text="{l:Tr Key=Panel_ClearAll}" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <common:AppIcon Kind="Delete" Width="14" Height="14" />
+              <TextBlock Text="{l:Tr Key=Panel_ClearAll}" FontSize="13" />
             </StackPanel>
           </Button>
         </StackPanel>
@@ -106,9 +135,9 @@
                     HorizontalAlignment="Right"
                     Spacing="8"
                     Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsConfirmingClear), Mode=OneWay}">
-          <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" VerticalAlignment="Center" />
-          <Button Content="{l:Tr Key=Panel_ClearYes}" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
-          <Button Content="{l:Tr Key=Common_Cancel}" Command="{x:Bind ViewModel.CancelClearCommand}" />
+          <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" FontSize="13" VerticalAlignment="Center" />
+          <Button Content="{l:Tr Key=Panel_ClearYes}" MinHeight="28" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
+          <Button Content="{l:Tr Key=Common_Cancel}" MinHeight="28" Command="{x:Bind ViewModel.CancelClearCommand}" />
         </StackPanel>
       </Grid>
     </Border>

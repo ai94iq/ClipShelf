@@ -24,9 +24,12 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         _clipboard = clipboard;
         _dates = dates;
         ReloadOnChange("clip");
+        Items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasItems));
     }
 
     public ObservableCollection<ClipItemViewModel> Items { get; } = [];
+
+    public bool HasItems => Items.Count > 0;
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
