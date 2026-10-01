@@ -2,6 +2,7 @@ using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
+using ClipShelf.Core.Security;
 using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Features.Settings;
@@ -132,6 +133,33 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public bool HasExportStatus => !string.IsNullOrEmpty(ExportStatus);
 
+    // Export lock: when a password is set, exporting asks for it first.
+    public bool HasExportPassword => _settings.Current.ExportPasswordHash is not null;
+
+    public string PasswordButtonText =>
+        HasExportPassword ? Tr.Get("Settings_ChangePassword") : Tr.Get("Settings_SetPassword");
+
+    public bool VerifyExportPassword(string password) =>
+        PasswordHash.Verify(password, _settings.Current.ExportPasswordHash ?? string.Empty);
+
+    public void SetExportPassword(string password)
+    {
+        Save(_settings.Current with { ExportPasswordHash = PasswordHash.Create(password) });
+        NotifyExportPasswordChanged();
+    }
+
+    public void RemoveExportPassword()
+    {
+        Save(_settings.Current with { ExportPasswordHash = null });
+        NotifyExportPasswordChanged();
+    }
+
+    private void NotifyExportPasswordChanged()
+    {
+        OnPropertyChanged(nameof(HasExportPassword));
+        OnPropertyChanged(nameof(PasswordButtonText));
+    }
+
     // Default name for the save dialog: ClipShelf-Export-2026-10-01-1432.
     public string SuggestedExportFileName =>
         Tr.Format("Settings_ExportFileName",
@@ -157,6 +185,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             "Retention_Day", "Retention_Week", "Retention_Month", "Retention_Forever",
             "Settings_ClearOnSignOut", "Settings_ClearOnSignOutHint",
             "Settings_Export", "Settings_ExportHint", "Common_Export",
+            "Settings_ExportPassword", "Settings_ExportPasswordHint",
         ],
     ];
 

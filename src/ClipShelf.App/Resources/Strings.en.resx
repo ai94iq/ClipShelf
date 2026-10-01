@@ -35,6 +35,7 @@
   <data name="Common_Export" xml:space="preserve"><value>Export</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
   <data name="Common_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Remove</value></data>
   <data name="Common_Retry" xml:space="preserve"><value>Retry</value></data>
   <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
@@ -88,6 +89,16 @@
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
+  <data name="Password_ChangeTitle" xml:space="preserve"><value>Change export password</value></data>
+  <data name="Password_Confirm" xml:space="preserve"><value>Confirm password</value></data>
+  <data name="Password_Current" xml:space="preserve"><value>Current password</value></data>
+  <data name="Password_Mismatch" xml:space="preserve"><value>The passwords don't match.</value></data>
+  <data name="Password_New" xml:space="preserve"><value>New password</value></data>
+  <data name="Password_RemoveTitle" xml:space="preserve"><value>Remove export password</value></data>
+  <data name="Password_SetTitle" xml:space="preserve"><value>Set export password</value></data>
+  <data name="Password_TooShort" xml:space="preserve"><value>Use at least 4 characters.</value></data>
+  <data name="Password_VerifyTitle" xml:space="preserve"><value>Export password</value></data>
+  <data name="Password_Wrong" xml:space="preserve"><value>That password is not right.</value></data>
   <data name="Retention_Day" xml:space="preserve"><value>1 day</value></data>
   <data name="Retention_Forever" xml:space="preserve"><value>Forever</value></data>
   <data name="Retention_Month" xml:space="preserve"><value>30 days</value></data>
@@ -98,6 +109,7 @@
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>
+  <data name="Settings_ChangePassword" xml:space="preserve"><value>Change password…</value></data>
   <data name="Settings_ClearOnSignOut" xml:space="preserve"><value>Clear history when I sign out</value></data>
   <data name="Settings_ClearOnSignOutHint" xml:space="preserve"><value>Removes unpinned clips when you sign out or shut down.</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
@@ -109,6 +121,8 @@
   <data name="Settings_ExportFailed" xml:space="preserve"><value>The clips couldn't be saved.</value></data>
   <data name="Settings_ExportFileName" xml:space="preserve"><value>{0}-Export-{1}</value></data>
   <data name="Settings_ExportHint" xml:space="preserve"><value>Save the whole history as a JSON or CSV file.</value></data>
+  <data name="Settings_ExportPassword" xml:space="preserve"><value>Export password</value></data>
+  <data name="Settings_ExportPasswordHint" xml:space="preserve"><value>Ask for a password before the history is saved to a file.</value></data>
   <data name="Settings_History" xml:space="preserve"><value>History</value></data>
   <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
@@ -121,6 +135,7 @@
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>
   <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the notification area.</value></data>
   <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>Search settings</value></data>
+  <data name="Settings_SetPassword" xml:space="preserve"><value>Set password…</value></data>
   <data name="Settings_ShowTrayIcon" xml:space="preserve"><value>Show the tray icon</value></data>
   <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>

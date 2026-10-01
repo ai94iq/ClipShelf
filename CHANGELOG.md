@@ -23,6 +23,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Export the saved clips from Settings as a JSON or CSV file.
 - Select several clips in the list and copy them all at once.
 - Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
+- Lock exports with a password: set one in Settings and it is asked before the history is saved to a file.
 
 ### Changed
 - The installer shows the MIT license, an installation folder page, creates a desktop shortcut, and offers to run ClipShelf when finished; its artwork matches the app.

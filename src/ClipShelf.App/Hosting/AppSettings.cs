@@ -26,10 +26,10 @@ public sealed record AppSettings
     // Null = follow the Windows accent; otherwise one of AccentPresets (hex, e.g. "#0F6CBD").
     public string? Accent { get; init; }
 
-    // How many unpinned clips to keep; pinned clips are never pruned.
+    // How many uncategorized clips to keep; pinned and categorized clips are never pruned.
     public int MaxItems { get; init; } = 100;
 
-    // Days to keep unpinned clips; 0 keeps them forever. Pinned clips are never pruned.
+    // Days to keep uncategorized clips; 0 keeps them forever. Pinned and categorized clips are never pruned.
     public int RetentionDays { get; init; }
 
     // When true, unpinned clips are cleared when the user signs out or shuts down.
@@ -46,6 +46,9 @@ public sealed record AppSettings
 
     // When true, double-clicking the tray icon opens the full history window.
     public bool OpenHistoryOnDoubleClick { get; init; } = true;
+
+    // PBKDF2 hash of the export password; null means exporting does not ask for one.
+    public string? ExportPasswordHash { get; init; }
 
     [JsonConverter(typeof(JsonStringEnumConverter<TrayIconKind>))]
     public TrayIconKind TrayIcon { get; init; } = TrayIconKind.Filled;

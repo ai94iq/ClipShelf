@@ -27,6 +27,10 @@ public sealed partial class SettingsPage : UserControl
 
     private async void OnExportClick(object sender, RoutedEventArgs e)
     {
+        if (ViewModel.HasExportPassword &&
+            !await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyExportPassword))
+            return;
+
         var format = ViewModel.SelectedExportFormat.Value;
         var picker = new FileSavePicker
         {
@@ -42,6 +46,20 @@ public sealed partial class SettingsPage : UserControl
         if (file is null) return;
 
         await ViewModel.ExportAsync(file.Path);
+    }
+
+    private async void OnPasswordClick(object sender, RoutedEventArgs e)
+    {
+        var password = ViewModel.HasExportPassword
+            ? await PasswordPrompt.ChangeAsync(XamlRoot, ViewModel.VerifyExportPassword)
+            : await PasswordPrompt.SetAsync(XamlRoot);
+        if (password is not null) ViewModel.SetExportPassword(password);
+    }
+
+    private async void OnRemovePasswordClick(object sender, RoutedEventArgs e)
+    {
+        if (await PasswordPrompt.ConfirmRemoveAsync(XamlRoot, ViewModel.VerifyExportPassword))
+            ViewModel.RemoveExportPassword();
     }
 
     private void OnHotkeyClick(object sender, RoutedEventArgs e)

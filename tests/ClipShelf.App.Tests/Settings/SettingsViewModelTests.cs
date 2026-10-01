@@ -320,6 +320,51 @@ public sealed class SettingsViewModelTests
             viewModel.SuggestedExportFileName);
     }
 
+    [Fact]
+    public void Setting_the_export_password_stores_a_hash_that_verifies()
+    {
+        var viewModel = Create();
+
+        viewModel.SetExportPassword("hunter2");
+
+        Assert.True(viewModel.HasExportPassword);
+        Assert.True(_store.Saved is { ExportPasswordHash: not null });
+        Assert.True(viewModel.VerifyExportPassword("hunter2"));
+        Assert.False(viewModel.VerifyExportPassword("wrong"));
+    }
+
+    [Fact]
+    public void Removing_the_export_password_clears_it()
+    {
+        var viewModel = Create();
+        viewModel.SetExportPassword("hunter2");
+
+        viewModel.RemoveExportPassword();
+
+        Assert.False(viewModel.HasExportPassword);
+        Assert.True(_store.Saved is { ExportPasswordHash: null });
+    }
+
+    [Fact]
+    public void The_password_button_says_set_then_change()
+    {
+        var viewModel = Create();
+        var before = viewModel.PasswordButtonText;
+
+        viewModel.SetExportPassword("hunter2");
+
+        Assert.NotEqual(before, viewModel.PasswordButtonText);
+    }
+
+    [Fact]
+    public void Filtering_by_password_keeps_the_history_group()
+    {
+        var viewModel = Create();
+        viewModel.Filter = "password";
+
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 3));
+    }
+
     private SettingsViewModel Create() =>
         new(_service, _theme, _repository, _startup, _export, NullLogger<SettingsViewModel>.Instance);
 }
