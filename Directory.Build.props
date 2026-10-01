@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Product>ClipShelf</Product>
+    <Company>Abdulwahb Isam</Company>
+    <Copyright>Copyright (c) 2026 Abdulwahb Isam</Copyright>
+  </PropertyGroup>
+
+  <!-- C# projects only; the WiX project must not get these -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

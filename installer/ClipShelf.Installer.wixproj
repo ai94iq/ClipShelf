@@ -1,0 +1,14 @@
+<Project Sdk="WixToolset.Sdk/6.0.2">
+  <PropertyGroup>
+    <OutputName>ClipShelf-Setup-$(Version)</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <Cultures>ar-SA</Cultures>
+    <PublishDir>$(MSBuildThisFileDirectory)..\artifacts\publish\win-x64</PublishDir>
+    <DefineConstants>Version=$(Version);PublishDir=$(PublishDir)</DefineConstants>
+    <!-- WiX packages are versioned here, not through CPM; keep both on the same 6.x version -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+  </ItemGroup>
+</Project>

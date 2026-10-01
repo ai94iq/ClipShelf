@@ -1,0 +1,16 @@
+* text=auto
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.slnx  text eol=crlf
+*.cs    text diff=csharp
+*.xaml  text
+*.resx  text
+*.sql   text
+*.md    text
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.ttf   binary
+*.db    binary
+*.msi   binary
+.githooks/* text eol=lf

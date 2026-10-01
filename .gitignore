@@ -1,0 +1,21 @@
+# Build output
+bin/
+obj/
+artifacts/
+TestResults/
+
+# IDE
+.vs/
+.idea/
+*.user
+*.suo
+
+# Local data (never commit)
+*.db
+*.db-wal
+*.db-shm
+logs/
+
+# Secrets
+*.pfx
+*.p12

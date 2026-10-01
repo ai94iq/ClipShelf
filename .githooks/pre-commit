@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs every test before each commit. Never bypass with --no-verify.
+echo "[pre-commit] running tests..."
+dotnet test --solution ClipShelf.slnx -c Release || { echo "[pre-commit] tests failed: commit blocked"; exit 1; }

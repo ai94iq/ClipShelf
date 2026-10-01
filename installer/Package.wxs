@@ -1,0 +1,54 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- UpgradeCode is fixed forever. Never change it. -->
+  <Package Name="!(loc.ProductName)"
+           Manufacturer="!(loc.Manufacturer)"
+           Version="$(var.Version)"
+           Language="1025"
+           UpgradeCode="92889A21-5376-451A-9E19-FCCC712A4539"
+           Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="ClipShelf" />
+    </StandardDirectory>
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <!-- Everything from the publish folder except the exe, which needs a known Id for the shortcut -->
+      <Files Include="$(var.PublishDir)\**">
+        <Exclude Files="$(var.PublishDir)\ClipShelf.exe" />
+      </Files>
+      <Component Id="AppExe">
+        <File Id="AppExeFile" Source="$(var.PublishDir)\ClipShelf.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut">
+        <Shortcut Id="AppShortcut"
+                  Name="!(loc.ProductName)"
+                  Target="[#AppExeFile]"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon" />
+        <RegistryValue Root="HKMU" Key="Software\Abdulwahb Isam\ClipShelf"
+                       Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+  </Fragment>
+</Wix>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Accent_Blue" xml:space="preserve"><value>أزرق</value></data>
+  <data name="Accent_Graphite" xml:space="preserve"><value>رمادي</value></data>
+  <data name="Accent_Green" xml:space="preserve"><value>أخضر</value></data>
+  <data name="Accent_Orange" xml:space="preserve"><value>برتقالي</value></data>
+  <data name="Accent_Purple" xml:space="preserve"><value>بنفسجي</value></data>
+  <data name="Accent_Rose" xml:space="preserve"><value>وردي</value></data>
+  <data name="Accent_System" xml:space="preserve"><value>لون النظام</value></data>
+  <data name="Accent_Teal" xml:space="preserve"><value>أزرق مخضر</value></data>
+  <data name="App_AlreadyRunning" xml:space="preserve"><value>التطبيق يعمل بالفعل.</value></data>
+  <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
+  <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="Common_No" xml:space="preserve"><value>لا</value></data>
+  <data name="Common_Ok" xml:space="preserve"><value>حسنًا</value></data>
+  <data name="Common_Retry" xml:space="preserve"><value>إعادة المحاولة</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>حفظ</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>نعم</value></data>
+  <data name="Date_Approx" xml:space="preserve"><value>حوالي {0}</value></data>
+  <data name="Date_HijriApprox" xml:space="preserve"><value>حوالي {0} هـ</value></data>
+  <data name="Date_HijriDay" xml:space="preserve"><value>{0} {1} {2} هـ</value></data>
+  <data name="Date_HijriMonth" xml:space="preserve"><value>{0} {1} هـ</value></data>
+  <data name="Date_HijriYear" xml:space="preserve"><value>{0} هـ</value></data>
+  <data name="Error_LoadFailed" xml:space="preserve"><value>تعذّر تحميل البيانات.</value></data>
+  <data name="Error_Startup" xml:space="preserve"><value>تعذّر تشغيل التطبيق. راجع ملفات السجل.</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>حدث خطأ غير متوقع.</value></data>
+  <data name="HijriMonth_1" xml:space="preserve"><value>محرم</value></data>
+  <data name="HijriMonth_10" xml:space="preserve"><value>شوال</value></data>
+  <data name="HijriMonth_11" xml:space="preserve"><value>ذو القعدة</value></data>
+  <data name="HijriMonth_12" xml:space="preserve"><value>ذو الحجة</value></data>
+  <data name="HijriMonth_2" xml:space="preserve"><value>صفر</value></data>
+  <data name="HijriMonth_3" xml:space="preserve"><value>ربيع الأول</value></data>
+  <data name="HijriMonth_4" xml:space="preserve"><value>ربيع الآخر</value></data>
+  <data name="HijriMonth_5" xml:space="preserve"><value>جمادى الأولى</value></data>
+  <data name="HijriMonth_6" xml:space="preserve"><value>جمادى الآخرة</value></data>
+  <data name="HijriMonth_7" xml:space="preserve"><value>رجب</value></data>
+  <data name="HijriMonth_8" xml:space="preserve"><value>شعبان</value></data>
+  <data name="HijriMonth_9" xml:space="preserve"><value>رمضان</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>داكن</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>فاتح</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>حسب النظام</value></data>
+</root>

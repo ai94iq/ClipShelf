@@ -1,0 +1,69 @@
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using ClipShelf.App.Shell;
+
+namespace ClipShelf.App;
+
+public partial class App : Application
+{
+    private readonly AppSettings _settings;
+    private IHost? _host;
+    private Mutex? _singleInstance;
+    private bool _ownsMutex;
+
+    public App()
+    {
+        _settings = SettingsStore.Load();
+        Culture.Configure(_settings);             // before any window or Tr call
+        AppLogging.Configure();
+        InitializeComponent();
+        ThemeService.ApplyAccentResources(Resources, _settings.Accent);   // before any control loads
+        UnhandledException += (_, e) =>
+        {
+            Log.Error(e.Exception, "Unhandled UI exception");
+            e.Handled = true;
+        };
+    }
+
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        _singleInstance = new Mutex(initiallyOwned: true, @"Local\ClipShelf.SingleInstance", out _ownsMutex);
+        if (!_ownsMutex)
+        {
+            Log.Information("Second instance blocked");
+            Exit();
+            return;
+        }
+
+        try
+        {
+            var builder = Host.CreateApplicationBuilder();
+            builder.Services.AddSerilog();        // uses the static Log.Logger
+            builder.Services.AddAppServices(_settings);
+            _host = builder.Build();
+            await _host.StartAsync();
+            _host.Services.GetRequiredService<IDataChangeNotifier>();          // must be created on the UI thread
+
+            var database = _host.Services.GetRequiredService<DatabaseInitializer>();
+            await Task.Run(database.BackupAndMigrate);
+
+            var window = _host.Services.GetRequiredService<MainWindow>();
+            window.Closed += (_, _) => Shutdown();
+            window.Activate();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Startup failed");
+            Shutdown();
+            Exit();
+        }
+    }
+
+    private void Shutdown()
+    {
+        _host?.Dispose();                         // the app registers no hosted services
+        if (_ownsMutex) _singleInstance?.ReleaseMutex();
+        _singleInstance?.Dispose();
+        Log.CloseAndFlush();
+    }
+}

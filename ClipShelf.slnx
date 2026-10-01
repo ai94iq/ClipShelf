@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ClipShelf.App/ClipShelf.App.csproj" />
+    <Project Path="src/ClipShelf.Core/ClipShelf.Core.csproj" />
+    <Project Path="src/ClipShelf.Data/ClipShelf.Data.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ClipShelf.App.Tests/ClipShelf.App.Tests.csproj" />
+    <Project Path="tests/ClipShelf.Core.Tests/ClipShelf.Core.Tests.csproj" />
+    <Project Path="tests/ClipShelf.Data.Tests/ClipShelf.Data.Tests.csproj" />
+  </Folder>
+</Solution>
