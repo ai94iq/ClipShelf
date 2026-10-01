@@ -5,6 +5,7 @@ using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
+using ClipShelf.Core.Models;
 using ClipShelf.Core.Theming;
 using NSubstitute;
 
@@ -17,9 +18,17 @@ public sealed class SettingsViewModelTests
     private readonly IThemeService _theme = Substitute.For<IThemeService>();
     private readonly IClipRepository _repository = Substitute.For<IClipRepository>();
     private readonly IClipExportService _export = Substitute.For<IClipExportService>();
+    private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
+    private readonly CategoryLockService _locks;
+    private readonly ILockPasswordService _passwords;
     private readonly FakeStartupRegistration _startup = new();
 
-    public SettingsViewModelTests() => _service = new SettingsService(_store, new AppSettings());
+    public SettingsViewModelTests()
+    {
+        _service = new SettingsService(_store, new AppSettings());
+        _passwords = new LockPasswordService(_service);
+        _locks = new CategoryLockService(_service, Substitute.For<IDataChangeNotifier>());
+    }
 
     [Fact]
     public void Toggling_double_click_off_saves_the_setting()
@@ -174,6 +183,9 @@ public sealed class SettingsViewModelTests
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 0));
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 1));
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 2));
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 3));
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 4));
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 5));
         Assert.True(viewModel.IsExitVisible(viewModel.Filter));
         Assert.False(viewModel.HasNoMatches(viewModel.Filter));
     }
@@ -321,50 +333,154 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
-    public void Setting_the_export_password_stores_a_hash_that_verifies()
+    public async Task Setting_the_password_stores_a_hash_that_verifies()
     {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>()).Returns(new List<Category>());
         var viewModel = Create();
 
-        viewModel.SetExportPassword("hunter2");
+        await viewModel.SetLockPasswordAsync("hunter2");
 
-        Assert.True(viewModel.HasExportPassword);
-        Assert.True(_store.Saved is { ExportPasswordHash: not null });
-        Assert.True(viewModel.VerifyExportPassword("hunter2"));
-        Assert.False(viewModel.VerifyExportPassword("wrong"));
+        Assert.True(viewModel.HasLockPassword);
+        Assert.True(_store.Saved is { LockPasswordHash: not null });
+        Assert.True(viewModel.VerifyLockPassword("hunter2"));
+        Assert.False(viewModel.VerifyLockPassword("wrong"));
     }
 
     [Fact]
-    public void Removing_the_export_password_clears_it()
+    public async Task Removing_the_password_clears_it_and_every_lock()
     {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>()).Returns(new List<Category>());
         var viewModel = Create();
-        viewModel.SetExportPassword("hunter2");
+        await viewModel.SetLockPasswordAsync("hunter2");
 
-        viewModel.RemoveExportPassword();
+        await viewModel.RemoveLockPasswordAsync();
 
-        Assert.False(viewModel.HasExportPassword);
-        Assert.True(_store.Saved is { ExportPasswordHash: null });
+        Assert.False(viewModel.HasLockPassword);
+        Assert.True(_store.Saved is { LockPasswordHash: null });
+        await _categories.Received(1).ClearLocksAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public void The_password_button_says_set_then_change()
+    public async Task The_password_button_says_set_then_change()
     {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>()).Returns(new List<Category>());
         var viewModel = Create();
         var before = viewModel.PasswordButtonText;
 
-        viewModel.SetExportPassword("hunter2");
+        await viewModel.SetLockPasswordAsync("hunter2");
 
         Assert.NotEqual(before, viewModel.PasswordButtonText);
     }
 
     [Fact]
-    public void Filtering_by_password_keeps_the_history_group()
+    public void Filtering_by_password_keeps_the_categories_group()
     {
         var viewModel = Create();
         viewModel.Filter = "password";
 
-        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 3));
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 5));
+    }
+
+    [Fact]
+    public void Filtering_by_export_keeps_the_export_group()
+    {
+        var viewModel = Create();
+        viewModel.Filter = "export";
+
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 4));
+    }
+
+    [Fact]
+    public async Task Category_rows_report_the_lock_state()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work"), new(8, "Secret", true) });
+        var viewModel = Create();
+
+        await viewModel.RefreshCategoriesAsync();
+
+        Assert.Equal(2, viewModel.CategoryRows.Count);
+        Assert.True(viewModel.CategoryRows[0].ShowLock);
+        Assert.True(viewModel.CategoryRows[1].ShowUnlock);
+        Assert.False(viewModel.CategoryRows[1].ShowLockNow);
+    }
+
+    [Fact]
+    public async Task Unlocking_a_category_swaps_the_lock_buttons()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(8, "Secret", true) });
+        var viewModel = Create();
+        await viewModel.RefreshCategoriesAsync();
+
+        await viewModel.UnlockCategoryAsync(8);
+
+        Assert.True(viewModel.CategoryRows[0].ShowLockNow);
+        Assert.Contains(8, _locks.UnlockedCategoryIds);
+    }
+
+    [Fact]
+    public async Task Locking_a_category_marks_it_and_hides_it_again()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(8, "Secret") });
+        var viewModel = Create();
+        _locks.Unlock(8);
+
+        await viewModel.LockCategoryAsync(8);
+
+        await _categories.Received(1).SetLockedAsync(8, true, Arg.Any<CancellationToken>());
+        Assert.DoesNotContain(8, _locks.UnlockedCategoryIds);
+    }
+
+    [Fact]
+    public void Filtering_by_categories_keeps_the_categories_group()
+    {
+        var viewModel = Create();
+        viewModel.Filter = "categories";
+
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 5));
+    }
+
+    [Fact]
+    public void Toggling_lock_on_minimize_saves_it()
+    {
+        var viewModel = Create();
+
+        viewModel.LockOnMinimize = true;
+
+        Assert.True(_store.Saved is { LockOnMinimize: true });
+    }
+
+    [Fact]
+    public void Lock_timing_has_safe_defaults()
+    {
+        var viewModel = Create();
+
+        Assert.True(viewModel.LockOnExit);
+        Assert.True(viewModel.LockOnShutdown);
+        Assert.False(viewModel.LockOnMinimize);
+    }
+
+    [Fact]
+    public void The_lock_timing_summary_lists_the_enabled_events()
+    {
+        var viewModel = Create();
+        Assert.Equal(
+            $"{Tr.Get("LockWhen_Exit")}, {Tr.Get("LockWhen_Shutdown")}",
+            viewModel.LockWhenText);
+
+        viewModel.LockOnExit = false;
+        viewModel.LockOnShutdown = false;
+
+        Assert.Equal(Tr.Get("LockWhen_Never"), viewModel.LockWhenText);
+
+        viewModel.LockOnMinimize = true;
+
+        Assert.Equal(Tr.Get("LockWhen_Minimize"), viewModel.LockWhenText);
     }
 
     private SettingsViewModel Create() =>
-        new(_service, _theme, _repository, _startup, _export, NullLogger<SettingsViewModel>.Instance);
+        new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords,
+            NullLogger<SettingsViewModel>.Instance);
 }

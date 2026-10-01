@@ -8,10 +8,12 @@ public interface IClipRepository
     Task AddOrBumpAsync(string text, string? appName, DateTimeOffset copiedAtUtc, CancellationToken ct);
 
     Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
-        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null);
+        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
+        IReadOnlyCollection<long>? unlockedCategories = null);
 
     Task<IReadOnlyList<ClipListItem>> SearchAsync(
-        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null);
+        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
+        IReadOnlyCollection<long>? unlockedCategories = null);
 
     Task SetPinnedAsync(long id, bool pinned, CancellationToken ct);
 

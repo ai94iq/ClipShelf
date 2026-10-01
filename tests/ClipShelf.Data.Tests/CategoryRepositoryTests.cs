@@ -38,6 +38,35 @@ public sealed class CategoryRepositoryTests
     }
 
     [Fact]
+    public async Task Locking_a_category_marks_it()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+        var category = await repo.GetOrAddAsync("Work", ct);
+
+        await repo.SetLockedAsync(category.Id, true, ct);
+
+        Assert.True(Assert.Single(await repo.GetCategoriesAsync(ct)).IsLocked);
+    }
+
+    [Fact]
+    public async Task Clearing_all_locks_unlocks_every_category()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+        var work = await repo.GetOrAddAsync("Work", ct);
+        var personal = await repo.GetOrAddAsync("Personal", ct);
+        await repo.SetLockedAsync(work.Id, true, ct);
+        await repo.SetLockedAsync(personal.Id, true, ct);
+
+        await repo.ClearLocksAsync(ct);
+
+        Assert.All(await repo.GetCategoriesAsync(ct), category => Assert.False(category.IsLocked));
+    }
+
+    [Fact]
     public async Task Adding_a_category_notifies_open_views()
     {
         using var db = new TempDatabase();

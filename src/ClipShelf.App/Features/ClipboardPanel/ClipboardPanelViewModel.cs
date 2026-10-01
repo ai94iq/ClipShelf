@@ -11,8 +11,11 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     private readonly IClipRepository _repository;
     private readonly ICategoryRepository _categories;
+    private readonly ICategoryLockService _locks;
+    private readonly ILockPasswordService _passwords;
     private readonly IClipboardWriter _clipboard;
     private readonly IDateFormatter _dates;
+    private readonly HashSet<long> _lockedCategoryIds = [];
     private CancellationTokenSource? _searchCts;
     private bool _quietRefreshInProgress;
     private bool _quietRefreshRequested;
@@ -20,15 +23,19 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     public ClipboardPanelViewModel(
         IClipRepository repository,
         ICategoryRepository categories,
+        ICategoryLockService locks,
+        ILockPasswordService passwords,
         IClipboardWriter clipboard,
         IDateFormatter dates,
         ILogger<ClipboardPanelViewModel> log) : base(log)
     {
         _repository = repository;
         _categories = categories;
+        _locks = locks;
+        _passwords = passwords;
         _clipboard = clipboard;
         _dates = dates;
-        ReloadQuietlyOnChange("clip");
+        ReloadQuietlyOnChange("clip", "lock");
         Items.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(HasItems));
@@ -57,15 +64,24 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public bool IsCategoryFilterActive => SelectedCategoryFilter?.Value is not null;
 
+    public bool IsCategoryFilterLocked =>
+        SelectedCategoryFilter?.Value is long id && _lockedCategoryIds.Contains(id);
+
     public async Task RefreshCategoryFilterAsync()
     {
         var categories = await _categories.GetCategoriesAsync(CancellationToken.None);
         var previous = SelectedCategoryFilter?.Value;
 
+        _lockedCategoryIds.Clear();
         CategoryFilterOptions.Clear();
         CategoryFilterOptions.Add(new Option<long?>(null, Tr.Get("History_FilterAll")));
         foreach (var category in categories)
-            CategoryFilterOptions.Add(new Option<long?>(category.Id, category.Name));
+        {
+            var locked = category.IsLocked && !_locks.UnlockedCategoryIds.Contains(category.Id);
+            if (locked) _lockedCategoryIds.Add(category.Id);
+            CategoryFilterOptions.Add(new Option<long?>(
+                category.Id, locked ? Tr.Format("History_FilterLocked", category.Name) : category.Name));
+        }
 
         var match = CategoryFilterOptions.FirstOrDefault(option => option.Value == previous) ?? CategoryFilterOptions[0];
         if (!Equals(match, SelectedCategoryFilter))
@@ -75,6 +91,15 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
             _updatingFilter = false;
         }
     }
+
+    public async Task UnlockCategoryAsync(long id)
+    {
+        _locks.Unlock(id);
+        await RefreshCategoryFilterAsync();
+        await RefreshAsync();
+    }
+
+    public bool VerifyLockPassword(string password) => _passwords.Verify(password);
 
     partial void OnSelectedCategoryFilterChanged(Option<long?>? value)
     {
@@ -99,11 +124,13 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     // Placeholder copy: an empty history, an empty search and an empty filter read differently.
     public string EmptyTitle =>
         IsSearchActive ? Tr.Get("Panel_NoResults")
+        : IsCategoryFilterLocked ? Tr.Get("Panel_EmptyLocked")
         : IsCategoryFilterActive ? Tr.Get("Panel_EmptyCategory")
         : Tr.Get("Panel_Empty");
 
     public string EmptyHint =>
         IsSearchActive ? Tr.Get("Panel_NoResultsHint")
+        : IsCategoryFilterLocked ? Tr.Get("Panel_EmptyLockedHint")
         : IsCategoryFilterActive ? Tr.Get("Panel_EmptyCategoryHint")
         : Tr.Get("Panel_EmptyHint");
 
@@ -217,9 +244,10 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     private async Task<IReadOnlyList<ClipListItem>> LoadItemsAsync(CancellationToken ct)
     {
         var categoryId = SelectedCategoryFilter?.Value;
+        var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
         return string.IsNullOrWhiteSpace(SearchText)
-            ? await _repository.GetRecentAsync(null, PageSize, ct, categoryId)
-            : await _repository.SearchAsync(SearchText, null, PageSize, ct, categoryId);
+            ? await _repository.GetRecentAsync(null, PageSize, ct, categoryId, unlocked)
+            : await _repository.SearchAsync(SearchText, null, PageSize, ct, categoryId, unlocked);
     }
 
     private void ReplaceItems(IEnumerable<ClipListItem> items)

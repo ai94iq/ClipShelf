@@ -49,6 +49,8 @@ public sealed class ClipItemViewModelTests
         var panel = new ClipboardPanelViewModel(
             Substitute.For<IClipRepository>(),
             Substitute.For<ICategoryRepository>(),
+            new FakeCategoryLocks(),
+            Substitute.For<ILockPasswordService>(),
             Substitute.For<IClipboardWriter>(),
             _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

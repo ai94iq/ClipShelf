@@ -41,7 +41,10 @@ public static class ServiceRegistration
 
         // App services
         services.AddSingleton<IThemeService, ThemeService>();
-        services.AddSingleton<IClipExportService>(sp => new ClipExportService(sp.GetRequiredService<IClipRepository>()));
+        services.AddSingleton<ICategoryLockService, CategoryLockService>();
+        services.AddSingleton<ILockPasswordService, LockPasswordService>();
+        services.AddSingleton<IClipExportService>(sp => new ClipExportService(
+            sp.GetRequiredService<IClipRepository>(), sp.GetRequiredService<ICategoryLockService>()));
         services.AddSingleton<IStartupRegistration, StartupRegistration>();
         services.AddSingleton<SessionWatcher>();
         services.AddSingleton<SessionCleanup>();

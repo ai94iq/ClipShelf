@@ -1,6 +1,7 @@
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Export;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.Storage.Pickers;
@@ -23,12 +24,14 @@ public sealed partial class SettingsPage : UserControl
 
     public SettingsViewModel ViewModel { get; }
 
+    public Task LoadAsync() => ViewModel.RefreshCategoriesAsync();
+
     private void OnExit(object sender, RoutedEventArgs e) => _shell.Value.Exit();
 
     private async void OnExportClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.HasExportPassword &&
-            !await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyExportPassword))
+        if (ViewModel.HasLockPassword &&
+            !await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyLockPassword))
             return;
 
         var format = ViewModel.SelectedExportFormat.Value;
@@ -50,16 +53,43 @@ public sealed partial class SettingsPage : UserControl
 
     private async void OnPasswordClick(object sender, RoutedEventArgs e)
     {
-        var password = ViewModel.HasExportPassword
-            ? await PasswordPrompt.ChangeAsync(XamlRoot, ViewModel.VerifyExportPassword)
+        var password = ViewModel.HasLockPassword
+            ? await PasswordPrompt.ChangeAsync(XamlRoot, ViewModel.VerifyLockPassword)
             : await PasswordPrompt.SetAsync(XamlRoot);
-        if (password is not null) ViewModel.SetExportPassword(password);
+        if (password is not null) await ViewModel.SetLockPasswordAsync(password);
     }
 
     private async void OnRemovePasswordClick(object sender, RoutedEventArgs e)
     {
-        if (await PasswordPrompt.ConfirmRemoveAsync(XamlRoot, ViewModel.VerifyExportPassword))
-            ViewModel.RemoveExportPassword();
+        if (await PasswordPrompt.ConfirmRemoveAsync(XamlRoot, ViewModel.VerifyLockPassword))
+            await ViewModel.RemoveLockPasswordAsync();
+    }
+
+    private async void OnCategoryLockClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: CategoryRow row } element) return;
+
+        switch (element.Tag as string)
+        {
+            case "lock":
+                // Locking needs the shared password first; there is nothing to ask if none is set.
+                if (!ViewModel.HasLockPassword)
+                {
+                    var created = await PasswordPrompt.SetAsync(XamlRoot);
+                    if (created is null) break;
+                    await ViewModel.SetLockPasswordAsync(created);
+                }
+
+                await ViewModel.LockCategoryAsync(row.Id);
+                break;
+            case "locknow":
+                await ViewModel.LockCategoryAsync(row.Id);
+                break;
+            case "unlock":
+                if (await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyLockPassword))
+                    await ViewModel.UnlockCategoryAsync(row.Id);
+                break;
+        }
     }
 
     private void OnHotkeyClick(object sender, RoutedEventArgs e)

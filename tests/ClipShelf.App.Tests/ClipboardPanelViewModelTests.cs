@@ -11,6 +11,8 @@ public sealed class ClipboardPanelViewModelTests
 {
     private readonly IClipRepository _repository = Substitute.For<IClipRepository>();
     private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
+    private readonly ICategoryLockService _locks = new FakeCategoryLocks();
+    private readonly ILockPasswordService _passwords = Substitute.For<ILockPasswordService>();
     private readonly IClipboardWriter _clipboard = Substitute.For<IClipboardWriter>();
     private readonly IDateFormatter _dates = Substitute.For<IDateFormatter>();
 
@@ -483,8 +485,63 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Equal(Tr.Get("Panel_EmptyCategory"), vm.EmptyTitle);
     }
 
+    [Fact]
+    public async Task Unlocked_categories_are_asked_for_in_the_query()
+    {
+        _locks.Unlock(7);
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), null,
+                Arg.Is<IReadOnlyCollection<long>>(ids => ids.Contains(7)))
+            .Returns(new List<ClipListItem> { Item(1, "secret") });
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.Equal("secret", Assert.Single(vm.Items).Text);
+    }
+
+    [Fact]
+    public async Task Locked_categories_are_marked_and_explained_in_the_filter()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work", true) });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7, null)
+            .Returns(new List<ClipListItem>());
+        var vm = Create();
+
+        await vm.RefreshCategoryFilterAsync();
+        Assert.Equal(Tr.Format("History_FilterLocked", "Work"), vm.CategoryFilterOptions[1].Label);
+
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+        await vm.RefreshAsync();
+
+        Assert.Equal(LoadState.Empty, vm.State);
+        Assert.Equal(Tr.Get("Panel_EmptyLocked"), vm.EmptyTitle);
+    }
+
+    [Fact]
+    public async Task Unlocking_a_locked_category_shows_its_clips()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Work", true) });
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7, null)
+            .Returns(new List<ClipListItem>());
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>(), 7,
+                Arg.Is<IReadOnlyCollection<long>>(ids => ids.Contains(7)))
+            .Returns(new List<ClipListItem> { Item(1, "secret") });
+        var vm = Create();
+        await vm.RefreshCategoryFilterAsync();
+        vm.SelectedCategoryFilter = vm.CategoryFilterOptions[1];
+
+        await vm.UnlockCategoryAsync(7);
+
+        Assert.Contains(7, _locks.UnlockedCategoryIds);
+        Assert.Equal("Work", vm.CategoryFilterOptions[1].Label);
+        Assert.Equal("secret", Assert.Single(vm.Items).Text);
+    }
+
     private ClipboardPanelViewModel Create() =>
-        new(_repository, _categories, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
+        new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
+            NullLogger<ClipboardPanelViewModel>.Instance);
 
     private static ClipListItem Item(long id, string text, bool pinned = false) =>
         new(id, text, "Notepad", pinned, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", id));

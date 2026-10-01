@@ -15,6 +15,7 @@ public sealed class AppShellService : IDisposable
     private readonly Lazy<Features.ClipboardPanel.ClipboardPanelWindow> _panel;
     private readonly GlobalHotkey _hotkey;
     private readonly SettingsService _settings;
+    private readonly ICategoryLockService _locks;
     private readonly TaskbarIcon _trayIcon = new();
     private TrayIconKind? _appliedTrayIcon;
     private bool? _appliedShowTrayIcon;
@@ -25,12 +26,14 @@ public sealed class AppShellService : IDisposable
         Lazy<Features.ClipboardPanel.ClipboardPanelWindow> panel,
         GlobalHotkey hotkey,
         SettingsService settings,
+        ICategoryLockService locks,
         AppLifetime lifetime)
     {
         _mainWindow = mainWindow;
         _panel = panel;
         _hotkey = hotkey;
         _settings = settings;
+        _locks = locks;
         Lifetime = lifetime;
 
         _trayIcon.ToolTipText = Tr.Get("App_Name");
@@ -62,7 +65,11 @@ public sealed class AppShellService : IDisposable
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
-    public void Exit() => ExitRequested?.Invoke(this, EventArgs.Empty);
+    public void Exit()
+    {
+        if (_settings.Current.LockOnExit) _locks.Reset();
+        ExitRequested?.Invoke(this, EventArgs.Empty);
+    }
 
     public void Dispose()
     {

@@ -1,5 +1,6 @@
 using ClipShelf.App.Features.History;
 using ClipShelf.App.Features.Settings;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
 
 namespace ClipShelf.App.Shell;
@@ -10,16 +11,22 @@ public sealed partial class MainWindow : Window
     private readonly Lazy<HistoryPage> _history;
     private readonly Lazy<SettingsPage> _settings;
     private readonly AppLifetime _lifetime;
+    private readonly SettingsService _appSettings;
+    private readonly ICategoryLockService _locks;
 
     public MainWindow(
         Lazy<HistoryPage> history,
         Lazy<SettingsPage> settings,
         IThemeService theme,
-        AppLifetime lifetime)
+        AppLifetime lifetime,
+        SettingsService appSettings,
+        ICategoryLockService locks)
     {
         _history = history;
         _settings = settings;
         _lifetime = lifetime;
+        _appSettings = appSettings;
+        _locks = locks;
 
         InitializeComponent();
         Title = Tr.Get("App_Name");
@@ -29,6 +36,15 @@ public sealed partial class MainWindow : Window
         this.ApplyCultureDirection();
         theme.Attach(this);
         AppWindow.Resize(new Windows.Graphics.SizeInt32(940, 660));
+
+        // Lock-on-minimize: hide unlocked categories again when the window goes to the taskbar.
+        AppWindow.Changed += (_, args) =>
+        {
+            if (!args.DidPresenterChange) return;
+            if (_appSettings.Current.LockOnMinimize &&
+                AppWindow.Presenter is OverlappedPresenter { State: OverlappedPresenterState.Minimized })
+                _locks.Reset();
+        };
 
         // Closing only hides the window; the app keeps running in the tray.
         AppWindow.Closing += (_, args) =>
@@ -67,6 +83,7 @@ public sealed partial class MainWindow : Window
         if (isSettings)
         {
             ContentFrame.Content = _settings.Value;
+            _ = _settings.Value.LoadAsync();
             return;
         }
 

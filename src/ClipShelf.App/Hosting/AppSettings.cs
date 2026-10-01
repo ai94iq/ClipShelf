@@ -47,8 +47,18 @@ public sealed record AppSettings
     // When true, double-clicking the tray icon opens the full history window.
     public bool OpenHistoryOnDoubleClick { get; init; } = true;
 
-    // PBKDF2 hash of the export password; null means exporting does not ask for one.
-    public string? ExportPasswordHash { get; init; }
+    // PBKDF2 hash of the app password; null means exports and category locks are open.
+    public string? LockPasswordHash { get; init; }
+
+    // When true, unlocked categories lock again on the matching event.
+    public bool LockOnExit { get; init; } = true;
+
+    public bool LockOnMinimize { get; init; }
+
+    public bool LockOnShutdown { get; init; } = true;
+
+    // Categories unlocked in this run; cleared by a lock-on event, kept otherwise.
+    public long[] UnlockedCategories { get; init; } = [];
 
     [JsonConverter(typeof(JsonStringEnumConverter<TrayIconKind>))]
     public TrayIconKind TrayIcon { get; init; } = TrayIconKind.Filled;

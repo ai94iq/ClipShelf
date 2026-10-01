@@ -353,6 +353,48 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task Locked_category_clips_stay_hidden_until_unlocked()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("secret", null, T0, ct);
+        var id = (await repo.GetRecentAsync(null, 50, ct))[0].Id;
+        var work = await categories.GetOrAddAsync("Work", ct);
+        await repo.AssignCategoryAsync(id, work.Id, ct);
+        await categories.SetLockedAsync(work.Id, true, ct);
+
+        Assert.Empty(await repo.GetRecentAsync(null, 50, ct));
+
+        var visible = await repo.GetRecentAsync(null, 50, ct, null, new long[] { work.Id });
+
+        Assert.Equal("secret", Assert.Single(visible).Text);
+    }
+
+    [Fact]
+    public async Task Search_skips_locked_category_clips()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("secret note", null, T0, ct);
+        var id = (await repo.GetRecentAsync(null, 50, ct))[0].Id;
+        var work = await categories.GetOrAddAsync("Work", ct);
+        await repo.AssignCategoryAsync(id, work.Id, ct);
+        await categories.SetLockedAsync(work.Id, true, ct);
+
+        Assert.Empty(await repo.SearchAsync("secret", null, 50, ct));
+
+        var visible = await repo.SearchAsync("secret", null, 50, ct, null, new long[] { work.Id });
+
+        Assert.Equal("secret note", Assert.Single(visible).Text);
+    }
+
+    [Fact]
     public async Task Writes_notify_open_views()
     {
         using var db = new TempDatabase();

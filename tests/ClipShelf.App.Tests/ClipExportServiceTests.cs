@@ -20,7 +20,7 @@ public sealed class ClipExportServiceTests : IDisposable
             .Returns(new List<ClipListItem> { Item(3, "c", category: "Work"), Item(2, "b") });
         _repository.GetRecentAsync(new PageCursor("k2", 2), 2, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "a") });
-        var service = new ClipExportService(_repository, pageSize: 2);
+        var service = new ClipExportService(_repository, new FakeCategoryLocks(), pageSize: 2);
 
         var count = await service.ExportAsync(path, ClipExportFormat.Json, TestContext.Current.CancellationToken);
 
@@ -39,7 +39,7 @@ public sealed class ClipExportServiceTests : IDisposable
         var path = TempPath(".json");
         _repository.GetRecentAsync(null, 200, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem>());
-        var service = new ClipExportService(_repository);
+        var service = new ClipExportService(_repository, new FakeCategoryLocks());
 
         var count = await service.ExportAsync(path, ClipExportFormat.Json, TestContext.Current.CancellationToken);
 
@@ -53,12 +53,28 @@ public sealed class ClipExportServiceTests : IDisposable
         var path = TempPath(".csv");
         _repository.GetRecentAsync(null, 200, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem>());
-        var service = new ClipExportService(_repository);
+        var service = new ClipExportService(_repository, new FakeCategoryLocks());
 
         await service.ExportAsync(path, ClipExportFormat.Csv, TestContext.Current.CancellationToken);
 
         var bytes = await File.ReadAllBytesAsync(path, TestContext.Current.CancellationToken);
         Assert.Equal(new byte[] { 0xEF, 0xBB, 0xBF }, bytes.Take(3).ToArray());
+    }
+
+    [Fact]
+    public async Task Unlocked_categories_are_passed_to_the_query()
+    {
+        var locks = new FakeCategoryLocks();
+        locks.Unlock(7);
+        _repository.GetRecentAsync(null, 200, Arg.Any<CancellationToken>(), null,
+                Arg.Is<IReadOnlyCollection<long>>(ids => ids.Contains(7)))
+            .Returns(new List<ClipListItem>());
+        var service = new ClipExportService(_repository, locks);
+        var path = TempPath(".json");
+
+        var count = await service.ExportAsync(path, ClipExportFormat.Json, TestContext.Current.CancellationToken);
+
+        Assert.Equal(0, count);
     }
 
     public void Dispose()

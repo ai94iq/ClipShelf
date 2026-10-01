@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace ClipShelf.Data.Repositories;
 
 // SQLite + Dapper. No cache: the history is small and every write already notifies open views.
@@ -20,7 +22,8 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
         }, ct);
 
     public Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
-        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null) =>
+        PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
+        IReadOnlyCollection<long>? unlockedCategories = null) =>
         Task.Run<IReadOnlyList<ClipListItem>>(() =>
         {
             using var connection = factory.Open();
@@ -34,14 +37,18 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                    OR c.CreatedAtUtc < @key
                    OR (c.CreatedAtUtc = @key AND c.Id < @id))
                   AND (@categoryId IS NULL OR c.CategoryId = @categoryId)
+                  AND (c.CategoryId IS NULL
+                       OR c.CategoryId NOT IN (SELECT Id FROM Category WHERE IsLocked = 1)
+                       OR c.CategoryId IN (SELECT value FROM json_each(@unlocked)))
                 ORDER BY c.CreatedAtUtc DESC, c.Id DESC
                 LIMIT @pageSize
                 """,
-                Paging(after, pageSize, categoryId));
+                Paging(after, pageSize, categoryId, unlockedCategories));
         }, ct);
 
     public Task<IReadOnlyList<ClipListItem>> SearchAsync(
-        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null) =>
+        string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
+        IReadOnlyCollection<long>? unlockedCategories = null) =>
         Task.Run<IReadOnlyList<ClipListItem>>(() =>
         {
             using var connection = factory.Open();
@@ -54,10 +61,13 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 WHERE c.Text LIKE @like ESCAPE '\'
                   AND (@key IS NULL OR c.CreatedAtUtc < @key OR (c.CreatedAtUtc = @key AND c.Id < @id))
                   AND (@categoryId IS NULL OR c.CategoryId = @categoryId)
+                  AND (c.CategoryId IS NULL
+                       OR c.CategoryId NOT IN (SELECT Id FROM Category WHERE IsLocked = 1)
+                       OR c.CategoryId IN (SELECT value FROM json_each(@unlocked)))
                 ORDER BY c.CreatedAtUtc DESC, c.Id DESC
                 LIMIT @pageSize
                 """,
-                Paging(after, pageSize, categoryId, like: $"%{EscapeLike(query)}%"));
+                Paging(after, pageSize, categoryId, unlockedCategories, like: $"%{EscapeLike(query)}%"));
         }, ct);
 
     public Task SetPinnedAsync(long id, bool pinned, CancellationToken ct) =>
@@ -147,8 +157,18 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 r.CategoryName))
             .ToList();
 
-    private static object Paging(PageCursor? after, int pageSize, long? categoryId, string? like = null) =>
-        new { key = after?.Key, id = after?.Id ?? 0L, pageSize, like, categoryId };
+    private static object Paging(
+        PageCursor? after, int pageSize, long? categoryId, IReadOnlyCollection<long>? unlockedCategories,
+        string? like = null) =>
+        new
+        {
+            key = after?.Key,
+            id = after?.Id ?? 0L,
+            pageSize,
+            like,
+            categoryId,
+            unlocked = JsonSerializer.Serialize(unlockedCategories ?? Array.Empty<long>()),
+        };
 
     private static string Iso(DateTimeOffset value) =>
         value.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture);

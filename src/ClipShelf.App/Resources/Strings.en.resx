@@ -70,9 +70,14 @@
   <data name="History_Description" xml:space="preserve"><value>Everything you copied, newest first</value></data>
   <data name="History_Filter" xml:space="preserve"><value>Category filter</value></data>
   <data name="History_FilterAll" xml:space="preserve"><value>All categories</value></data>
+  <data name="History_FilterLocked" xml:space="preserve"><value>{0} (locked)</value></data>
   <data name="History_Pinned" xml:space="preserve"><value>Pinned</value></data>
   <data name="History_Recent" xml:space="preserve"><value>Recent</value></data>
   <data name="History_Title" xml:space="preserve"><value>History</value></data>
+  <data name="LockWhen_Exit" xml:space="preserve"><value>on exit</value></data>
+  <data name="LockWhen_Minimize" xml:space="preserve"><value>on minimize</value></data>
+  <data name="LockWhen_Never" xml:space="preserve"><value>never</value></data>
+  <data name="LockWhen_Shutdown" xml:space="preserve"><value>on shutdown</value></data>
   <data name="Nav_History" xml:space="preserve"><value>History</value></data>
   <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Panel_Category" xml:space="preserve"><value>Add to category</value></data>
@@ -84,20 +89,22 @@
   <data name="Panel_EmptyCategory" xml:space="preserve"><value>No clips in this category</value></data>
   <data name="Panel_EmptyCategoryHint" xml:space="preserve"><value>Pick the folder button on a row to add one.</value></data>
   <data name="Panel_EmptyHint" xml:space="preserve"><value>Copy text and it will show up here.</value></data>
+  <data name="Panel_EmptyLocked" xml:space="preserve"><value>This category is locked</value></data>
+  <data name="Panel_EmptyLockedHint" xml:space="preserve"><value>Enter the password to see its clips.</value></data>
   <data name="Panel_NoResults" xml:space="preserve"><value>No matching clips</value></data>
   <data name="Panel_NoResultsHint" xml:space="preserve"><value>Try a different search term.</value></data>
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
-  <data name="Password_ChangeTitle" xml:space="preserve"><value>Change export password</value></data>
+  <data name="Password_ChangeTitle" xml:space="preserve"><value>Change password</value></data>
   <data name="Password_Confirm" xml:space="preserve"><value>Confirm password</value></data>
   <data name="Password_Current" xml:space="preserve"><value>Current password</value></data>
   <data name="Password_Mismatch" xml:space="preserve"><value>The passwords don't match.</value></data>
   <data name="Password_New" xml:space="preserve"><value>New password</value></data>
-  <data name="Password_RemoveTitle" xml:space="preserve"><value>Remove export password</value></data>
-  <data name="Password_SetTitle" xml:space="preserve"><value>Set export password</value></data>
+  <data name="Password_RemoveTitle" xml:space="preserve"><value>Remove password</value></data>
+  <data name="Password_SetTitle" xml:space="preserve"><value>Set password</value></data>
   <data name="Password_TooShort" xml:space="preserve"><value>Use at least 4 characters.</value></data>
-  <data name="Password_VerifyTitle" xml:space="preserve"><value>Export password</value></data>
+  <data name="Password_VerifyTitle" xml:space="preserve"><value>Password</value></data>
   <data name="Password_Wrong" xml:space="preserve"><value>That password is not right.</value></data>
   <data name="Retention_Day" xml:space="preserve"><value>1 day</value></data>
   <data name="Retention_Forever" xml:space="preserve"><value>Forever</value></data>
@@ -109,6 +116,8 @@
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>
+  <data name="Settings_Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="Settings_CategoriesEmpty" xml:space="preserve"><value>Press the folder button on any clip to make one.</value></data>
   <data name="Settings_ChangePassword" xml:space="preserve"><value>Change password…</value></data>
   <data name="Settings_ClearOnSignOut" xml:space="preserve"><value>Clear history when I sign out</value></data>
   <data name="Settings_ClearOnSignOutHint" xml:space="preserve"><value>Removes unpinned clips when you sign out or shut down.</value></data>
@@ -121,12 +130,18 @@
   <data name="Settings_ExportFailed" xml:space="preserve"><value>The clips couldn't be saved.</value></data>
   <data name="Settings_ExportFileName" xml:space="preserve"><value>{0}-Export-{1}</value></data>
   <data name="Settings_ExportHint" xml:space="preserve"><value>Save the whole history as a JSON or CSV file.</value></data>
-  <data name="Settings_ExportPassword" xml:space="preserve"><value>Export password</value></data>
-  <data name="Settings_ExportPasswordHint" xml:space="preserve"><value>Ask for a password before the history is saved to a file.</value></data>
   <data name="Settings_History" xml:space="preserve"><value>History</value></data>
   <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
+  <data name="Settings_LockCategory" xml:space="preserve"><value>Lock</value></data>
+  <data name="Settings_LockNow" xml:space="preserve"><value>Lock now</value></data>
+  <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit ClipShelf</value></data>
+  <data name="Settings_LockOnMinimize" xml:space="preserve"><value>The window is minimized</value></data>
+  <data name="Settings_LockOnShutdown" xml:space="preserve"><value>I shut down or sign out</value></data>
+  <data name="Settings_LockPassword" xml:space="preserve"><value>Password</value></data>
+  <data name="Settings_LockPasswordHint" xml:space="preserve"><value>Asked before exporting and before opening a locked category.</value></data>
+  <data name="Settings_LockWhen" xml:space="preserve"><value>Lock categories when</value></data>
   <data name="Settings_MaxItems" xml:space="preserve"><value>Maximum history items</value></data>
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
@@ -140,6 +155,7 @@
   <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>
   <data name="Settings_TrayIcon" xml:space="preserve"><value>Tray icon</value></data>
+  <data name="Settings_UnlockCategory" xml:space="preserve"><value>Unlock…</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>

@@ -1,9 +1,10 @@
+using System.Collections.ObjectModel;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
-using ClipShelf.Core.Security;
 using ClipShelf.Core.Theming;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace ClipShelf.App.Features.Settings;
 
@@ -19,6 +20,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly IClipRepository _repository;
     private readonly IStartupRegistration _startup;
     private readonly IClipExportService _export;
+    private readonly ICategoryRepository _categories;
+    private readonly ICategoryLockService _locks;
+    private readonly ILockPasswordService _passwords;
     private readonly ILogger<SettingsViewModel> _log;
     private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
@@ -29,6 +33,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         IClipRepository repository,
         IStartupRegistration startup,
         IClipExportService export,
+        ICategoryRepository categories,
+        ICategoryLockService locks,
+        ILockPasswordService passwords,
         ILogger<SettingsViewModel> log)
     {
         _settings = settings;
@@ -36,6 +43,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         _repository = repository;
         _startup = startup;
         _export = export;
+        _categories = categories;
+        _locks = locks;
+        _passwords = passwords;
         _log = log;
 
         SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
@@ -49,7 +59,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         RunAtStartup = settings.Current.RunAtStartup;
         MaxItems = settings.Current.MaxItems;
         ClearOnSignOut = settings.Current.ClearOnSignOut;
+        LockOnExit = settings.Current.LockOnExit;
+        LockOnMinimize = settings.Current.LockOnMinimize;
+        LockOnShutdown = settings.Current.LockOnShutdown;
         SelectedExportFormat = ExportFormatOptions[0];
+        WeakReferenceMessenger.Default.Register<SettingsViewModel, DataChanged>(this, (vm, message) =>
+        {
+            if (message.Area == "category") _ = vm.RefreshCategoriesAsync();
+        });
 
         _loading = false;
     }
@@ -113,6 +130,28 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool ClearOnSignOut { get; set; }
 
+    [ObservableProperty]
+    public partial bool LockOnExit { get; set; }
+
+    [ObservableProperty]
+    public partial bool LockOnMinimize { get; set; }
+
+    [ObservableProperty]
+    public partial bool LockOnShutdown { get; set; }
+
+    // Summary on the "Lock categories when" dropdown: "on exit, on shutdown" or "never".
+    public string LockWhenText
+    {
+        get
+        {
+            var parts = new List<string>(3);
+            if (LockOnExit) parts.Add(Tr.Get("LockWhen_Exit"));
+            if (LockOnMinimize) parts.Add(Tr.Get("LockWhen_Minimize"));
+            if (LockOnShutdown) parts.Add(Tr.Get("LockWhen_Shutdown"));
+            return parts.Count == 0 ? Tr.Get("LockWhen_Never") : string.Join(", ", parts);
+        }
+    }
+
     public IReadOnlyList<Option<ClipExportFormat>> ExportFormatOptions { get; } =
     [
         new(ClipExportFormat.Json, Tr.Get("Export_Json")),
@@ -133,31 +172,69 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public bool HasExportStatus => !string.IsNullOrEmpty(ExportStatus);
 
-    // Export lock: when a password is set, exporting asks for it first.
-    public bool HasExportPassword => _settings.Current.ExportPasswordHash is not null;
+    // The shared password: asked before exporting and before opening a locked category.
+    public bool HasLockPassword => _passwords.IsSet;
 
     public string PasswordButtonText =>
-        HasExportPassword ? Tr.Get("Settings_ChangePassword") : Tr.Get("Settings_SetPassword");
+        HasLockPassword ? Tr.Get("Settings_ChangePassword") : Tr.Get("Settings_SetPassword");
 
-    public bool VerifyExportPassword(string password) =>
-        PasswordHash.Verify(password, _settings.Current.ExportPasswordHash ?? string.Empty);
+    public bool VerifyLockPassword(string password) => _passwords.Verify(password);
 
-    public void SetExportPassword(string password)
+    public async Task SetLockPasswordAsync(string password)
     {
-        Save(_settings.Current with { ExportPasswordHash = PasswordHash.Create(password) });
-        NotifyExportPasswordChanged();
+        _passwords.Set(password);
+        NotifyLockPasswordChanged();
+        await RefreshCategoriesAsync();
     }
 
-    public void RemoveExportPassword()
+    public async Task RemoveLockPasswordAsync()
     {
-        Save(_settings.Current with { ExportPasswordHash = null });
-        NotifyExportPasswordChanged();
+        _passwords.Remove();
+        _locks.Reset();
+        await _categories.ClearLocksAsync(CancellationToken.None);
+        NotifyLockPasswordChanged();
+        await RefreshCategoriesAsync();
     }
 
-    private void NotifyExportPasswordChanged()
+    private void NotifyLockPasswordChanged()
     {
-        OnPropertyChanged(nameof(HasExportPassword));
+        OnPropertyChanged(nameof(HasLockPassword));
         OnPropertyChanged(nameof(PasswordButtonText));
+    }
+
+    // Category locks: each category can hide its clips behind its own password.
+    public ObservableCollection<CategoryRow> CategoryRows { get; } = [];
+
+    public bool ShowCategoriesEmpty => CategoryRows.Count == 0;
+
+    public async Task RefreshCategoriesAsync()
+    {
+        var categories = await _categories.GetCategoriesAsync(CancellationToken.None);
+
+        CategoryRows.Clear();
+        foreach (var category in categories)
+        {
+            CategoryRows.Add(new CategoryRow(
+                category.Id,
+                category.Name,
+                category.IsLocked,
+                _locks.UnlockedCategoryIds.Contains(category.Id)));
+        }
+
+        OnPropertyChanged(nameof(ShowCategoriesEmpty));
+    }
+
+    public async Task LockCategoryAsync(long id)
+    {
+        await _categories.SetLockedAsync(id, true, CancellationToken.None);
+        _locks.Lock(id);
+        await RefreshCategoriesAsync();
+    }
+
+    public async Task UnlockCategoryAsync(long id)
+    {
+        _locks.Unlock(id);
+        await RefreshCategoriesAsync();
     }
 
     // Default name for the save dialog: ClipShelf-Export-2026-10-01-1432.
@@ -178,14 +255,19 @@ public sealed partial class SettingsViewModel : ObservableObject
         [
             "Settings_RunAtStartup", "Settings_RunAtStartupHint",
             "Settings_Hotkey", "Settings_HotkeyHint",
-            "Settings_MaxItems", "Settings_MaxItemsHint",
         ],
         [
-            "Settings_History", "Settings_Retention", "Settings_RetentionHint",
+            "Settings_History", "Settings_MaxItems", "Settings_MaxItemsHint",
+            "Settings_Retention", "Settings_RetentionHint",
             "Retention_Day", "Retention_Week", "Retention_Month", "Retention_Forever",
             "Settings_ClearOnSignOut", "Settings_ClearOnSignOutHint",
-            "Settings_Export", "Settings_ExportHint", "Common_Export",
-            "Settings_ExportPassword", "Settings_ExportPasswordHint",
+        ],
+        ["Common_Export", "Settings_Export", "Settings_ExportHint"],
+        [
+            "Settings_Categories", "Settings_CategoriesEmpty",
+            "Settings_LockPassword", "Settings_LockPasswordHint",
+            "Settings_LockWhen", "Settings_LockOnExit", "Settings_LockOnMinimize", "Settings_LockOnShutdown",
+            "Settings_LockCategory", "Settings_LockNow", "Settings_UnlockCategory",
         ],
     ];
 
@@ -198,6 +280,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool ShowBehaviorGroup => IsGroupVisible(Filter, 2);
 
     public bool ShowHistoryGroup => IsGroupVisible(Filter, 3);
+
+    public bool ShowExportGroup => IsGroupVisible(Filter, 4);
+
+    public bool ShowCategoriesGroup => IsGroupVisible(Filter, 5);
 
     public bool ShowExitGroup => IsExitVisible(Filter);
 
@@ -216,6 +302,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowTrayGroup));
         OnPropertyChanged(nameof(ShowBehaviorGroup));
         OnPropertyChanged(nameof(ShowHistoryGroup));
+        OnPropertyChanged(nameof(ShowExportGroup));
+        OnPropertyChanged(nameof(ShowCategoriesGroup));
         OnPropertyChanged(nameof(ShowExitGroup));
         OnPropertyChanged(nameof(ShowNoMatches));
     }
@@ -302,6 +390,24 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (_loading) return;
 
         Save(_settings.Current with { ClearOnSignOut = value });
+    }
+
+    partial void OnLockOnExitChanged(bool value)
+    {
+        Save(_settings.Current with { LockOnExit = value });
+        OnPropertyChanged(nameof(LockWhenText));
+    }
+
+    partial void OnLockOnMinimizeChanged(bool value)
+    {
+        Save(_settings.Current with { LockOnMinimize = value });
+        OnPropertyChanged(nameof(LockWhenText));
+    }
+
+    partial void OnLockOnShutdownChanged(bool value)
+    {
+        Save(_settings.Current with { LockOnShutdown = value });
+        OnPropertyChanged(nameof(LockWhenText));
     }
 
     partial void OnIsExportingChanged(bool value) => OnPropertyChanged(nameof(CanExport));

@@ -33,12 +33,14 @@
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
       <ComboBox Grid.Column="1"
+                x:Name="CategoryFilter"
                 MinWidth="180"
                 MinHeight="36"
                 AutomationProperties.Name="{l:Tr Key=History_Filter}"
                 ItemsSource="{x:Bind ViewModel.CategoryFilterOptions}"
                 DisplayMemberPath="Label"
-                SelectedItem="{x:Bind ViewModel.SelectedCategoryFilter, Mode=TwoWay}" />
+                SelectedItem="{x:Bind ViewModel.SelectedCategoryFilter, Mode=TwoWay}"
+                SelectionChanged="OnCategoryFilterChanged" />
     </Grid>
 
     <!-- Grouped history (Pinned, then Recent) on a card surface, with its loading/empty/error overlay -->

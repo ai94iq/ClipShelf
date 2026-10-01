@@ -6,15 +6,17 @@ using ClipShelf.Core.Models;
 namespace ClipShelf.App.Services;
 
 // Reads the history in cursor pages and writes it out as one JSON or CSV file.
-public sealed class ClipExportService(IClipRepository repository, int pageSize = 200) : IClipExportService
+public sealed class ClipExportService(IClipRepository repository, ICategoryLockService locks, int pageSize = 200)
+    : IClipExportService
 {
     public async Task<int> ExportAsync(string path, ClipExportFormat format, CancellationToken ct)
     {
+        var unlocked = locks.UnlockedCategoryIds.Count == 0 ? null : locks.UnlockedCategoryIds;
         var rows = new List<ClipExportRow>();
         PageCursor? after = null;
         while (true)
         {
-            var page = await repository.GetRecentAsync(after, pageSize, ct);
+            var page = await repository.GetRecentAsync(after, pageSize, ct, null, unlocked);
             rows.AddRange(page.Select(item =>
                 new ClipExportRow(item.Text, item.AppName, item.IsPinned, item.CreatedAtUtc, item.CategoryName)));
 
