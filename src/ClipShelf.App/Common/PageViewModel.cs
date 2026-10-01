@@ -27,6 +27,22 @@ public abstract partial class PageViewModel : ObservableObject
 
     protected abstract Task<bool> LoadCoreAsync(CancellationToken ct);
 
+    protected void MarkQuietLoadCompleted(bool hasContent)
+    {
+        _loadedOnce = true;
+        ErrorMessage = null;
+        State = hasContent ? LoadState.Loaded : LoadState.Empty;
+    }
+
+    protected void MarkQuietLoadFailed(Exception ex)
+    {
+        _log.LogError(ex, "Loading {Page} failed", GetType().Name);
+        if (_loadedOnce) return;
+
+        ErrorMessage = Tr.Get("Error_LoadFailed");
+        State = LoadState.Error;
+    }
+
     // Reload automatically when a repository reports a change in one of these areas.
     protected void ReloadOnChange(params string[] areas) =>
         WeakReferenceMessenger.Default.Register<PageViewModel, DataChanged>(this, (vm, message) =>
@@ -34,6 +50,15 @@ public abstract partial class PageViewModel : ObservableObject
             if (areas.Contains(message.Area) && vm._loadedOnce && vm.ReloadCommand.CanExecute(null))
                 vm.ReloadCommand.Execute(null);
         });
+
+    protected void ReloadQuietlyOnChange(params string[] areas) =>
+        WeakReferenceMessenger.Default.Register<PageViewModel, DataChanged>(this, (vm, message) =>
+        {
+            if (areas.Contains(message.Area) && vm._loadedOnce)
+                _ = vm.ReloadQuietlyAsync();
+        });
+
+    protected virtual Task ReloadQuietlyAsync() => ReloadCommand.ExecuteAsync(null);
 
     [RelayCommand]
     private async Task ReloadAsync(CancellationToken ct)

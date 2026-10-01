@@ -18,5 +18,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Tray icon style (filled or outline) and a switch to hide the tray icon; an Exit button in Settings keeps the app reachable when the tray is hidden.
 
 ### Changed
+- Flyout monitor placement is centralized with the platform window helpers.
+
 ### Fixed
+- Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
+
 ### Removed

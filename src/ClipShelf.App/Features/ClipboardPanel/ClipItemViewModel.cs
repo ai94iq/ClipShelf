@@ -11,23 +11,31 @@ public sealed partial class ClipItemViewModel : ObservableObject
     {
         _panel = panel;
         Id = model.Id;
+        UpdateFrom(model, dates);
+    }
+
+    public long Id { get; }
+
+    [ObservableProperty]
+    public partial string Text { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string? AppName { get; set; }
+
+    [ObservableProperty]
+    public partial string TimeText { get; set; } = string.Empty;
+
+    public string Preview => ClipText.Preview(Text);
+
+    public string SourceText => string.IsNullOrEmpty(AppName) ? TimeText : $"{AppName} · {TimeText}";
+
+    public void UpdateFrom(ClipListItem model, IDateFormatter dates)
+    {
         Text = model.Text;
         AppName = model.AppName;
         IsPinned = model.IsPinned;
         TimeText = dates.FormatSince(model.CreatedAtUtc);
     }
-
-    public long Id { get; }
-
-    public string Text { get; }
-
-    public string? AppName { get; }
-
-    public string TimeText { get; }
-
-    public string Preview => ClipText.Preview(Text);
-
-    public string SourceText => string.IsNullOrEmpty(AppName) ? TimeText : $"{AppName} · {TimeText}";
 
     [ObservableProperty]
     public partial bool IsPinned { get; set; }
@@ -40,4 +48,10 @@ public sealed partial class ClipItemViewModel : ObservableObject
 
     [RelayCommand]
     private Task DeleteAsync() => _panel.DeleteAsync(this);
+
+    partial void OnTextChanged(string value) => OnPropertyChanged(nameof(Preview));
+
+    partial void OnAppNameChanged(string? value) => OnPropertyChanged(nameof(SourceText));
+
+    partial void OnTimeTextChanged(string value) => OnPropertyChanged(nameof(SourceText));
 }

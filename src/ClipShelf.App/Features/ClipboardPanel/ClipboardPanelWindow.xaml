@@ -38,6 +38,9 @@
                 SelectionMode="None"
                 IsItemClickEnabled="True"
                 ItemClick="OnItemClick">
+        <ListView.ItemContainerTransitions>
+          <TransitionCollection />
+        </ListView.ItemContainerTransitions>
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />

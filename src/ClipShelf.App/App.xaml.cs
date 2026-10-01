@@ -4,7 +4,7 @@ using ClipShelf.App.Shell;
 
 namespace ClipShelf.App;
 
-public partial class App : Application
+public sealed partial class App : Application
 {
     private readonly AppSettings _settings;
     private IHost? _host;

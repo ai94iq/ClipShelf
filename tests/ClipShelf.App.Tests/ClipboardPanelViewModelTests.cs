@@ -54,6 +54,62 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task Quiet_refresh_keeps_existing_rows_when_the_result_is_unchanged()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        var first = vm.Items[0];
+        var collectionChanges = 0;
+        vm.Items.CollectionChanged += (_, _) => collectionChanges++;
+
+        await vm.RefreshQuietAsync();
+
+        Assert.Equal(0, collectionChanges);
+        Assert.Same(first, vm.Items[0]);
+    }
+
+    [Fact]
+    public async Task Quiet_refresh_sets_the_result_state_without_showing_loading()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        var loadingObserved = false;
+        vm.PropertyChanged += (_, args) =>
+            loadingObserved |= args.PropertyName == nameof(vm.State) && vm.State == LoadState.Loading;
+
+        await vm.RefreshQuietAsync();
+
+        Assert.False(loadingObserved);
+        Assert.Equal(LoadState.Loaded, vm.State);
+    }
+
+    [Fact]
+    public async Task Quiet_refresh_inserts_new_rows_without_resetting_the_collection()
+    {
+        IReadOnlyList<ClipListItem> results = [Item(1, "one"), Item(2, "two")];
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult(results));
+        var vm = Create();
+        await vm.RefreshAsync();
+        var first = vm.Items[0];
+        var second = vm.Items[1];
+        var resetCollection = false;
+        vm.Items.CollectionChanged += (_, args) =>
+            resetCollection |= args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset;
+        results = [Item(3, "new"), Item(1, "one"), Item(2, "two")];
+
+        await vm.RefreshQuietAsync();
+
+        Assert.False(resetCollection);
+        Assert.Equal(new long[] { 3, 1, 2 }, vm.Items.Select(item => item.Id));
+        Assert.Same(first, vm.Items[1]);
+        Assert.Same(second, vm.Items[2]);
+    }
+
+    [Fact]
     public async Task Activating_an_item_copies_it_and_signals_the_window()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
@@ -104,6 +160,17 @@ public sealed class ClipboardPanelViewModelTests
         Assert.True(vm.IsConfirmingClear);
 
         vm.CancelClearCommand.Execute(null);
+        Assert.False(vm.IsConfirmingClear);
+    }
+
+    [Fact]
+    public void Reset_transient_state_dismisses_a_pending_clear_confirmation()
+    {
+        var vm = Create();
+        vm.RequestClearCommand.Execute(null);
+
+        vm.ResetTransientState();
+
         Assert.False(vm.IsConfirmingClear);
     }
 

@@ -33,6 +33,8 @@ public sealed class AppShellService : IDisposable
         Lifetime = lifetime;
 
         _trayIcon.ToolTipText = Tr.Get("App_Name");
+        // Don't delay the flyout while waiting to see whether a second click follows.
+        _trayIcon.NoLeftClickDelay = true;
         _trayIcon.LeftClickCommand = new AsyncRelayCommand(TogglePanelAsync);
         _trayIcon.DoubleClickCommand = new RelayCommand(OpenHistoryOnDoubleClick);
         _trayIcon.ContextFlyout = BuildMenu();
@@ -42,6 +44,10 @@ public sealed class AppShellService : IDisposable
 
         _hotkey.Pressed += (_, _) => _ = TogglePanelAsync();
         _hotkey.Register(NativeMethods.ModWin | NativeMethods.ModShift, HotkeyVirtualKey);
+
+        // Create the flyout window now so the first open is instant instead of paying
+        // the full XAML and backdrop setup while the user is waiting on the hotkey.
+        _ = _panel.Value;
     }
 
     public AppLifetime Lifetime { get; }
@@ -64,7 +70,10 @@ public sealed class AppShellService : IDisposable
 
     private void OpenHistoryOnDoubleClick()
     {
-        if (_settings.Current.OpenHistoryOnDoubleClick) ShowHistory();
+        if (!_settings.Current.OpenHistoryOnDoubleClick) return;
+
+        _panel.Value.Hide();
+        ShowHistory();
     }
 
     // Picks the tray variant from the icon style and the taskbar theme, and honours show/hide.
