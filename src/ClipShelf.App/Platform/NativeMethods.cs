@@ -23,7 +23,21 @@ internal static class NativeMethods
     internal const int ErrorClassAlreadyExists = 1410;
 
     internal const int GwlExStyle = -20;
+    internal const int GwlStyle = -16;
     internal const int WsExToolWindow = 0x00000080;
+    internal const int WsExWindowEdge = 0x00000100;
+    internal const int WsExClientEdge = 0x00000200;
+    internal const int WsCaption = 0x00C00000;
+    internal const int WsThickFrame = 0x00040000;
+    internal const int WsBorder = 0x00800000;
+
+    internal const uint SwpNoSize = 0x0001;
+    internal const uint SwpNoMove = 0x0002;
+    internal const uint SwpNoZOrder = 0x0004;
+    internal const uint SwpFrameChanged = 0x0020;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern bool SetWindowPos(IntPtr window, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
     internal const uint MonitorDefaultToNearest = 0x00000002;
     internal const byte VirtualKeyControl = 0x11;
     internal const byte VirtualKeyV = 0x56;
@@ -102,6 +116,7 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     internal static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, UIntPtr extraInfo);
 
+    internal const int DwmImmersiveDarkMode = 20;
     internal const int DwmWindowCornerPreference = 33;
     internal const int DwmWindowCornerRound = 2;
     internal const int DwmWindowBorderColor = 34;

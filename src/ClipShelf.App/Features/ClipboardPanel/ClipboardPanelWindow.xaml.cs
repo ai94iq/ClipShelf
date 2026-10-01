@@ -9,12 +9,18 @@ using Windows.System;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
 
-// A borderless, always-on-top flyout at the bottom-right of the active monitor. It hides when it
-// loses focus or the user presses Esc, like the Windows clipboard flyout.
+// A borderless, always-on-top flyout at the bottom-right of the active monitor, styled like the
+// Windows 11 clipboard flyout: acrylic surface, rounded corners, no window frame, and a height
+// that fits the content. It hides when it loses focus or the user presses Esc.
 public sealed partial class ClipboardPanelWindow : Window
 {
     private const int WidthLogical = 400;
-    private const int HeightLogical = 520;
+    private const int MinHeightLogical = 200;
+    private const int MaxHeightLogical = 560;
+    private const int SearchRowLogical = 62;
+    private const int FooterLogical = 46;
+    private const int ItemLogical = 56;
+    private const int VisibleRowsLogical = 8;
     private const int MarginLogical = 12;
     private const int PasteDelayMs = 60;
 
@@ -35,6 +41,10 @@ public sealed partial class ClipboardPanelWindow : Window
         ConfigureSurface();
         Activated += OnActivated;
         ViewModel.ItemActivated += OnItemActivated;
+        ViewModel.Items.CollectionChanged += (_, _) =>
+        {
+            if (AppWindow.IsVisible) FitToContent();
+        };
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -54,9 +64,10 @@ public sealed partial class ClipboardPanelWindow : Window
     {
         _previousWindow = NativeMethods.GetForegroundWindow();
         await ViewModel.RefreshAsync();
-        Position();
+        FitToContent();
         AppWindow.Show();
         Activate();
+        ApplyFrame();   // activating can restore the default frame, so re-apply it
         SearchBox.Focus(FocusState.Programmatic);
     }
 
@@ -64,29 +75,52 @@ public sealed partial class ClipboardPanelWindow : Window
 
     private void ConfigureChrome()
     {
-        var presenter = OverlappedPresenter.Create();
-        presenter.IsAlwaysOnTop = true;
-        presenter.IsResizable = false;
-        presenter.IsMaximizable = false;
-        presenter.IsMinimizable = false;
-        presenter.SetBorderAndTitleBar(false, false);
-        AppWindow.SetPresenter(presenter);
+        // Configure the window's existing presenter; replacing it (SetPresenter) drops the
+        // SystemBackdrop and the flyout renders opaque.
+        if (AppWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.IsAlwaysOnTop = true;
+            presenter.IsResizable = false;
+            presenter.IsMaximizable = false;
+            presenter.IsMinimizable = false;
+            presenter.SetBorderAndTitleBar(false, false);
+        }
 
-        // Keep the flyout out of the taskbar and Alt+Tab.
+        // Keep the flyout out of the taskbar and Alt+Tab, and strip every window frame style
+        // (WinUI's default window class adds WS_EX_WINDOWEDGE, WS_CAPTION and WS_THICKFRAME,
+        // which is the light 1px border).
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        var style = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlExStyle).ToInt64();
-        NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlExStyle, new IntPtr(style | NativeMethods.WsExToolWindow));
+        var exStyle = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlExStyle).ToInt64();
+        exStyle = (exStyle | NativeMethods.WsExToolWindow) & ~NativeMethods.WsExWindowEdge & ~NativeMethods.WsExClientEdge;
+        NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlExStyle, new IntPtr(exStyle));
 
-        // Rounded corners like the PowerToys tray flyouts; ignored on Windows 10.
+        var style = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlStyle).ToInt64();
+        style &= ~(NativeMethods.WsCaption | NativeMethods.WsThickFrame | NativeMethods.WsBorder);
+        NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlStyle, new IntPtr(style));
+
+        NativeMethods.SetWindowPos(
+            handle, IntPtr.Zero, 0, 0, 0, 0,
+            NativeMethods.SwpFrameChanged | NativeMethods.SwpNoMove | NativeMethods.SwpNoSize | NativeMethods.SwpNoZOrder);
+
+        ApplyFrame();
+    }
+
+    // Matches the frame to the app theme, rounds the corners, and removes the 1px border.
+    private void ApplyFrame()
+    {
+        var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+        var dark = Application.Current.RequestedTheme == ApplicationTheme.Dark ? 1 : 0;
+        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmImmersiveDarkMode, ref dark, sizeof(int));
+
         var corner = NativeMethods.DwmWindowCornerRound;
         NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowCornerPreference, ref corner, sizeof(int));
 
-        // Drop the default 1px frame so the acrylic surface reaches the rounded edge.
         var border = NativeMethods.DwmColorNone;
         NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowBorderColor, ref border, sizeof(int));
     }
 
-    // Acrylic surface like the PowerToys tray flyouts; solid where acrylic is unavailable.
+    // Acrylic surface like the Windows 11 / PowerToys flyouts; solid where acrylic is unavailable.
     private void ConfigureSurface()
     {
         if (DesktopAcrylicController.IsSupported())
@@ -99,13 +133,24 @@ public sealed partial class ClipboardPanelWindow : Window
         Root.Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"];
     }
 
-    private void Position()
+    private void FitToContent()
+    {
+        var count = ViewModel.Items.Count;
+        var height = count == 0
+            ? MinHeightLogical
+            : SearchRowLogical + Math.Min(count, VisibleRowsLogical) * ItemLogical + FooterLogical;
+
+        Reposition(Math.Clamp(height, MinHeightLogical, MaxHeightLogical));
+    }
+
+    // Anchors the flyout to the bottom-right of the monitor under the cursor.
+    private void Reposition(int heightLogical)
     {
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
         var dpi = NativeMethods.GetDpiForWindow(handle);
         var scale = dpi == 0 ? 1.0 : dpi / 96.0;
         var width = (int)(WidthLogical * scale);
-        var height = (int)(HeightLogical * scale);
+        var height = (int)(heightLogical * scale);
         var margin = (int)(MarginLogical * scale);
 
         NativeMethods.GetCursorPos(out var cursor);
@@ -122,7 +167,13 @@ public sealed partial class ClipboardPanelWindow : Window
 
     private void OnActivated(object sender, WindowActivatedEventArgs args)
     {
-        if (args.WindowActivationState == WindowActivationState.Deactivated) Hide();
+        if (args.WindowActivationState == WindowActivationState.Deactivated)
+        {
+            Hide();
+            return;
+        }
+
+        ApplyFrame();
     }
 
     private void OnItemActivated(object? sender, EventArgs e)
