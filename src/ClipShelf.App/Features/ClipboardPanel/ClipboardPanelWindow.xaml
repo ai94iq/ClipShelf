@@ -5,8 +5,7 @@
         xmlns:common="using:ClipShelf.App.Common"
         xmlns:features="using:ClipShelf.App.Features.ClipboardPanel">
   <Grid x:Name="Root"
-        KeyDown="OnKeyDown"
-        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+        KeyDown="OnKeyDown">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />

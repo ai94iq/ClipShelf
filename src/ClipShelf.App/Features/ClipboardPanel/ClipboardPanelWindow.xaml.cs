@@ -1,8 +1,10 @@
 using System.Runtime.InteropServices;
 using ClipShelf.App.Platform;
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Windows.System;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
@@ -30,6 +32,7 @@ public sealed partial class ClipboardPanelWindow : Window
         this.ApplyCultureDirection();
 
         ConfigureChrome();
+        ConfigureSurface();
         Activated += OnActivated;
         ViewModel.ItemActivated += OnItemActivated;
     }
@@ -73,6 +76,23 @@ public sealed partial class ClipboardPanelWindow : Window
         var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
         var style = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlExStyle).ToInt64();
         NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlExStyle, new IntPtr(style | NativeMethods.WsExToolWindow));
+
+        // Rounded corners like the PowerToys tray flyouts; ignored on Windows 10.
+        var corner = NativeMethods.DwmWindowCornerRound;
+        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowCornerPreference, ref corner, sizeof(int));
+    }
+
+    // Acrylic surface like the PowerToys tray flyouts; solid where acrylic is unavailable.
+    private void ConfigureSurface()
+    {
+        if (DesktopAcrylicController.IsSupported())
+        {
+            SystemBackdrop = new DesktopAcrylicBackdrop();
+            Root.Background = null;
+            return;
+        }
+
+        Root.Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"];
     }
 
     private void Position()

@@ -1,10 +1,11 @@
 using System.Runtime.InteropServices;
 
-#pragma warning disable SYSLIB1054 // Plain DllImport is enough here; LibraryImport adds no value for these.
+#pragma warning disable SYSLIB1054 // DllImport is intentional: the app ships self-contained, not Native AOT.
 
 namespace ClipShelf.App.Platform;
 
-// The Win32 surface used for clipboard access, the change listener and the global hotkey.
+// The Win32 surface used for clipboard access, the change listener, the global hotkey and the
+// panel window. Win32 BOOL is 4 bytes, so every bool is marshalled explicitly.
 internal static class NativeMethods
 {
     internal const uint MessageClipboardUpdate = 0x031D;
@@ -21,16 +22,26 @@ internal static class NativeMethods
 
     internal const int ErrorClassAlreadyExists = 1410;
 
+    internal const int GwlExStyle = -20;
+    internal const int WsExToolWindow = 0x00000080;
+    internal const uint MonitorDefaultToNearest = 0x00000002;
+    internal const byte VirtualKeyControl = 0x11;
+    internal const byte VirtualKeyV = 0x56;
+    internal const uint KeyEventKeyUp = 0x0002;
+
     // HWND_MESSAGE (-3): a message-only window that is never shown.
     internal static readonly IntPtr MessageOnlyParent = new(-3);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool OpenClipboard(IntPtr owner);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool CloseClipboard();
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool EmptyClipboard();
 
     [DllImport("user32.dll", SetLastError = true)]
@@ -49,26 +60,24 @@ internal static class NativeMethods
     internal static extern IntPtr GlobalLock(IntPtr memory);
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GlobalUnlock(IntPtr memory);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool AddClipboardFormatListener(IntPtr window);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool RemoveClipboardFormatListener(IntPtr window);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool RegisterHotKey(IntPtr window, int id, uint modifiers, uint key);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool UnregisterHotKey(IntPtr window, int id);
-
-    internal const int GwlExStyle = -20;
-    internal const long WsExToolWindow = 0x00000080;
-    internal const uint MonitorDefaultToNearest = 0x00000002;
-    internal const byte VirtualKeyControl = 0x11;
-    internal const byte VirtualKeyV = 0x56;
-    internal const uint KeyEventKeyUp = 0x0002;
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr GetWindowLongPtr(IntPtr window, int index);
@@ -80,16 +89,24 @@ internal static class NativeMethods
     internal static extern uint GetDpiForWindow(IntPtr window);
 
     [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetCursorPos(out Point point);
 
     [DllImport("user32.dll")]
     internal static extern IntPtr MonitorFromPoint(Point point, uint flags);
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
 
     [DllImport("user32.dll")]
     internal static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, UIntPtr extraInfo);
+
+    internal const int DwmWindowCornerPreference = 33;
+    internal const int DwmWindowCornerRound = 2;
+
+    [DllImport("dwmapi.dll")]
+    internal static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr GetForegroundWindow();
@@ -98,6 +115,7 @@ internal static class NativeMethods
     internal static extern uint GetWindowThreadProcessId(IntPtr window, out uint processId);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool SetForegroundWindow(IntPtr window);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
