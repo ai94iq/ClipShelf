@@ -28,3 +28,4 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 
 | Feature | Folder | Notes |
 |---|---|---|
+| Clipboard history storage | src/ClipShelf.Data/Repositories/ClipRepository.cs | Text clips in SQLite; upsert by SHA-256 hash; keyset paging, search, pin, prune |
