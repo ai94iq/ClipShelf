@@ -1,44 +1,131 @@
 <UserControl x:Class="ClipShelf.App.Features.Settings.SettingsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:l="using:ClipShelf.App.Localization">
+             xmlns:l="using:ClipShelf.App.Localization"
+             xmlns:common="using:ClipShelf.App.Common">
   <ScrollViewer>
-    <StackPanel Padding="24" Spacing="12">
+    <StackPanel Padding="24,18,24,24">
       <TextBlock Text="{l:Tr Key=Nav_Settings}" Style="{StaticResource TitleTextBlockStyle}" />
 
       <!-- Appearance -->
       <TextBlock Text="{l:Tr Key=Settings_Appearance}"
-                 Style="{StaticResource SubtitleTextBlockStyle}"
-                 Margin="0,12,0,0" />
-      <ComboBox Header="{l:Tr Key=Settings_Theme}"
-                MinWidth="220"
-                HorizontalAlignment="Left"
-                ItemsSource="{x:Bind ViewModel.ThemeOptions}"
-                DisplayMemberPath="Label"
-                SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
-      <ComboBox Header="{l:Tr Key=Settings_Backdrop}"
-                MinWidth="220"
-                HorizontalAlignment="Left"
-                ItemsSource="{x:Bind ViewModel.BackdropOptions}"
-                DisplayMemberPath="Label"
-                SelectedItem="{x:Bind ViewModel.SelectedBackdrop, Mode=TwoWay}" />
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Margin="0,26,0,8"
+                 Visibility="{x:Bind ViewModel.ShowAppearanceGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Visibility="{x:Bind ViewModel.ShowAppearanceGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <StackPanel>
+          <common:SettingsCard Header="{l:Tr Key=Settings_Theme}">
+            <ComboBox MinWidth="240"
+                      MinHeight="36"
+                      AutomationProperties.Name="{l:Tr Key=Settings_Theme}"
+                      ItemsSource="{x:Bind ViewModel.ThemeOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_Backdrop}">
+            <ComboBox MinWidth="240"
+                      MinHeight="36"
+                      AutomationProperties.Name="{l:Tr Key=Settings_Backdrop}"
+                      ItemsSource="{x:Bind ViewModel.BackdropOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{x:Bind ViewModel.SelectedBackdrop, Mode=TwoWay}" />
+          </common:SettingsCard>
+        </StackPanel>
+      </Border>
 
       <!-- Tray -->
       <TextBlock Text="{l:Tr Key=Settings_Tray}"
-                 Style="{StaticResource SubtitleTextBlockStyle}"
-                 Margin="0,12,0,0" />
-      <ComboBox Header="{l:Tr Key=Settings_TrayIcon}"
-                MinWidth="220"
-                HorizontalAlignment="Left"
-                ItemsSource="{x:Bind ViewModel.TrayIconOptions}"
-                DisplayMemberPath="Label"
-                SelectedItem="{x:Bind ViewModel.SelectedTrayIcon, Mode=TwoWay}" />
-      <ToggleSwitch Header="{l:Tr Key=Settings_ShowTrayIcon}"
-                    IsOn="{x:Bind ViewModel.ShowTrayIcon, Mode=TwoWay}" />
-      <ToggleSwitch Header="{l:Tr Key=Settings_DoubleClickTray}"
-                    IsOn="{x:Bind ViewModel.DoubleClickOpensHistory, Mode=TwoWay}" />
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Margin="0,26,0,8"
+                 Visibility="{x:Bind ViewModel.ShowTrayGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Visibility="{x:Bind ViewModel.ShowTrayGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <StackPanel>
+          <common:SettingsCard Header="{l:Tr Key=Settings_TrayIcon}">
+            <ComboBox MinWidth="240"
+                      MinHeight="36"
+                      AutomationProperties.Name="{l:Tr Key=Settings_TrayIcon}"
+                      ItemsSource="{x:Bind ViewModel.TrayIconOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{x:Bind ViewModel.SelectedTrayIcon, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_ShowTrayIcon}">
+            <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}"
+                          OffContent="{l:Tr Key=Common_Disabled}"
+                          AutomationProperties.Name="{l:Tr Key=Settings_ShowTrayIcon}"
+                          IsOn="{x:Bind ViewModel.ShowTrayIcon, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_DoubleClickTray}">
+            <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}"
+                          OffContent="{l:Tr Key=Common_Disabled}"
+                          AutomationProperties.Name="{l:Tr Key=Settings_DoubleClickTray}"
+                          IsOn="{x:Bind ViewModel.DoubleClickOpensHistory, Mode=TwoWay}" />
+          </common:SettingsCard>
+        </StackPanel>
+      </Border>
 
-      <Button Content="{l:Tr Key=Settings_ExitApp}" Click="OnExit" Margin="0,12,0,0" />
+      <!-- Behavior -->
+      <TextBlock Text="{l:Tr Key=Settings_Behavior}"
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Margin="0,26,0,8"
+                 Visibility="{x:Bind ViewModel.ShowBehaviorGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Visibility="{x:Bind ViewModel.ShowBehaviorGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <StackPanel>
+          <common:SettingsCard Header="{l:Tr Key=Settings_RunAtStartup}"
+                               Description="{l:Tr Key=Settings_RunAtStartupHint}">
+            <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}"
+                          OffContent="{l:Tr Key=Common_Disabled}"
+                          AutomationProperties.Name="{l:Tr Key=Settings_RunAtStartup}"
+                          IsOn="{x:Bind ViewModel.RunAtStartup, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_Hotkey}"
+                               Description="{l:Tr Key=Settings_HotkeyHint}">
+            <Button x:Name="HotkeyButton"
+                    MinWidth="160"
+                    MinHeight="36"
+                    HorizontalContentAlignment="Center"
+                    Click="OnHotkeyClick"
+                    KeyDown="OnHotkeyKeyDown"
+                    LostFocus="OnHotkeyLostFocus"
+                    AutomationProperties.Name="{l:Tr Key=Settings_Hotkey}"
+                    Content="{x:Bind ViewModel.HotkeyDisplay, Mode=OneWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_MaxItems}"
+                               Description="{l:Tr Key=Settings_MaxItemsHint}">
+            <NumberBox Width="200"
+                       MinHeight="36"
+                       Minimum="5"
+                       Maximum="1000"
+                       SmallChange="5"
+                       SpinButtonPlacementMode="Compact"
+                       AutomationProperties.Name="{l:Tr Key=Settings_MaxItems}"
+                       Value="{x:Bind ViewModel.MaxItems, Mode=TwoWay}" />
+          </common:SettingsCard>
+        </StackPanel>
+      </Border>
+
+      <!-- Exit -->
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Margin="0,26,0,0"
+              Visibility="{x:Bind ViewModel.ShowExitGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <common:SettingsCard Header="{l:Tr Key=Settings_ExitApp}"
+                             Description="{l:Tr Key=Settings_ExitHint}">
+          <Button Content="{l:Tr Key=Common_Exit}" Click="OnExit" />
+        </common:SettingsCard>
+      </Border>
+
+      <TextBlock Text="{l:Tr Key=Settings_NoMatches}"
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                 Margin="0,26,0,0"
+                 Visibility="{x:Bind ViewModel.ShowNoMatches, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
     </StackPanel>
   </ScrollViewer>
 </UserControl>

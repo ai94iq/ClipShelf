@@ -16,11 +16,16 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - New app icon, and a light/dark tray icon that follows the taskbar theme.
 - Theme (system/light/dark) and background (Mica, Mica Alt, Acrylic, None) settings applied live on every window.
 - Tray icon style (filled or outline) and a switch to hide the tray icon; an Exit button in Settings keeps the app reachable when the tray is hidden.
+- Run at Windows startup, change the global shortcut by recording a key combination, and set how many clips the history keeps; lowering the limit trims the oldest unpinned clips.
 
 ### Changed
+- Settings use grouped cards with taller rows, small section headings, and Enabled/Disabled toggles; the sidebar is an icon rail with Settings at the bottom, and the title bar holds a settings search that hides groups that do not match.
+- The History page search box is a regular rounded field, and history rows no longer hover-highlight like a selection (the pin and delete buttons keep their own hover).
 - Flyout monitor placement is centralized with the platform window helpers.
 
 ### Fixed
 - Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
+- Changing the history size no longer trims on every keystroke or spin click, and the tray icon or shortcut are only re-applied when their own settings change.
+- The history footer reads "1 clip" instead of "1 clips" for a single item.
 
 ### Removed

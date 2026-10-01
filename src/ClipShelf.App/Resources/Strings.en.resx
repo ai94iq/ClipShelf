@@ -24,6 +24,9 @@
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
   <data name="Clip_Time_Now" xml:space="preserve"><value>now</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Disabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="Common_Enabled" xml:space="preserve"><value>Enabled</value></data>
+  <data name="Common_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
   <data name="Common_Ok" xml:space="preserve"><value>OK</value></data>
   <data name="Common_Retry" xml:space="preserve"><value>Retry</value></data>
@@ -49,7 +52,12 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
-  <data name="History_Count" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Count_one" xml:space="preserve"><value>1 clip</value></data>
+  <data name="History_Count_other" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Count_two" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Count_zero" xml:space="preserve"><value>No clips</value></data>
   <data name="History_Description" xml:space="preserve"><value>Everything you copied, newest first</value></data>
   <data name="History_Pinned" xml:space="preserve"><value>Pinned</value></data>
   <data name="History_Recent" xml:space="preserve"><value>Recent</value></data>
@@ -66,8 +74,19 @@
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
+  <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
   <data name="Settings_ExitApp" xml:space="preserve"><value>Exit ClipShelf</value></data>
+  <data name="Settings_ExitHint" xml:space="preserve"><value>Stops clipboard capture and removes the tray icon.</value></data>
+  <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
+  <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
+  <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
+  <data name="Settings_MaxItems" xml:space="preserve"><value>Maximum history items</value></data>
+  <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Older unpinned clips are removed once the limit is passed.</value></data>
+  <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
+  <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>
+  <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the notification area.</value></data>
+  <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>Search settings</value></data>
   <data name="Settings_ShowTrayIcon" xml:space="preserve"><value>Show the tray icon</value></data>
   <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>

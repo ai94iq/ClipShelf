@@ -9,9 +9,10 @@ ClipShelf is a Windows clipboard-history app that keeps recently copied text sea
 - Browse the full history in a separate window, grouped into Pinned and Recent.
 - Choose System, Light, or Dark theme and a Mica, Mica Alt, Acrylic, or solid backdrop where supported.
 - Choose a filled or outline tray icon, hide the icon, and configure whether a tray double-click opens the full history window.
+- Set the global shortcut by recording a key combination, run at Windows startup, and cap how many clips the history keeps; a search box in the title bar finds settings.
 - Start in the notification area and keep history and settings on this PC under `%LOCALAPPDATA%\ClipShelf`.
 
-The default shortcut is `Win+Shift+V`; it may be unavailable if another app has registered it.
+The default shortcut is `Win+Shift+V`; change it in Settings if another app has already registered it.
 
 ## Requirements
 

@@ -10,7 +10,7 @@ App → Core, Data. Data → Core. Core → nothing.
 
 ## Startup flow
 
-Settings → culture → logging → single instance → host → backup and migrate → tray icon + clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
+Settings → culture → logging → single instance → host → backup and migrate → startup registration and saved shortcut applied → tray icon + clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
 
 ## Data flow
 
@@ -34,4 +34,4 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 | Clipboard history panel | src/ClipShelf.App/Features/ClipboardPanel/ | Borderless flyout above the taskbar; native frame and monitor placement are in `Platform/PanelFrame.cs`; Win+Shift+V or an immediate tray click toggles it; search, pin, delete, clear, paste on select; history rows update in place |
 | App shell | src/ClipShelf.App/Shell/MainWindow.xaml | NavigationView window with the History and Settings pages; closing only hides it |
 | History page | src/ClipShelf.App/Features/History/HistoryPage.xaml | Full list grouped into Pinned and Recent, search, clip count, clear all with a confirmation dialog |
-| Settings page | src/ClipShelf.App/Features/Settings/SettingsPage.xaml | Tray options (currently: double-click the tray icon opens the full window) |
+| Settings page | src/ClipShelf.App/Features/Settings/SettingsPage.xaml | Appearance, tray and behavior (Windows startup, global shortcut, history size) options |

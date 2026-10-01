@@ -1,0 +1,26 @@
+<UserControl x:Class="ClipShelf.App.Common.SettingsCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- One row inside a settings group: title (and optional description) left, control right. -->
+  <Grid ColumnSpacing="16"
+        MinHeight="64"
+        Padding="16,16">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+      <TextBlock x:Name="HeaderText" FontSize="15" />
+      <TextBlock x:Name="DescriptionText"
+                 Style="{StaticResource CaptionTextBlockStyle}"
+                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                 TextWrapping="Wrap"
+                 Visibility="Collapsed" />
+    </StackPanel>
+
+    <ContentPresenter x:Name="CardHost"
+                      Grid.Column="1"
+                      VerticalAlignment="Center" />
+  </Grid>
+</UserControl>

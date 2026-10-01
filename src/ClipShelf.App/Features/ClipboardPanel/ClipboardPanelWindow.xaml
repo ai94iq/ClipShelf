@@ -38,6 +38,14 @@
                 SelectionMode="None"
                 IsItemClickEnabled="True"
                 ItemClick="OnItemClick">
+        <ListView.Resources>
+          <!-- Rows are click-to-paste; the hover fill reads like a selection in dark theme. -->
+          <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="Transparent" />
+        </ListView.Resources>
         <ListView.ItemContainerTransitions>
           <TransitionCollection />
         </ListView.ItemContainerTransitions>

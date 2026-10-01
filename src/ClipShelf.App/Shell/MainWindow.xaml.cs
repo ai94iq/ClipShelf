@@ -51,7 +51,7 @@ public sealed partial class MainWindow : Window
 
     public void ShowSettings()
     {
-        Nav.SelectedItem = Nav.MenuItems[1];
+        Nav.SelectedItem = Nav.FooterMenuItems[0];
         AppWindow.Show();
         Activate();
     }
@@ -60,7 +60,11 @@ public sealed partial class MainWindow : Window
     {
         if (args.SelectedItem is not NavigationViewItem item) return;
 
-        if ((item.Tag as string) == "settings")
+        var isSettings = (item.Tag as string) == "settings";
+        SettingsSearchBox.Visibility = isSettings ? Visibility.Visible : Visibility.Collapsed;
+        if (!isSettings) SettingsSearchBox.Text = string.Empty;
+
+        if (isSettings)
         {
             ContentFrame.Content = _settings.Value;
             return;
@@ -70,4 +74,7 @@ public sealed partial class MainWindow : Window
         ContentFrame.Content = page;
         _ = page.LoadAsync();
     }
+
+    private void OnSettingsSearchChanged(object sender, TextChangedEventArgs e) =>
+        _settings.Value.ViewModel.Filter = SettingsSearchBox.Text;
 }

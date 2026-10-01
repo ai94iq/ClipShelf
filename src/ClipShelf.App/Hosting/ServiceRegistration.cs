@@ -38,6 +38,7 @@ public static class ServiceRegistration
 
         // App services
         services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<IStartupRegistration, StartupRegistration>();
         services.AddSingleton<IDateFormatter, DateFormatter>();
         services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
 

@@ -6,6 +6,7 @@
   <!-- Shared resources only. Feature-specific styles stay in the feature folder. -->
   <common:LoadStateToVisibilityConverter x:Key="LoadStateVisible" />
   <common:PinIconConverter x:Key="PinIcon" />
+  <common:BoolToVisibilityConverter x:Key="BoolVisible" />
 
   <!-- App font: Segoe UI (the app ships English only) -->
   <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
@@ -19,6 +20,18 @@
   <Thickness x:Key="FieldSpacing">0,0,0,16</Thickness>
   <Thickness x:Key="LabelSpacing">0,0,0,4</Thickness>
   <CornerRadius x:Key="CardRadius">8</CornerRadius>
+
+  <!-- A settings group: one rounded surface holding rows, a hairline between them. -->
+  <Style x:Key="SettingsGroupBorder" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
+  </Style>
+  <Style x:Key="SettingsGroupDivider" TargetType="Border">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Background" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+  </Style>
 
   <!-- One history row, used by the flyout and the full history window.
        Classic {Binding} because x:Bind needs a code-behind class in a resource dictionary. -->
@@ -45,6 +58,7 @@
                 Width="30"
                 Height="30"
                 Padding="0"
+                AllowFocusOnInteraction="False"
                 Command="{Binding TogglePinCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
@@ -55,6 +69,7 @@
                 Width="30"
                 Height="30"
                 Padding="0"
+                AllowFocusOnInteraction="False"
                 Command="{Binding DeleteCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"
                 AutomationProperties.Name="{l:Tr Key=Panel_Delete}">

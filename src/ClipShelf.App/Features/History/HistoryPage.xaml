@@ -19,55 +19,62 @@
                  Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
     </StackPanel>
 
-    <!-- Search: just the field, no background or icon -->
+    <!-- Search. The default field chrome makes the control read as a search box. -->
     <Grid Grid.Row="1" Margin="24,12,24,6">
       <TextBox x:Name="SearchBox"
                Height="36"
-               Padding="0,0,8,0"
+               CornerRadius="{StaticResource CardRadius}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
-               Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-        <TextBox.Resources>
-          <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
-          <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
-          <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
-          <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
-          <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
-          <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
-          <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
-          <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
-        </TextBox.Resources>
-      </TextBox>
+               Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 
-    <!-- Grouped history (Pinned, then Recent) with its loading/empty/error overlay -->
+    <!-- Grouped history (Pinned, then Recent) on a card surface, with its loading/empty/error overlay -->
     <Grid Grid.Row="2">
-      <ListView x:Name="ClipList"
-                Padding="24,0,24,8"
-                SelectionMode="None"
-                IsItemClickEnabled="True"
-                ItemClick="OnItemClick"
-                ItemTemplate="{StaticResource ClipItemTemplate}">
-        <ListView.ItemContainerStyle>
-          <Style TargetType="ListViewItem">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="0,7" />
-            <Setter Property="MinHeight" Value="0" />
-            <Setter Property="CornerRadius" Value="4" />
-          </Style>
-        </ListView.ItemContainerStyle>
-        <ListView.GroupStyle>
-          <GroupStyle>
-            <GroupStyle.HeaderTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding Title}"
-                           Style="{StaticResource BodyStrongTextBlockStyle}"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Margin="0,14,0,4" />
-              </DataTemplate>
-            </GroupStyle.HeaderTemplate>
-          </GroupStyle>
-        </ListView.GroupStyle>
-      </ListView>
+      <Border Margin="24,4,24,8"
+              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              BorderThickness="1"
+              CornerRadius="{StaticResource CardRadius}"
+              Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.HasItems), Mode=OneWay}">
+        <ListView x:Name="ClipList"
+                  Padding="8,8,8,4"
+                  SelectionMode="None"
+                  IsItemClickEnabled="True"
+                  ItemClick="OnItemClick"
+                  ItemTemplate="{StaticResource ClipItemTemplate}">
+          <ListView.Resources>
+            <!-- Rows are click-to-copy; a hovering fill reads like a selection in dark theme.
+                 The pin and delete buttons keep their own hover state. -->
+            <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="Transparent" />
+          </ListView.Resources>
+          <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+              <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              <Setter Property="Padding" Value="0,7" />
+              <Setter Property="MinHeight" Value="0" />
+              <Setter Property="CornerRadius" Value="4" />
+              <!-- Clicking a row copies it; keep the row from staying highlighted afterwards. -->
+              <Setter Property="AllowFocusOnInteraction" Value="False" />
+            </Style>
+          </ListView.ItemContainerStyle>
+          <ListView.GroupStyle>
+            <GroupStyle>
+              <GroupStyle.HeaderTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Title}"
+                             Style="{StaticResource BodyStrongTextBlockStyle}"
+                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                             Margin="0,12,0,2" />
+                </DataTemplate>
+              </GroupStyle.HeaderTemplate>
+            </GroupStyle>
+          </ListView.GroupStyle>
+        </ListView>
+      </Border>
 
       <common:LoadStateOverlay State="{x:Bind ViewModel.State, Mode=OneWay}"
                                ErrorMessage="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"

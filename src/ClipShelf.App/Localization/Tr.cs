@@ -14,4 +14,18 @@ public static class Tr
 
     public static string Format(string key, params object?[] args) =>
         string.Format(CultureInfo.CurrentCulture, Get(key), args);
+
+    // English plural forms: zero, one, other. The six-key convention (zero/one/two/few/many/other)
+    // keeps the resx ready for a locale with richer rules.
+    public static string Plural(string key, int count)
+    {
+        var form = count switch
+        {
+            0 => "zero",
+            1 => "one",
+            _ => "other",
+        };
+
+        return Format($"{key}_{form}", count);
+    }
 }

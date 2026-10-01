@@ -20,7 +20,10 @@ public sealed class GlobalHotkey : IDisposable
 
     public bool Register(uint modifiers, uint virtualKey)
     {
-        var registered = NativeMethods.RegisterHotKey(MessagePump.Handle, Id, modifiers, virtualKey);
+        // Re-registering under the same id needs a release first; this is a no-op before the first one.
+        NativeMethods.UnregisterHotKey(MessagePump.Handle, Id);
+        var registered = NativeMethods.RegisterHotKey(
+            MessagePump.Handle, Id, modifiers | NativeMethods.ModNoRepeat, virtualKey);
         if (!registered) _log.LogWarning("Registering the global hotkey failed; another app may own it");
         return registered;
     }

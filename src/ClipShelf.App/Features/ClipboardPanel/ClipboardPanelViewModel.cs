@@ -40,7 +40,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public bool HasItems => Items.Count > 0;
 
-    public string CountText => Tr.Format("History_Count", Items.Count);
+    public string CountText => Tr.Plural("History_Count", Items.Count);
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;

@@ -19,6 +19,7 @@ internal static class NativeMethods
     internal const uint ModControl = 0x0002;
     internal const uint ModShift = 0x0004;
     internal const uint ModWin = 0x0008;
+    internal const uint ModNoRepeat = 0x4000;
 
     internal const int ErrorClassAlreadyExists = 1410;
 
@@ -88,6 +89,9 @@ internal static class NativeMethods
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool RegisterHotKey(IntPtr window, int id, uint modifiers, uint key);
+
+    [DllImport("user32.dll")]
+    internal static extern short GetKeyState(int virtualKey);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

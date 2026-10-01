@@ -55,6 +55,11 @@ public sealed partial class App : Application
             // the app alive in the notification area until the user exits from the tray menu.
             var shell = _host.Services.GetRequiredService<AppShellService>();
             shell.ExitRequested += (_, _) => ExitApplication();
+
+            // Rewrites the startup entry with the current path, so an update that moves the app
+            // keeps starting the right executable.
+            _host.Services.GetRequiredService<IStartupRegistration>().Apply(_settings.RunAtStartup);
+
             _host.Services.GetRequiredService<ClipboardService>();
         }
         catch (Exception ex)

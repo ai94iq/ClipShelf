@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Hosting;
@@ -6,6 +7,9 @@ namespace ClipShelf.App.Hosting;
 // Saved as settings.json. Changing Language takes effect after a restart.
 public sealed record AppSettings
 {
+    public static HotkeyGesture DefaultHotkey { get; } =
+        new(HotkeyModifiers.Win | HotkeyModifiers.Shift, 0x56); // V
+
     public string Language { get; init; } = "en-US";
 
     public bool UseHijri { get; init; }
@@ -26,6 +30,10 @@ public sealed record AppSettings
     public int MaxItems { get; init; } = 100;
 
     public bool RunAtStartup { get; init; }
+
+    // Global shortcut that opens the flyout; at least one modifier plus one key.
+    [JsonConverter(typeof(HotkeyGestureJsonConverter))]
+    public HotkeyGesture Hotkey { get; init; } = DefaultHotkey;
 
     // When true, choosing an item also pastes it into the app that had focus.
     public bool PasteOnSelect { get; init; } = true;

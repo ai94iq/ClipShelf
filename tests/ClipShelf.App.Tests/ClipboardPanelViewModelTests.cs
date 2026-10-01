@@ -200,6 +200,18 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Equal("2 clips", vm.CountText);
     }
 
+    [Fact]
+    public async Task A_single_clip_is_reported_in_the_singular()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "only") });
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.Equal("1 clip", vm.CountText);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
 

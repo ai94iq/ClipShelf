@@ -1,4 +1,6 @@
 using ClipShelf.App.Services;
+using ClipShelf.Core.Abstractions;
+using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Features.Settings;
@@ -6,20 +8,36 @@ namespace ClipShelf.App.Features.Settings;
 // Settings that apply immediately: each change is saved and takes effect without a restart.
 public sealed partial class SettingsViewModel : ObservableObject
 {
+    private const int MinHistoryItems = 5;
+    private const int MaxHistoryItems = 1000;
+    private const int PruneDelayMs = 300;
+
     private readonly SettingsService _settings;
     private readonly IThemeService _theme;
+    private readonly IClipRepository _repository;
+    private readonly IStartupRegistration _startup;
+    private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
 
-    public SettingsViewModel(SettingsService settings, IThemeService theme)
+    public SettingsViewModel(
+        SettingsService settings,
+        IThemeService theme,
+        IClipRepository repository,
+        IStartupRegistration startup)
     {
         _settings = settings;
         _theme = theme;
+        _repository = repository;
+        _startup = startup;
 
         SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
         SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
         ShowTrayIcon = settings.Current.ShowTrayIcon;
         DoubleClickOpensHistory = settings.Current.OpenHistoryOnDoubleClick;
+        Hotkey = settings.Current.Hotkey;
+        RunAtStartup = settings.Current.RunAtStartup;
+        MaxItems = settings.Current.MaxItems;
 
         _loading = false;
     }
@@ -60,6 +78,65 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool DoubleClickOpensHistory { get; set; }
 
+    [ObservableProperty]
+    public partial HotkeyGesture Hotkey { get; set; }
+
+    [ObservableProperty]
+    public partial bool RunAtStartup { get; set; }
+
+    [ObservableProperty]
+    public partial double MaxItems { get; set; }
+
+    // Settings search from the title bar; an empty filter shows everything.
+    [ObservableProperty]
+    public partial string Filter { get; set; } = string.Empty;
+
+    // Resx keys per settings group, in the page's order, so a search can hide whole groups.
+    private static readonly string[][] Groups =
+    [
+        ["Settings_Theme", "Settings_Backdrop"],
+        ["Settings_TrayIcon", "Settings_ShowTrayIcon", "Settings_DoubleClickTray"],
+        [
+            "Settings_RunAtStartup", "Settings_RunAtStartupHint",
+            "Settings_Hotkey", "Settings_HotkeyHint",
+            "Settings_MaxItems", "Settings_MaxItemsHint",
+        ],
+    ];
+
+    private static readonly string[] ExitKeys = ["Settings_ExitApp", "Settings_ExitHint"];
+
+    public bool ShowAppearanceGroup => IsGroupVisible(Filter, 0);
+
+    public bool ShowTrayGroup => IsGroupVisible(Filter, 1);
+
+    public bool ShowBehaviorGroup => IsGroupVisible(Filter, 2);
+
+    public bool ShowExitGroup => IsExitVisible(Filter);
+
+    public bool ShowNoMatches => HasNoMatches(Filter);
+
+    public bool IsGroupVisible(string filter, int index) => MatchesAny(filter, Groups[index]);
+
+    public bool IsExitVisible(string filter) => MatchesAny(filter, ExitKeys);
+
+    public bool HasNoMatches(string filter) =>
+        !Groups.Any(group => MatchesAny(filter, group)) && !MatchesAny(filter, ExitKeys);
+
+    partial void OnFilterChanged(string value)
+    {
+        OnPropertyChanged(nameof(ShowAppearanceGroup));
+        OnPropertyChanged(nameof(ShowTrayGroup));
+        OnPropertyChanged(nameof(ShowBehaviorGroup));
+        OnPropertyChanged(nameof(ShowExitGroup));
+        OnPropertyChanged(nameof(ShowNoMatches));
+    }
+
+    private static bool MatchesAny(string filter, string[] keys) =>
+        string.IsNullOrWhiteSpace(filter) ||
+        keys.Any(key => Tr.Get(key).Contains(filter.Trim(), StringComparison.OrdinalIgnoreCase));
+
+    public string HotkeyDisplay => HotkeyText.Format(Hotkey);
+
     partial void OnSelectedThemeChanged(Option<AppTheme> value) =>
         ApplyTheme(_settings.Current with { Theme = value.Value });
 
@@ -74,6 +151,53 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnDoubleClickOpensHistoryChanged(bool value) =>
         Save(_settings.Current with { OpenHistoryOnDoubleClick = value });
+
+    partial void OnHotkeyChanged(HotkeyGesture value)
+    {
+        OnPropertyChanged(nameof(HotkeyDisplay));
+        if (_loading) return;
+
+        Save(_settings.Current with { Hotkey = value });
+    }
+
+    partial void OnRunAtStartupChanged(bool value)
+    {
+        if (_loading) return;
+
+        Save(_settings.Current with { RunAtStartup = value });
+        _startup.Apply(value);
+    }
+
+    partial void OnMaxItemsChanged(double value)
+    {
+        if (_loading) return;
+
+        var keep = (int)Math.Clamp(value, MinHistoryItems, MaxHistoryItems);
+        Save(_settings.Current with { MaxItems = keep });
+        PruneDebounced(keep);
+    }
+
+    // The number box reports every keystroke or spin click; trim once the value settles instead
+    // of deleting rows on each intermediate value.
+    private void PruneDebounced(int keep)
+    {
+        _pruneCts?.Cancel();
+        var cts = _pruneCts = new CancellationTokenSource();
+        _ = PruneAfterDelayAsync(keep, cts.Token);
+    }
+
+    private async Task PruneAfterDelayAsync(int keep, CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(PruneDelayMs, ct);
+            await _repository.PruneAsync(keep, CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+            // superseded by a newer value
+        }
+    }
 
     // Theme and backdrop show on screen right away, so they are re-applied as well as saved.
     private void ApplyTheme(AppSettings next)
