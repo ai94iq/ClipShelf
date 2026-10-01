@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Hosting;
 
@@ -13,6 +14,10 @@ public sealed record AppSettings
 
     [JsonConverter(typeof(JsonStringEnumConverter<AppTheme>))]
     public AppTheme Theme { get; init; } = AppTheme.System;
+
+    // Window backdrop, from WinUI 3.
+    [JsonConverter(typeof(JsonStringEnumConverter<BackdropKind>))]
+    public BackdropKind Backdrop { get; init; } = BackdropKind.Mica;
 
     // Null = follow the Windows accent; otherwise one of AccentPresets (hex, e.g. "#0F6CBD").
     public string? Accent { get; init; }

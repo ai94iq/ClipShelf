@@ -1,29 +1,41 @@
 using Microsoft.UI;
+using Microsoft.UI.Xaml.Controls;
 using ClipShelf.Core.Theming;
 
 namespace ClipShelf.App.Services;
 
-// Theme applies live. The accent is set once at startup (WinUI reads accent resources when controls
-// load), so changing it needs a restart. High Contrast is handled by Windows automatically.
-public sealed class ThemeService(AppSettings startupSettings) : IThemeService
+// Applies the theme and the backdrop to every attached window, live. The accent is fixed at
+// startup (WinUI reads the accent resources when controls load), so changing it needs a restart.
+public sealed class ThemeService(SettingsService settings) : IThemeService
 {
-    private Window? _window;
+    private readonly List<Window> _windows = [];
 
     public void Attach(Window window)
     {
-        _window = window;
-        Apply(startupSettings);
+        _windows.Add(window);
+        ApplyTo(window);
     }
 
-    public void Apply(AppSettings settings)
+    public void Apply(AppSettings next)
     {
-        if (_window?.Content is not FrameworkElement root) return;
-        root.RequestedTheme = settings.Theme switch
+        foreach (var window in _windows.ToArray()) ApplyTo(window);
+    }
+
+    private void ApplyTo(Window window)
+    {
+        var current = settings.Current;
+
+        if (window.Content is FrameworkElement root)
         {
-            AppTheme.Light => ElementTheme.Light,
-            AppTheme.Dark => ElementTheme.Dark,
-            _ => ElementTheme.Default,
-        };
+            root.RequestedTheme = current.Theme switch
+            {
+                AppTheme.Light => ElementTheme.Light,
+                AppTheme.Dark => ElementTheme.Dark,
+                _ => ElementTheme.Default,
+            };
+        }
+
+        if (window.Content is Panel panel) WindowSurface.ApplyBackdrop(window, panel, current.Backdrop);
     }
 
     // Call from the App constructor, after InitializeComponent. Null keeps the Windows accent.

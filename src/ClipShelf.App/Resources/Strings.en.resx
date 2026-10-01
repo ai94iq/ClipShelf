@@ -15,6 +15,10 @@
   <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
+  <data name="Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>
+  <data name="Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Backdrop_MicaAlt" xml:space="preserve"><value>Mica Alt</value></data>
+  <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
@@ -60,7 +64,10 @@
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
+  <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>

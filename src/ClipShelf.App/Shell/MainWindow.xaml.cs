@@ -38,7 +38,6 @@ public sealed partial class MainWindow : Window
             AppWindow.Hide();
         };
 
-        WindowSurface.ApplyMica(this, Root);
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 

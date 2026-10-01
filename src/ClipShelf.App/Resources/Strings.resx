@@ -4,47 +4,51 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="Accent_Blue" xml:space="preserve"><value>أزرق</value></data>
-  <data name="Accent_Graphite" xml:space="preserve"><value>رمادي</value></data>
-  <data name="Accent_Green" xml:space="preserve"><value>أخضر</value></data>
-  <data name="Accent_Orange" xml:space="preserve"><value>برتقالي</value></data>
-  <data name="Accent_Purple" xml:space="preserve"><value>بنفسجي</value></data>
-  <data name="Accent_Rose" xml:space="preserve"><value>وردي</value></data>
-  <data name="Accent_System" xml:space="preserve"><value>لون النظام</value></data>
-  <data name="Accent_Teal" xml:space="preserve"><value>أزرق مخضر</value></data>
-  <data name="App_AlreadyRunning" xml:space="preserve"><value>التطبيق يعمل بالفعل.</value></data>
+  <data name="Accent_Blue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Accent_Graphite" xml:space="preserve"><value>Graphite</value></data>
+  <data name="Accent_Green" xml:space="preserve"><value>Green</value></data>
+  <data name="Accent_Orange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Accent_Purple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Accent_Rose" xml:space="preserve"><value>Rose</value></data>
+  <data name="Accent_System" xml:space="preserve"><value>Windows accent</value></data>
+  <data name="Accent_Teal" xml:space="preserve"><value>Teal</value></data>
+  <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
-  <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
+  <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
+  <data name="Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>
+  <data name="Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Backdrop_MicaAlt" xml:space="preserve"><value>Mica Alt</value></data>
+  <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
   <data name="Clip_Time_Now" xml:space="preserve"><value>now</value></data>
-  <data name="Common_Cancel" xml:space="preserve"><value>إلغاء</value></data>
-  <data name="Common_No" xml:space="preserve"><value>لا</value></data>
-  <data name="Common_Ok" xml:space="preserve"><value>حسنًا</value></data>
-  <data name="Common_Retry" xml:space="preserve"><value>إعادة المحاولة</value></data>
-  <data name="Common_Save" xml:space="preserve"><value>حفظ</value></data>
-  <data name="Common_Yes" xml:space="preserve"><value>نعم</value></data>
-  <data name="Date_Approx" xml:space="preserve"><value>حوالي {0}</value></data>
-  <data name="Date_HijriApprox" xml:space="preserve"><value>حوالي {0} هـ</value></data>
-  <data name="Date_HijriDay" xml:space="preserve"><value>{0} {1} {2} هـ</value></data>
-  <data name="Date_HijriMonth" xml:space="preserve"><value>{0} {1} هـ</value></data>
-  <data name="Date_HijriYear" xml:space="preserve"><value>{0} هـ</value></data>
-  <data name="Error_LoadFailed" xml:space="preserve"><value>تعذّر تحميل البيانات.</value></data>
-  <data name="Error_Startup" xml:space="preserve"><value>تعذّر تشغيل التطبيق. راجع ملفات السجل.</value></data>
-  <data name="Error_Unexpected" xml:space="preserve"><value>حدث خطأ غير متوقع.</value></data>
-  <data name="HijriMonth_1" xml:space="preserve"><value>محرم</value></data>
-  <data name="HijriMonth_10" xml:space="preserve"><value>شوال</value></data>
-  <data name="HijriMonth_11" xml:space="preserve"><value>ذو القعدة</value></data>
-  <data name="HijriMonth_12" xml:space="preserve"><value>ذو الحجة</value></data>
-  <data name="HijriMonth_2" xml:space="preserve"><value>صفر</value></data>
-  <data name="HijriMonth_3" xml:space="preserve"><value>ربيع الأول</value></data>
-  <data name="HijriMonth_4" xml:space="preserve"><value>ربيع الآخر</value></data>
-  <data name="HijriMonth_5" xml:space="preserve"><value>جمادى الأولى</value></data>
-  <data name="HijriMonth_6" xml:space="preserve"><value>جمادى الآخرة</value></data>
-  <data name="HijriMonth_7" xml:space="preserve"><value>رجب</value></data>
-  <data name="HijriMonth_8" xml:space="preserve"><value>شعبان</value></data>
-  <data name="HijriMonth_9" xml:space="preserve"><value>رمضان</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_No" xml:space="preserve"><value>No</value></data>
+  <data name="Common_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Common_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Date_Approx" xml:space="preserve"><value>c. {0}</value></data>
+  <data name="Date_HijriApprox" xml:space="preserve"><value>c. {0} AH</value></data>
+  <data name="Date_HijriDay" xml:space="preserve"><value>{0} {1} {2} AH</value></data>
+  <data name="Date_HijriMonth" xml:space="preserve"><value>{0} {1} AH</value></data>
+  <data name="Date_HijriYear" xml:space="preserve"><value>{0} AH</value></data>
+  <data name="Error_LoadFailed" xml:space="preserve"><value>Couldn't load the data.</value></data>
+  <data name="Error_Startup" xml:space="preserve"><value>The app couldn't start. Check the log files.</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>An unexpected error occurred.</value></data>
+  <data name="HijriMonth_1" xml:space="preserve"><value>Muharram</value></data>
+  <data name="HijriMonth_10" xml:space="preserve"><value>Shawwal</value></data>
+  <data name="HijriMonth_11" xml:space="preserve"><value>Dhu al-Qadah</value></data>
+  <data name="HijriMonth_12" xml:space="preserve"><value>Dhu al-Hijjah</value></data>
+  <data name="HijriMonth_2" xml:space="preserve"><value>Safar</value></data>
+  <data name="HijriMonth_3" xml:space="preserve"><value>Rabi al-Awwal</value></data>
+  <data name="HijriMonth_4" xml:space="preserve"><value>Rabi al-Thani</value></data>
+  <data name="HijriMonth_5" xml:space="preserve"><value>Jumada al-Ula</value></data>
+  <data name="HijriMonth_6" xml:space="preserve"><value>Jumada al-Akhirah</value></data>
+  <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
+  <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
+  <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
   <data name="History_Count" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Description" xml:space="preserve"><value>Everything you copied, newest first</value></data>
   <data name="History_Pinned" xml:space="preserve"><value>Pinned</value></data>
@@ -60,11 +64,14 @@
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
+  <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>
-  <data name="Theme_Dark" xml:space="preserve"><value>داكن</value></data>
-  <data name="Theme_Light" xml:space="preserve"><value>فاتح</value></data>
-  <data name="Theme_System" xml:space="preserve"><value>حسب النظام</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>

@@ -6,6 +6,24 @@
     <StackPanel Padding="24" Spacing="12">
       <TextBlock Text="{l:Tr Key=Nav_Settings}" Style="{StaticResource TitleTextBlockStyle}" />
 
+      <!-- Appearance -->
+      <TextBlock Text="{l:Tr Key=Settings_Appearance}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
+                 Margin="0,12,0,0" />
+      <ComboBox Header="{l:Tr Key=Settings_Theme}"
+                MinWidth="220"
+                HorizontalAlignment="Left"
+                ItemsSource="{x:Bind ViewModel.ThemeOptions}"
+                DisplayMemberPath="Label"
+                SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+      <ComboBox Header="{l:Tr Key=Settings_Backdrop}"
+                MinWidth="220"
+                HorizontalAlignment="Left"
+                ItemsSource="{x:Bind ViewModel.BackdropOptions}"
+                DisplayMemberPath="Label"
+                SelectedItem="{x:Bind ViewModel.SelectedBackdrop, Mode=TwoWay}" />
+
+      <!-- Tray -->
       <TextBlock Text="{l:Tr Key=Settings_Tray}"
                  Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,12,0,0" />
