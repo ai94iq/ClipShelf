@@ -2,6 +2,14 @@
 
 File: `%LOCALAPPDATA%\ClipShelf\data.db`. WAL mode. Per-connection settings: synchronous=NORMAL, busy_timeout=5000, cache_size=-20000, foreign_keys=ON.
 
+## Encryption
+
+The database is SQLCipher-encrypted (see [decisions/0003](decisions/0003-encrypted-database.md)). The
+32-byte key lives in `key.bin` next to it, protected with Windows DPAPI for the current user. An
+existing plaintext `data.db` is encrypted with `sqlcipher_export()` on the next launch; the plaintext
+file is replaced only after the export succeeds, and older plaintext backups are removed in the same
+step. Backups (`VACUUM INTO`) are encrypted with the same key.
+
 ## Tables
 
 | Table | Purpose | Key columns |

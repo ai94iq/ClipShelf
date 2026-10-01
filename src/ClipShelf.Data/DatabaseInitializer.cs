@@ -6,10 +6,14 @@ public sealed class DatabaseInitializer(
     private const string Prefix = "Migrations.";
     private const int BackupsToKeep = 14;
 
-    // Runs on a background thread at startup: backup (if due), then pending migrations.
+    // Runs on a background thread at startup: encrypt an existing plaintext file, backup (if
+    // due), then pending migrations.
     public void BackupAndMigrate()
     {
         Directory.CreateDirectory(options.BackupDirectory);
+        if (options.EncryptionKey is not null && IsPlaintext(options.DatabasePath))
+            EncryptExistingDatabase();
+
         var migrations = LoadMigrations();
         using var connection = factory.Open();
         connection.Execute("PRAGMA journal_mode = WAL;");
@@ -30,6 +34,52 @@ public sealed class DatabaseInitializer(
             transaction.Commit();
             log.LogInformation("Applied migration {Version} ({Name})", migration.Version, migration.Name);
         }
+    }
+
+    // SQLCipher writes a random header, so the SQLite magic string means the file is plaintext.
+    private static bool IsPlaintext(string path)
+    {
+        if (!File.Exists(path)) return false;
+
+        // Read-share so a pooled connection in this or another process does not block the check.
+        using var stream = new FileStream(
+            path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        var header = new byte[16];
+        return stream.Read(header, 0, header.Length) == header.Length &&
+               header.SequenceEqual("SQLite format 3\0"u8.ToArray());
+    }
+
+    // Moves an existing plaintext database into an encrypted copy with sqlcipher_export, then
+    // replaces the original. The original stays untouched unless the export succeeds.
+    private void EncryptExistingDatabase()
+    {
+        var database = options.DatabasePath;
+        var target = database + ".encrypted";
+        if (File.Exists(target)) File.Delete(target);
+
+        using (var connection = new SqliteConnection($"Data Source={database}"))
+        {
+            connection.Open();
+            var version = connection.ExecuteScalar<long>("PRAGMA user_version;");
+            var attach = string.Create(CultureInfo.InvariantCulture,
+                $"ATTACH DATABASE '{target.Replace("'", "''")}' AS encrypted KEY '{options.EncryptionKey!.Replace("'", "''")}';");
+            connection.Execute(attach);
+            connection.Execute("SELECT sqlcipher_export('encrypted');");
+            // sqlcipher_export copies schema and data but not user_version.
+            connection.Execute(string.Create(CultureInfo.InvariantCulture,
+                $"PRAGMA encrypted.user_version = {version};"));
+            connection.Execute("DETACH DATABASE encrypted;");
+        }
+
+        SqliteConnection.ClearAllPools();
+        File.Move(target, database, overwrite: true);
+        File.Delete(database + "-wal");   // plaintext sidecars must not survive
+        File.Delete(database + "-shm");
+
+        // Plaintext backups would keep readable copies of the history around.
+        foreach (var backup in BackupFiles().ToList()) backup.Delete();
+
+        log.LogInformation("Encrypted the existing database");
     }
 
     private void Backup(SqliteConnection connection, string reason)

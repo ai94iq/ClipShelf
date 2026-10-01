@@ -8,6 +8,8 @@ public static class AppPaths
 
     public static string Database { get; } = Path.Combine(Root, "data.db");
 
+    public static string DatabaseKey { get; } = Path.Combine(Root, "key.bin");
+
     public static string Settings { get; } = Path.Combine(Root, "settings.json");
 
     public static string Logs { get; } = Ensure(Path.Combine(Root, "logs"));

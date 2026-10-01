@@ -19,7 +19,8 @@ public static class ServiceRegistration
         services.AddTransient(typeof(Lazy<>), typeof(LazyService<>));
 
         // Data: factory, initializer and repositories are Singletons.
-        services.AddSingleton(new DataOptions(AppPaths.Database, AppPaths.Backups));
+        services.AddSingleton(new DataOptions(
+            AppPaths.Database, AppPaths.Backups, DatabaseKey.LoadOrCreate(AppPaths.DatabaseKey)));
         services.AddSingleton<SqliteConnectionFactory>();
         services.AddSingleton<DatabaseInitializer>();
         services.AddSingleton<IClipRepository, ClipRepository>();

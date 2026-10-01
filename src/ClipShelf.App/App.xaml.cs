@@ -13,6 +13,7 @@ public sealed partial class App : Application
 
     public App()
     {
+        SQLitePCL.Batteries_V2.Init();            // the SQLCipher provider must be set up first
         _settings = new FileSettingsStore().Load();
         Culture.Configure(_settings);             // before any window or Tr call
         AppLogging.Configure();

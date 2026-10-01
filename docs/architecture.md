@@ -14,7 +14,7 @@ Settings → culture → logging → single instance → host → backup and mig
 
 ## Data flow
 
-ViewModel → repository (Task.Run + Dapper) → SQLite. Writes evict cache keys and send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
+ViewModel → repository (Task.Run + Dapper) → SQLite (SQLCipher-encrypted; the key is protected with Windows DPAPI). Writes evict cache keys and send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
 
 ## Loading states
 
