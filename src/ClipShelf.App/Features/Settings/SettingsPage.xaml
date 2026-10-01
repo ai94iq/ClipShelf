@@ -136,6 +136,29 @@
                           AutomationProperties.Name="{l:Tr Key=Settings_ClearOnSignOut}"
                           IsOn="{x:Bind ViewModel.ClearOnSignOut, Mode=TwoWay}" />
           </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_Export}"
+                               Description="{l:Tr Key=Settings_ExportHint}">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <ComboBox MinWidth="120"
+                        MinHeight="36"
+                        AutomationProperties.Name="{l:Tr Key=Settings_Export}"
+                        ItemsSource="{x:Bind ViewModel.ExportFormatOptions}"
+                        DisplayMemberPath="Label"
+                        SelectedItem="{x:Bind ViewModel.SelectedExportFormat, Mode=TwoWay}" />
+              <Button Content="{l:Tr Key=Common_Export}"
+                      MinHeight="36"
+                      IsEnabled="{x:Bind ViewModel.CanExport, Mode=OneWay}"
+                      Click="OnExportClick"
+                      AutomationProperties.Name="{l:Tr Key=Common_Export}" />
+            </StackPanel>
+          </common:SettingsCard>
+          <TextBlock Text="{x:Bind ViewModel.ExportStatus, Mode=OneWay}"
+                     Style="{StaticResource CaptionTextBlockStyle}"
+                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                     TextWrapping="Wrap"
+                     Margin="16,0,16,14"
+                     Visibility="{x:Bind ViewModel.HasExportStatus, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
         </StackPanel>
       </Border>
 

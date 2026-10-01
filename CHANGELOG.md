@@ -20,6 +20,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Run at Windows startup, change the global shortcut by recording a key combination, and set how many clips the history keeps; lowering the limit trims the oldest unpinned clips.
 - Keep clips for 1, 7 or 30 days (or forever), and optionally clear unpinned history when you sign out or shut down.
 - A placeholder in the flyout and the history page when there are no clips, with a separate message when a search finds nothing; search is disabled until there are clips.
+- Export the saved clips from Settings as a JSON or CSV file.
 
 ### Changed
 - The installer shows the MIT license, an installation folder page, creates a desktop shortcut, and offers to run ClipShelf when finished; its artwork matches the app.

@@ -1,5 +1,6 @@
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
+using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 
@@ -16,6 +17,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly IThemeService _theme;
     private readonly IClipRepository _repository;
     private readonly IStartupRegistration _startup;
+    private readonly IClipExportService _export;
+    private readonly ILogger<SettingsViewModel> _log;
     private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
 
@@ -23,12 +26,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         SettingsService settings,
         IThemeService theme,
         IClipRepository repository,
-        IStartupRegistration startup)
+        IStartupRegistration startup,
+        IClipExportService export,
+        ILogger<SettingsViewModel> log)
     {
         _settings = settings;
         _theme = theme;
         _repository = repository;
         _startup = startup;
+        _export = export;
+        _log = log;
 
         SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
@@ -41,6 +48,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         RunAtStartup = settings.Current.RunAtStartup;
         MaxItems = settings.Current.MaxItems;
         ClearOnSignOut = settings.Current.ClearOnSignOut;
+        SelectedExportFormat = ExportFormatOptions[0];
 
         _loading = false;
     }
@@ -104,6 +112,32 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool ClearOnSignOut { get; set; }
 
+    public IReadOnlyList<Option<ClipExportFormat>> ExportFormatOptions { get; } =
+    [
+        new(ClipExportFormat.Json, Tr.Get("Export_Json")),
+        new(ClipExportFormat.Csv, Tr.Get("Export_Csv")),
+    ];
+
+    [ObservableProperty]
+    public partial Option<ClipExportFormat> SelectedExportFormat { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsExporting { get; set; }
+
+    // Feedback under the export row: how many clips were written, or why it failed.
+    [ObservableProperty]
+    public partial string? ExportStatus { get; set; }
+
+    public bool CanExport => !IsExporting;
+
+    public bool HasExportStatus => !string.IsNullOrEmpty(ExportStatus);
+
+    // Default name for the save dialog: ClipShelf-Export-2026-10-01-1432.
+    public string SuggestedExportFileName =>
+        Tr.Format("Settings_ExportFileName",
+            Tr.Get("App_Name"),
+            DateTimeOffset.Now.ToString("yyyy-MM-dd-HHmm", CultureInfo.InvariantCulture));
+
     // Settings search from the title bar; an empty filter shows everything.
     [ObservableProperty]
     public partial string Filter { get; set; } = string.Empty;
@@ -122,6 +156,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             "Settings_History", "Settings_Retention", "Settings_RetentionHint",
             "Retention_Day", "Retention_Week", "Retention_Month", "Retention_Forever",
             "Settings_ClearOnSignOut", "Settings_ClearOnSignOutHint",
+            "Settings_Export", "Settings_ExportHint", "Common_Export",
         ],
     ];
 
@@ -238,6 +273,35 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (_loading) return;
 
         Save(_settings.Current with { ClearOnSignOut = value });
+    }
+
+    partial void OnIsExportingChanged(bool value) => OnPropertyChanged(nameof(CanExport));
+
+    partial void OnExportStatusChanged(string? value) => OnPropertyChanged(nameof(HasExportStatus));
+
+    // Runs after the page's save picker returned a file path.
+    public async Task ExportAsync(string path)
+    {
+        if (IsExporting) return;
+
+        IsExporting = true;
+        ExportStatus = null;
+        try
+        {
+            var count = await _export.ExportAsync(path, SelectedExportFormat.Value, CancellationToken.None);
+            ExportStatus = count == 0
+                ? Tr.Get("Settings_ExportEmpty")
+                : Tr.Format("Settings_ExportDone", Tr.Plural("History_Count", count));
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "Exporting clips failed");
+            ExportStatus = Tr.Get("Settings_ExportFailed");
+        }
+        finally
+        {
+            IsExporting = false;
+        }
     }
 
     // Theme and backdrop show on screen right away, so they are re-applied as well as saved.

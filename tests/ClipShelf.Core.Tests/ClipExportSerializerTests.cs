@@ -1,0 +1,55 @@
+using System.Text.Json;
+using ClipShelf.Core.Export;
+
+namespace ClipShelf.Core.Tests;
+
+public sealed class ClipExportSerializerTests
+{
+    [Fact]
+    public void Json_rows_use_camel_case_field_names()
+    {
+        var json = ClipExportSerializer.Serialize([Row("hello")], ClipExportFormat.Json);
+
+        using var document = JsonDocument.Parse(json);
+        var item = document.RootElement[0];
+        Assert.Equal("hello", item.GetProperty("text").GetString());
+        Assert.Equal("Notepad", item.GetProperty("appName").GetString());
+        Assert.False(item.GetProperty("pinned").GetBoolean());
+        Assert.Equal("2026-01-02T03:04:05+00:00", item.GetProperty("copiedAtUtc").GetString());
+    }
+
+    [Fact]
+    public void Json_keeps_line_breaks_and_unicode()
+    {
+        var json = ClipExportSerializer.Serialize([Row("line1\nline2 ✓")], ClipExportFormat.Json);
+
+        using var document = JsonDocument.Parse(json);
+        Assert.Equal("line1\nline2 ✓", document.RootElement[0].GetProperty("text").GetString());
+    }
+
+    [Fact]
+    public void Csv_lists_a_header_and_one_row_per_clip()
+    {
+        var csv = ClipExportSerializer.Serialize([Row("one"), Row("two", pinned: true)], ClipExportFormat.Csv);
+
+        var lines = csv.Split("\r\n");
+        Assert.Equal("text,app_name,pinned,copied_at", lines[0]);
+        Assert.Equal("one,Notepad,false,2026-01-02T03:04:05.0000000+00:00", lines[1]);
+        Assert.Equal("two,Notepad,true,2026-01-02T03:04:05.0000000+00:00", lines[2]);
+        Assert.Equal(3, lines.Length);
+    }
+
+    [Fact]
+    public void Csv_quotes_commas_quotes_and_line_breaks()
+    {
+        var csv = ClipExportSerializer.Serialize(
+            [Row("a,b"), Row("say \"hi\""), Row("line1\nline2")], ClipExportFormat.Csv);
+
+        Assert.Contains("\"a,b\"", csv);
+        Assert.Contains("\"say \"\"hi\"\"\"", csv);
+        Assert.Contains("\"line1\nline2\"", csv);
+    }
+
+    private static ClipExportRow Row(string text, bool pinned = false) =>
+        new(text, "Notepad", pinned, new DateTimeOffset(2026, 1, 2, 3, 4, 5, TimeSpan.Zero));
+}

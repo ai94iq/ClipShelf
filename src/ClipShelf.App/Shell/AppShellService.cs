@@ -53,6 +53,9 @@ public sealed class AppShellService : IDisposable
 
     public AppLifetime Lifetime { get; }
 
+    // Used by the settings page to anchor system pickers to the app window.
+    public IntPtr MainWindowHandle => WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow.Value);
+
     public event EventHandler? ExitRequested;
 
     public void ShowHistory() => _mainWindow.Value.ShowHistory();

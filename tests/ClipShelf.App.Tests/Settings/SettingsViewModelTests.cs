@@ -1,7 +1,9 @@
 using ClipShelf.App.Features.Settings;
 using ClipShelf.App.Hosting;
+using ClipShelf.App.Localization;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
+using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 using NSubstitute;
@@ -14,6 +16,7 @@ public sealed class SettingsViewModelTests
     private readonly SettingsService _service;
     private readonly IThemeService _theme = Substitute.For<IThemeService>();
     private readonly IClipRepository _repository = Substitute.For<IClipRepository>();
+    private readonly IClipExportService _export = Substitute.For<IClipExportService>();
     private readonly FakeStartupRegistration _startup = new();
 
     public SettingsViewModelTests() => _service = new SettingsService(_store, new AppSettings());
@@ -250,5 +253,73 @@ public sealed class SettingsViewModelTests
         Assert.True(_store.Saved is { ClearOnSignOut: true });
     }
 
-    private SettingsViewModel Create() => new(_service, _theme, _repository, _startup);
+    [Fact]
+    public async Task Exporting_uses_the_chosen_format_and_reports_the_count()
+    {
+        _export.ExportAsync("out.json", ClipExportFormat.Json, Arg.Any<CancellationToken>()).Returns(3);
+        var viewModel = Create();
+
+        await viewModel.ExportAsync("out.json");
+
+        await _export.Received(1).ExportAsync("out.json", ClipExportFormat.Json, Arg.Any<CancellationToken>());
+        Assert.True(viewModel.HasExportStatus);
+        Assert.Equal(
+            Tr.Format("Settings_ExportDone", Tr.Plural("History_Count", 3)),
+            viewModel.ExportStatus);
+    }
+
+    [Fact]
+    public async Task Choosing_csv_exports_csv()
+    {
+        _export.ExportAsync("out.csv", ClipExportFormat.Csv, Arg.Any<CancellationToken>()).Returns(0);
+        var viewModel = Create();
+        viewModel.SelectedExportFormat = viewModel.ExportFormatOptions.Single(o => o.Value == ClipExportFormat.Csv);
+
+        await viewModel.ExportAsync("out.csv");
+
+        await _export.Received(1).ExportAsync("out.csv", ClipExportFormat.Csv, Arg.Any<CancellationToken>());
+        Assert.Equal(Tr.Get("Settings_ExportEmpty"), viewModel.ExportStatus);
+    }
+
+    [Fact]
+    public async Task A_failed_export_reports_it()
+    {
+        _export.ExportAsync(Arg.Any<string>(), Arg.Any<ClipExportFormat>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<int>(new IOException("disk full")));
+        var viewModel = Create();
+
+        await viewModel.ExportAsync("out.json");
+
+        Assert.Equal(Tr.Get("Settings_ExportFailed"), viewModel.ExportStatus);
+    }
+
+    [Fact]
+    public async Task Exporting_disables_export_until_it_finishes()
+    {
+        var completion = new TaskCompletionSource<int>();
+        _export.ExportAsync(Arg.Any<string>(), Arg.Any<ClipExportFormat>(), Arg.Any<CancellationToken>())
+            .Returns(completion.Task);
+        var viewModel = Create();
+
+        var export = viewModel.ExportAsync("out.json");
+        Assert.False(viewModel.CanExport);
+
+        completion.SetResult(1);
+        await export;
+
+        Assert.True(viewModel.CanExport);
+    }
+
+    [Fact]
+    public void The_suggested_export_file_name_holds_the_app_name_and_a_timestamp()
+    {
+        var viewModel = Create();
+
+        Assert.Matches(
+            @"^ClipShelf-Export-\d{4}-\d{2}-\d{2}-\d{4}$",
+            viewModel.SuggestedExportFileName);
+    }
+
+    private SettingsViewModel Create() =>
+        new(_service, _theme, _repository, _startup, _export, NullLogger<SettingsViewModel>.Instance);
 }
