@@ -1,6 +1,6 @@
 # Localization
 
-Arabic (ar-SA) is the neutral language in `Strings.resx`; English is in `Strings.en.resx`. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this.
+English is the only UI language for now: `Strings.resx` (neutral) and `Strings.en.resx` hold the same English text, so the app shows English on any culture. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this. Adding a language later means filling the satellite file and wiring it in `Culture`.
 
 ## Key naming
 
@@ -23,3 +23,7 @@ Plurals: `Base_zero`, `Base_one`, `Base_two`, `Base_few`, `Base_many`, `Base_oth
 | Save | حفظ | |
 | Cancel | إلغاء | |
 | Retry | إعادة المحاولة | |
+| Clipboard history | سجل الحافظة | The list of recently copied items |
+| Clip | عنصر | One stored clipboard item |
+| Pinned | مثبَّت | Kept when the history is trimmed or cleared |
+| Tray icon | أيقونة شريط المهام | Notification-area icon next to the clock |
