@@ -1,4 +1,3 @@
-using ClipShelf.App.Resources;
 using ClipShelf.Core.Models;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
@@ -31,11 +30,7 @@ public sealed partial class ClipItemViewModel : ObservableObject
     public string SourceText => string.IsNullOrEmpty(AppName) ? TimeText : $"{AppName} · {TimeText}";
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PinIconKind))]
     public partial bool IsPinned { get; set; }
-
-    // A pinned item offers "unpin", so the button flips its glyph.
-    public IconKind PinIconKind => IsPinned ? IconKind.PinOff : IconKind.Pin;
 
     [RelayCommand]
     private void Activate() => _panel.Activate(this);

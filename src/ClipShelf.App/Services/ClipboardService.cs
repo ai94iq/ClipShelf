@@ -40,19 +40,22 @@ public sealed class ClipboardService : IClipboardWriter, IDisposable
             return;
         }
 
-        var text = Win32Clipboard.TryReadText();
-        if (text is null) return;
-
-        _ = CaptureAsync(text);
+        // The source app is read now, while the copy is fresh; the text read can sleep on retries,
+        // so it runs off the UI thread.
+        var appName = ForegroundApp.Name();
+        _ = CaptureAsync(appName);
     }
 
-    private async Task CaptureAsync(string text)
+    private async Task CaptureAsync(string? appName)
     {
         try
         {
+            var text = await Task.Run(Win32Clipboard.TryReadText);
+            if (text is null) return;
+
             await _capture.CaptureAsync(
                 text,
-                ForegroundApp.Name(),
+                appName,
                 DateTimeOffset.UtcNow,
                 _settings.Current.MaxItems,
                 CancellationToken.None);

@@ -12,6 +12,7 @@ public static class ServiceRegistration
     public static IServiceCollection AddAppServices(this IServiceCollection services, AppSettings settings)
     {
         services.AddSingleton(settings);
+        services.AddSingleton<ISettingsStore, FileSettingsStore>();
         services.AddSingleton<SettingsService>();
         services.AddMemoryCache(o => o.SizeLimit = 2_000);
         services.AddTransient(typeof(Lazy<>), typeof(LazyService<>));
@@ -36,8 +37,6 @@ public static class ServiceRegistration
         services.AddSingleton<SettingsViewModel>();
 
         // App services
-        services.AddSingleton<WindowContext>();
-        services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IDateFormatter, DateFormatter>();
         services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();

@@ -14,7 +14,7 @@
     <RootNamespace>ClipShelf.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
-    <NeutralLanguage>ar-SA</NeutralLanguage>
+    <NeutralLanguage>en-US</NeutralLanguage>
     <SatelliteResourceLanguages>ar;en</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>

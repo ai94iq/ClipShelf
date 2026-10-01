@@ -1,8 +1,6 @@
 using ClipShelf.App.Features.History;
 using ClipShelf.App.Features.Settings;
-using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace ClipShelf.App.Shell;
 
@@ -12,19 +10,16 @@ public sealed partial class MainWindow : Window
     private readonly Lazy<HistoryPage> _history;
     private readonly Lazy<SettingsPage> _settings;
     private readonly AppLifetime _lifetime;
-    private readonly WindowContext _context;
 
     public MainWindow(
         Lazy<HistoryPage> history,
         Lazy<SettingsPage> settings,
         IThemeService theme,
-        AppLifetime lifetime,
-        WindowContext context)
+        AppLifetime lifetime)
     {
         _history = history;
         _settings = settings;
         _lifetime = lifetime;
-        _context = context;
 
         InitializeComponent();
         Title = Tr.Get("App_Name");
@@ -43,16 +38,7 @@ public sealed partial class MainWindow : Window
             AppWindow.Hide();
         };
 
-        Activated += (_, args) =>
-        {
-            if (args.WindowActivationState != WindowActivationState.Deactivated) _context.Active = this;
-        };
-
-        if (MicaController.IsSupported())
-            SystemBackdrop = new MicaBackdrop();
-        else
-            Root.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"];
-
+        WindowSurface.ApplyMica(this, Root);
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 

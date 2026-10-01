@@ -3,11 +3,12 @@ using System.Runtime.InteropServices;
 namespace ClipShelf.App.Platform;
 
 // Reads and writes plain-text clipboard content through the Win32 API. Another app can hold the
-// clipboard open briefly, so opening is retried a few times before giving up.
+// clipboard open briefly, so opening is retried a few times before giving up. Reads run off the
+// UI thread because the retries can sleep.
 internal static class Win32Clipboard
 {
-    private const int Retries = 10;
-    private const int RetryDelayMs = 20;
+    private const int Retries = 5;
+    private const int RetryDelayMs = 10;
 
     public static string? TryReadText()
     {

@@ -5,6 +5,7 @@
                     xmlns:features="using:ClipShelf.App.Features.ClipboardPanel">
   <!-- Shared resources only. Feature-specific styles stay in the feature folder. -->
   <common:LoadStateToVisibilityConverter x:Key="LoadStateVisible" />
+  <common:PinIconConverter x:Key="PinIcon" />
 
   <!-- App font: Segoe UI (the app ships English only) -->
   <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
@@ -47,7 +48,7 @@
                 Command="{Binding TogglePinCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
-          <common:AppIcon Kind="{Binding PinIconKind}" Width="16" Height="16" />
+          <common:AppIcon Kind="{Binding IsPinned, Converter={StaticResource PinIcon}}" Width="16" Height="16" />
         </Button>
         <Button Background="Transparent"
                 BorderThickness="0"

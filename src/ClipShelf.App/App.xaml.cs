@@ -13,7 +13,7 @@ public partial class App : Application
 
     public App()
     {
-        _settings = SettingsStore.Load();
+        _settings = new FileSettingsStore().Load();
         Culture.Configure(_settings);             // before any window or Tr call
         AppLogging.Configure();
         InitializeComponent();

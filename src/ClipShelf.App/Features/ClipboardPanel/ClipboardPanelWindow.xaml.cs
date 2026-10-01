@@ -1,40 +1,32 @@
 using System.Runtime.InteropServices;
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
-using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Windows.System;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
 
 // A borderless, always-on-top flyout at the bottom-right of the active monitor, styled like the
-// Windows 11 clipboard flyout: acrylic surface, rounded corners, no window frame, and a height
-// that fits the content. It hides when it loses focus or the user presses Esc.
+// Windows 11 clipboard flyout. It hides when it loses focus or the user presses Esc.
 public sealed partial class ClipboardPanelWindow : Window
 {
     private const int WidthLogical = 360;
     private const int HeightLogical = 480;
     private const int MarginLogical = 12;
-    private const int PasteDelayMs = 60;
 
     private readonly SettingsService _settings;
     private readonly Lazy<AppShellService> _shell;
-    private readonly WindowContext _context;
     private IntPtr _previousWindow = IntPtr.Zero;
 
     public ClipboardPanelWindow(
         ClipboardPanelViewModel viewModel,
         SettingsService settings,
-        Lazy<AppShellService> shell,
-        WindowContext context)
+        Lazy<AppShellService> shell)
     {
         ViewModel = viewModel;
         _settings = settings;
         _shell = shell;
-        _context = context;
 
         InitializeComponent();
         Root.DataContext = viewModel;
@@ -43,8 +35,8 @@ public sealed partial class ClipboardPanelWindow : Window
         DestructiveHover.TintOnHover(ClearAllButton);
         DestructiveHover.TintOnHover(ConfirmClearButton);
 
-        ConfigureChrome();
-        ConfigureSurface();
+        PanelFrame.Configure(this);
+        WindowSurface.ApplyAcrylic(this, Root);
         Activated += OnActivated;
         ViewModel.ItemActivated += OnItemActivated;
         ViewModel.OpenHistoryRequested += OnOpenHistoryRequested;
@@ -70,71 +62,11 @@ public sealed partial class ClipboardPanelWindow : Window
         Reposition();
         AppWindow.Show();
         Activate();
-        ApplyFrame();   // activating can restore the default frame, so re-apply it
+        PanelFrame.ApplyTheme(this);
         SearchBox.Focus(FocusState.Programmatic);
     }
 
     public void Hide() => AppWindow.Hide();
-
-    private void ConfigureChrome()
-    {
-        // Configure the window's existing presenter; replacing it (SetPresenter) drops the
-        // SystemBackdrop and the flyout renders opaque.
-        if (AppWindow.Presenter is OverlappedPresenter presenter)
-        {
-            presenter.IsAlwaysOnTop = true;
-            presenter.IsResizable = false;
-            presenter.IsMaximizable = false;
-            presenter.IsMinimizable = false;
-            presenter.SetBorderAndTitleBar(false, false);
-        }
-
-        // Keep the flyout out of the taskbar and Alt+Tab, and strip every window frame style
-        // (WinUI's default window class adds WS_EX_WINDOWEDGE, WS_CAPTION and WS_THICKFRAME,
-        // which is the light 1px border).
-        var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        var exStyle = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlExStyle).ToInt64();
-        exStyle = (exStyle | NativeMethods.WsExToolWindow) & ~NativeMethods.WsExWindowEdge & ~NativeMethods.WsExClientEdge;
-        NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlExStyle, new IntPtr(exStyle));
-
-        var style = NativeMethods.GetWindowLongPtr(handle, NativeMethods.GwlStyle).ToInt64();
-        style &= ~(NativeMethods.WsCaption | NativeMethods.WsThickFrame | NativeMethods.WsBorder);
-        NativeMethods.SetWindowLongPtr(handle, NativeMethods.GwlStyle, new IntPtr(style));
-
-        NativeMethods.SetWindowPos(
-            handle, IntPtr.Zero, 0, 0, 0, 0,
-            NativeMethods.SwpFrameChanged | NativeMethods.SwpNoMove | NativeMethods.SwpNoSize | NativeMethods.SwpNoZOrder);
-
-        ApplyFrame();
-    }
-
-    // Matches the frame to the app theme, rounds the corners, and removes the 1px border.
-    private void ApplyFrame()
-    {
-        var handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
-
-        var dark = Application.Current.RequestedTheme == ApplicationTheme.Dark ? 1 : 0;
-        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmImmersiveDarkMode, ref dark, sizeof(int));
-
-        var corner = NativeMethods.DwmWindowCornerRound;
-        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowCornerPreference, ref corner, sizeof(int));
-
-        var border = NativeMethods.DwmColorNone;
-        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowBorderColor, ref border, sizeof(int));
-    }
-
-    // Acrylic surface like the Windows 11 / PowerToys flyouts; solid where acrylic is unavailable.
-    private void ConfigureSurface()
-    {
-        if (DesktopAcrylicController.IsSupported())
-        {
-            SystemBackdrop = new DesktopAcrylicBackdrop();
-            Root.Background = null;
-            return;
-        }
-
-        Root.Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"];
-    }
 
     // Anchors the flyout to the bottom-right of the monitor under the cursor.
     private void Reposition()
@@ -166,33 +98,19 @@ public sealed partial class ClipboardPanelWindow : Window
             return;
         }
 
-        _context.Active = this;   // dialogs opened from the flyout attach here
-        ApplyFrame();
+        PanelFrame.ApplyTheme(this);
     }
 
     private void OnItemActivated(object? sender, EventArgs e)
     {
         Hide();
-        if (_settings.Current.PasteOnSelect) _ = PasteAsync();
+        if (_settings.Current.PasteOnSelect) _ = KeyboardPaste.IntoAsync(_previousWindow);
     }
 
     private void OnOpenHistoryRequested(object? sender, EventArgs e)
     {
         Hide();
         _shell.Value.ShowHistory();
-    }
-
-    private async Task PasteAsync()
-    {
-        if (_previousWindow == IntPtr.Zero) return;
-
-        NativeMethods.SetForegroundWindow(_previousWindow);
-        await Task.Delay(PasteDelayMs);
-
-        NativeMethods.keybd_event(NativeMethods.VirtualKeyControl, 0, 0, UIntPtr.Zero);
-        NativeMethods.keybd_event(NativeMethods.VirtualKeyV, 0, 0, UIntPtr.Zero);
-        NativeMethods.keybd_event(NativeMethods.VirtualKeyV, 0, NativeMethods.KeyEventKeyUp, UIntPtr.Zero);
-        NativeMethods.keybd_event(NativeMethods.VirtualKeyControl, 0, NativeMethods.KeyEventKeyUp, UIntPtr.Zero);
     }
 
     private void OnItemClick(object sender, ItemClickEventArgs e)

@@ -14,8 +14,4 @@ public static class Tr
 
     public static string Format(string key, params object?[] args) =>
         string.Format(CultureInfo.CurrentCulture, Get(key), args);
-
-    // Uses keys {baseKey}_zero/_one/_two/_few/_many/_other, which must exist in both resx files.
-    public static string Plural(string baseKey, long count) =>
-        Format($"{baseKey}_{ArabicPlural.Form(count)}", count);
 }

@@ -2,11 +2,12 @@ using System.Text.Json;
 
 namespace ClipShelf.App.Hosting;
 
-public static class SettingsStore
+// settings.json under %LOCALAPPDATA%, written atomically.
+public sealed class FileSettingsStore : ISettingsStore
 {
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
-    public static AppSettings Load()
+    public AppSettings Load()
     {
         try
         {
@@ -20,10 +21,10 @@ public static class SettingsStore
         }
     }
 
-    public static void Save(AppSettings settings)
+    public void Save(AppSettings settings)
     {
         var temp = AppPaths.Settings + ".tmp";
         File.WriteAllText(temp, JsonSerializer.Serialize(settings, Options));
-        File.Move(temp, AppPaths.Settings, overwrite: true);    // atomic replace
+        File.Move(temp, AppPaths.Settings, overwrite: true);     // atomic replace
     }
 }

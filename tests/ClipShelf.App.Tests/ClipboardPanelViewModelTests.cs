@@ -118,6 +118,21 @@ public sealed class ClipboardPanelViewModelTests
         Assert.False(vm.IsConfirmingClear);
     }
 
+    [Fact]
+    public async Task Clips_are_grouped_into_pinned_and_recent()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "kept", pinned: true), Item(2, "plain") });
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.Equal(2, vm.Groups.Count);
+        Assert.Equal("kept", Assert.Single(vm.Groups[0]).Text);
+        Assert.Equal("plain", Assert.Single(vm.Groups[1]).Text);
+        Assert.Equal("2 clips", vm.CountText);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _clipboard, _dates, NullLogger<ClipboardPanelViewModel>.Instance);
 
