@@ -10,6 +10,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Capture copied text into a local history (up to the configured limit), ignoring the app's own copies.
 - Show a floating clipboard flyout with Win+Shift+V or a left-click on the tray icon: search, choose an item to paste it, pin, delete or clear all.
 - Use a clipboard icon for the app, and a tray icon that matches the light or dark taskbar.
+- Open a full history window from the tray menu or the flyout to browse, search, pin, delete and clear clips.
 
 ### Changed
 ### Fixed

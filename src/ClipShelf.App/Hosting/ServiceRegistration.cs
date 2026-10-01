@@ -1,4 +1,5 @@
 using ClipShelf.App.Features.ClipboardPanel;
+using ClipShelf.App.Features.History;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Services;
 using ClipShelf.Data.Repositories;
@@ -28,7 +29,8 @@ public static class ServiceRegistration
         services.AddSingleton<AppLifetime>();
         services.AddSingleton<AppShellService>();
         services.AddSingleton<ClipboardPanelWindow>();
-        services.AddSingleton<ClipboardPanelViewModel>();
+        services.AddTransient<ClipboardPanelViewModel>();
+        services.AddSingleton<HistoryWindow>();
 
         // App services
         services.AddSingleton<IDialogService, DialogService>();

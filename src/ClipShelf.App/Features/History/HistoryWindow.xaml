@@ -1,21 +1,20 @@
-<Window x:Class="ClipShelf.App.Features.ClipboardPanel.ClipboardPanelWindow"
+<Window x:Class="ClipShelf.App.Features.History.HistoryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="using:ClipShelf.App.Localization"
-        xmlns:common="using:ClipShelf.App.Common"
-        xmlns:features="using:ClipShelf.App.Features.ClipboardPanel">
-  <Grid x:Name="Root" KeyDown="OnKeyDown">
+        xmlns:common="using:ClipShelf.App.Common">
+  <Grid x:Name="Root">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <!-- Search: no background, no underline, just the glyph and the text -->
-    <Grid Grid.Row="0" Margin="12,10,12,4">
+    <!-- Search: no background, no underline -->
+    <Grid Grid.Row="0" Margin="20,18,20,8">
       <TextBox x:Name="SearchBox"
-               Height="34"
-               Padding="26,0,8,0"
+               Height="38"
+               Padding="30,0,10,0"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         <TextBox.Resources>
@@ -30,17 +29,17 @@
         </TextBox.Resources>
       </TextBox>
       <common:AppIcon Kind="Search"
-                      Width="15"
-                      Height="15"
-                      Margin="8,0,0,0"
+                      Width="16"
+                      Height="16"
+                      Margin="10,0,0,0"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Center"
                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
     </Grid>
 
-    <!-- History with its loading/empty/error overlay -->
+    <!-- Full history with its loading/empty/error overlay -->
     <Grid Grid.Row="1">
-      <ListView Padding="2,0"
+      <ListView Padding="12,0"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 ItemTemplate="{StaticResource ClipItemTemplate}"
                 SelectionMode="None"
@@ -49,7 +48,7 @@
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Padding" Value="10,7" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="CornerRadius" Value="4" />
           </Style>
@@ -62,54 +61,34 @@
                                RetryCommand="{x:Bind ViewModel.ReloadCommand, Mode=OneWay}" />
     </Grid>
 
-    <!-- Footer: open the full history window, and clear all with an inline confirmation -->
+    <!-- Footer: clear all with an inline confirmation -->
     <Border Grid.Row="2"
             BorderThickness="0,1,0,0"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-      <Grid Padding="6,4" ColumnSpacing="6">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <Button Grid.Column="0"
-                Background="Transparent"
-                BorderThickness="0"
-                MinHeight="28"
-                Padding="8,4"
-                HorizontalAlignment="Left"
-                Command="{x:Bind ViewModel.OpenHistoryCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <common:AppIcon Kind="Clipboard" Width="14" Height="14" />
-            <TextBlock Text="{l:Tr Key=Panel_OpenFullHistory}" FontSize="13" />
-          </StackPanel>
-        </Button>
-
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
+      <Grid Padding="14,8">
+        <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Visibility="{x:Bind common:BoolToVisibility.Collapsed(ViewModel.IsConfirmingClear), Mode=OneWay}">
           <Button Background="Transparent"
                   BorderThickness="0"
-                  MinHeight="28"
-                  Padding="8,4"
+                  MinHeight="30"
+                  Padding="10,4"
                   IsEnabled="{x:Bind ViewModel.HasItems, Mode=OneWay}"
                   Command="{x:Bind ViewModel.RequestClearCommand}">
             <StackPanel Orientation="Horizontal" Spacing="6">
-              <common:AppIcon Kind="Delete" Width="14" Height="14" />
-              <TextBlock Text="{l:Tr Key=Panel_ClearAll}" FontSize="13" />
+              <common:AppIcon Kind="Delete" Width="15" Height="15" />
+              <TextBlock Text="{l:Tr Key=Panel_ClearAll}" />
             </StackPanel>
           </Button>
         </StackPanel>
 
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
+        <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="8"
                     Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsConfirmingClear), Mode=OneWay}">
-          <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" FontSize="13" VerticalAlignment="Center" />
-          <Button Content="{l:Tr Key=Panel_ClearYes}" MinHeight="28" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
-          <Button Content="{l:Tr Key=Common_Cancel}" MinHeight="28" Command="{x:Bind ViewModel.CancelClearCommand}" />
+          <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" VerticalAlignment="Center" />
+          <Button Content="{l:Tr Key=Panel_ClearYes}" MinHeight="30" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
+          <Button Content="{l:Tr Key=Common_Cancel}" MinHeight="30" Command="{x:Bind ViewModel.CancelClearCommand}" />
         </StackPanel>
       </Grid>
     </Border>

@@ -28,3 +28,4 @@ Plurals: `Base_zero`, `Base_one`, `Base_two`, `Base_few`, `Base_many`, `Base_oth
 | Pinned | مثبَّت | Kept when the history is trimmed or cleared |
 | Tray icon | أيقونة شريط المهام | Notification-area icon next to the clock |
 | Hotkey | اختصار لوحة المفاتيح | Global shortcut; Win+Shift+V by default |
+| History window | نافذة السجل | The full app window that lists every clip |

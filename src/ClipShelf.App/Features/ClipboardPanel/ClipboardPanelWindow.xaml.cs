@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using ClipShelf.App.Platform;
+using ClipShelf.App.Shell;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
@@ -20,12 +21,14 @@ public sealed partial class ClipboardPanelWindow : Window
     private const int PasteDelayMs = 60;
 
     private readonly SettingsService _settings;
+    private readonly Lazy<AppShellService> _shell;
     private IntPtr _previousWindow = IntPtr.Zero;
 
-    public ClipboardPanelWindow(ClipboardPanelViewModel viewModel, SettingsService settings)
+    public ClipboardPanelWindow(ClipboardPanelViewModel viewModel, SettingsService settings, Lazy<AppShellService> shell)
     {
         ViewModel = viewModel;
         _settings = settings;
+        _shell = shell;
 
         InitializeComponent();
         Root.DataContext = viewModel;
@@ -36,6 +39,7 @@ public sealed partial class ClipboardPanelWindow : Window
         ConfigureSurface();
         Activated += OnActivated;
         ViewModel.ItemActivated += OnItemActivated;
+        ViewModel.OpenHistoryRequested += OnOpenHistoryRequested;
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -161,6 +165,12 @@ public sealed partial class ClipboardPanelWindow : Window
     {
         Hide();
         if (_settings.Current.PasteOnSelect) _ = PasteAsync();
+    }
+
+    private void OnOpenHistoryRequested(object? sender, EventArgs e)
+    {
+        Hide();
+        _ = _shell.Value.ShowHistoryAsync();
     }
 
     private async Task PasteAsync()

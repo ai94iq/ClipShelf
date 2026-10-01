@@ -1,4 +1,5 @@
 using ClipShelf.App.Features.ClipboardPanel;
+using ClipShelf.App.Features.History;
 using ClipShelf.App.Platform;
 using H.NotifyIcon;
 using Microsoft.UI.Xaml.Controls;
@@ -15,17 +16,20 @@ public sealed class AppShellService : IDisposable
 
     private readonly Lazy<MainWindow> _settingsWindow;
     private readonly Lazy<ClipboardPanelWindow> _panel;
+    private readonly Lazy<HistoryWindow> _history;
     private readonly GlobalHotkey _hotkey;
     private readonly TaskbarIcon _trayIcon = new();
 
     public AppShellService(
         Lazy<MainWindow> settingsWindow,
         Lazy<ClipboardPanelWindow> panel,
+        Lazy<HistoryWindow> history,
         GlobalHotkey hotkey,
         AppLifetime lifetime)
     {
         _settingsWindow = settingsWindow;
         _panel = panel;
+        _history = history;
         _hotkey = hotkey;
         Lifetime = lifetime;
 
@@ -62,10 +66,12 @@ public sealed class AppShellService : IDisposable
 
     private Task TogglePanelAsync() => _panel.Value.ToggleAsync();
 
+    public async Task ShowHistoryAsync() => await _history.Value.ShowAsync();
+
     private MenuFlyout BuildMenu()
     {
         var menu = new MenuFlyout();
-        menu.Items.Add(Item("Tray_OpenHistory", () => _ = TogglePanelAsync()));
+        menu.Items.Add(Item("Tray_OpenHistory", () => _ = ShowHistoryAsync()));
         menu.Items.Add(Item("Tray_Settings", ShowSettings));
         menu.Items.Add(new MenuFlyoutSeparator());
         menu.Items.Add(Item("Tray_Exit", RequestExit));

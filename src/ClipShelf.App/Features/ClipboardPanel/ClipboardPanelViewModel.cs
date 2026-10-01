@@ -40,6 +40,12 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     // Raised when the user picks an item; the window hides and optionally pastes.
     public event EventHandler? ItemActivated;
 
+    // Raised when the user asks for the full history window.
+    public event EventHandler? OpenHistoryRequested;
+
+    [RelayCommand]
+    private void OpenHistory() => OpenHistoryRequested?.Invoke(this, EventArgs.Empty);
+
     public Task RefreshAsync() => ReloadCommand.ExecuteAsync(null);
 
     public void Activate(ClipItemViewModel item)

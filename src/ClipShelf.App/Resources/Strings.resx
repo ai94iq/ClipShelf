@@ -50,6 +50,7 @@
   <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
   <data name="Panel_Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Panel_Empty" xml:space="preserve"><value>Nothing copied yet</value></data>
+  <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>داكن</value></data>
