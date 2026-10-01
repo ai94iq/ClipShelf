@@ -29,6 +29,12 @@ public sealed record AppSettings
     // How many unpinned clips to keep; pinned clips are never pruned.
     public int MaxItems { get; init; } = 100;
 
+    // Days to keep unpinned clips; 0 keeps them forever. Pinned clips are never pruned.
+    public int RetentionDays { get; init; }
+
+    // When true, unpinned clips are cleared when the user signs out or shuts down.
+    public bool ClearOnSignOut { get; init; }
+
     public bool RunAtStartup { get; init; }
 
     // Global shortcut that opens the flyout; at least one modifier plus one key.

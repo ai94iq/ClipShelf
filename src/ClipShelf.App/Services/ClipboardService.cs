@@ -8,14 +8,20 @@ namespace ClipShelf.App.Services;
 public sealed class ClipboardService : IClipboardWriter, IDisposable
 {
     private readonly ClipCaptureService _capture;
+    private readonly IClipRepository _repository;
     private readonly SettingsService _settings;
     private readonly ILogger<ClipboardService> _log;
     private readonly ClipboardWatcher _watcher = new();
     private int _selfWrites;
 
-    public ClipboardService(ClipCaptureService capture, SettingsService settings, ILogger<ClipboardService> log)
+    public ClipboardService(
+        ClipCaptureService capture,
+        IClipRepository repository,
+        SettingsService settings,
+        ILogger<ClipboardService> log)
     {
         _capture = capture;
+        _repository = repository;
         _settings = settings;
         _log = log;
         _watcher.Changed += OnClipboardChanged;
@@ -59,6 +65,11 @@ public sealed class ClipboardService : IClipboardWriter, IDisposable
                 DateTimeOffset.UtcNow,
                 _settings.Current.MaxItems,
                 CancellationToken.None);
+
+            // Age-based cleanup rides along with captures so a long session stays trimmed.
+            var days = _settings.Current.RetentionDays;
+            if (days > 0)
+                await _repository.PruneOlderThanAsync(DateTimeOffset.UtcNow.AddDays(-days), CancellationToken.None);
         }
         catch (Exception ex)
         {

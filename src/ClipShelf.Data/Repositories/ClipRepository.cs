@@ -96,6 +96,25 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             return removed;
         }, ct);
 
+    public Task<int> PruneOlderThanAsync(DateTimeOffset cutoffUtc, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            var removed = connection.Execute(
+                "DELETE FROM Clip WHERE IsPinned = 0 AND CreatedAtUtc < @cutoff;",
+                new { cutoff = Iso(cutoffUtc) });
+            if (removed > 0) changes.Notify(new DataChanged("clip"));
+            return removed;
+        }, ct);
+
+    public int ClearUnpinned()
+    {
+        using var connection = factory.Open();
+        var removed = connection.Execute("DELETE FROM Clip WHERE IsPinned = 0;");
+        if (removed > 0) changes.Notify(new DataChanged("clip"));
+        return removed;
+    }
+
     private static IReadOnlyList<ClipListItem> Read(SqliteConnection connection, string sql, object parameters) =>
         connection.Query<ClipRow>(sql, parameters)
             .Select(r => new ClipListItem(

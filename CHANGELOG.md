@@ -17,6 +17,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Theme (system/light/dark) and background (Mica, Mica Alt, Acrylic, None) settings applied live on every window.
 - Tray icon style (filled or outline) and a switch to hide the tray icon; an Exit button in Settings keeps the app reachable when the tray is hidden.
 - Run at Windows startup, change the global shortcut by recording a key combination, and set how many clips the history keeps; lowering the limit trims the oldest unpinned clips.
+- Keep clips for 1, 7 or 30 days (or forever), and optionally clear unpinned history when you sign out or shut down.
 
 ### Changed
 - Settings use grouped cards with taller rows, small section headings, and Enabled/Disabled toggles; the sidebar is an icon rail with Settings at the bottom, and the title bar holds a settings search that hides groups that do not match.

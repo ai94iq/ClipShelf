@@ -61,6 +61,15 @@ public sealed partial class App : Application
             _host.Services.GetRequiredService<IStartupRegistration>().Apply(_settings.RunAtStartup);
 
             _host.Services.GetRequiredService<ClipboardService>();
+            _host.Services.GetRequiredService<SessionCleanup>();
+
+            // Age-based cleanup runs once per launch.
+            if (_settings.RetentionDays > 0)
+            {
+                var repository = _host.Services.GetRequiredService<IClipRepository>();
+                await repository.PruneOlderThanAsync(
+                    DateTimeOffset.UtcNow.AddDays(-_settings.RetentionDays), CancellationToken.None);
+            }
         }
         catch (Exception ex)
         {

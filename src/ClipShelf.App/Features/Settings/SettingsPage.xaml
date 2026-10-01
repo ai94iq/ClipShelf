@@ -111,6 +111,34 @@
         </StackPanel>
       </Border>
 
+      <!-- History -->
+      <TextBlock Text="{l:Tr Key=Settings_History}"
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Margin="0,26,0,8"
+                 Visibility="{x:Bind ViewModel.ShowHistoryGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Visibility="{x:Bind ViewModel.ShowHistoryGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <StackPanel>
+          <common:SettingsCard Header="{l:Tr Key=Settings_Retention}"
+                               Description="{l:Tr Key=Settings_RetentionHint}">
+            <ComboBox MinWidth="240"
+                      MinHeight="36"
+                      AutomationProperties.Name="{l:Tr Key=Settings_Retention}"
+                      ItemsSource="{x:Bind ViewModel.RetentionOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{x:Bind ViewModel.SelectedRetention, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_ClearOnSignOut}"
+                               Description="{l:Tr Key=Settings_ClearOnSignOutHint}">
+            <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}"
+                          OffContent="{l:Tr Key=Common_Disabled}"
+                          AutomationProperties.Name="{l:Tr Key=Settings_ClearOnSignOut}"
+                          IsOn="{x:Bind ViewModel.ClearOnSignOut, Mode=TwoWay}" />
+          </common:SettingsCard>
+        </StackPanel>
+      </Border>
+
       <!-- Exit -->
       <Border Style="{StaticResource SettingsGroupBorder}"
               Margin="0,26,0,0"

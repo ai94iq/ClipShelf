@@ -206,5 +206,49 @@ public sealed class SettingsViewModelTests
         Assert.True(viewModel.HasNoMatches(viewModel.Filter));
     }
 
+    [Fact]
+    public void Changing_the_retention_saves_it_and_prunes_older_clips()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedRetention = viewModel.RetentionOptions.Single(o => o.Value == 7);
+
+        Assert.True(_store.Saved is { RetentionDays: 7 });
+        _repository.Received(1).PruneOlderThanAsync(Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void Choosing_forever_never_prunes_by_age()
+    {
+        var viewModel = Create();
+        viewModel.SelectedRetention = viewModel.RetentionOptions.Single(o => o.Value == 7);
+        _repository.ClearReceivedCalls();
+
+        viewModel.SelectedRetention = viewModel.RetentionOptions.Single(o => o.Value == 0);
+
+        Assert.True(_store.Saved is { RetentionDays: 0 });
+        _repository.DidNotReceive().PruneOlderThanAsync(Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void The_saved_retention_is_preselected()
+    {
+        _service.Update(_service.Current with { RetentionDays = 30 });
+
+        var viewModel = Create();
+
+        Assert.Equal(30, viewModel.SelectedRetention.Value);
+    }
+
+    [Fact]
+    public void Changing_clear_on_sign_out_saves_it()
+    {
+        var viewModel = Create();
+
+        viewModel.ClearOnSignOut = true;
+
+        Assert.True(_store.Saved is { ClearOnSignOut: true });
+    }
+
     private SettingsViewModel Create() => new(_service, _theme, _repository, _startup);
 }

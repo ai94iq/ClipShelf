@@ -33,11 +33,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
         SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
+        SelectedRetention = RetentionOptions.FirstOrDefault(o => o.Value == settings.Current.RetentionDays)
+            ?? RetentionOptions[^1];
         ShowTrayIcon = settings.Current.ShowTrayIcon;
         DoubleClickOpensHistory = settings.Current.OpenHistoryOnDoubleClick;
         Hotkey = settings.Current.Hotkey;
         RunAtStartup = settings.Current.RunAtStartup;
         MaxItems = settings.Current.MaxItems;
+        ClearOnSignOut = settings.Current.ClearOnSignOut;
 
         _loading = false;
     }
@@ -61,6 +64,14 @@ public sealed partial class SettingsViewModel : ObservableObject
     [
         new(TrayIconKind.Filled, Tr.Get("TrayIcon_Filled")),
         new(TrayIconKind.Outline, Tr.Get("TrayIcon_Outline")),
+    ];
+
+    public IReadOnlyList<Option<int>> RetentionOptions { get; } =
+    [
+        new(1, Tr.Get("Retention_Day")),
+        new(7, Tr.Get("Retention_Week")),
+        new(30, Tr.Get("Retention_Month")),
+        new(0, Tr.Get("Retention_Forever")),
     ];
 
     [ObservableProperty]
@@ -87,6 +98,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial double MaxItems { get; set; }
 
+    [ObservableProperty]
+    public partial Option<int> SelectedRetention { get; set; }
+
+    [ObservableProperty]
+    public partial bool ClearOnSignOut { get; set; }
+
     // Settings search from the title bar; an empty filter shows everything.
     [ObservableProperty]
     public partial string Filter { get; set; } = string.Empty;
@@ -101,6 +118,11 @@ public sealed partial class SettingsViewModel : ObservableObject
             "Settings_Hotkey", "Settings_HotkeyHint",
             "Settings_MaxItems", "Settings_MaxItemsHint",
         ],
+        [
+            "Settings_History", "Settings_Retention", "Settings_RetentionHint",
+            "Retention_Day", "Retention_Week", "Retention_Month", "Retention_Forever",
+            "Settings_ClearOnSignOut", "Settings_ClearOnSignOutHint",
+        ],
     ];
 
     private static readonly string[] ExitKeys = ["Settings_ExitApp", "Settings_ExitHint"];
@@ -110,6 +132,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool ShowTrayGroup => IsGroupVisible(Filter, 1);
 
     public bool ShowBehaviorGroup => IsGroupVisible(Filter, 2);
+
+    public bool ShowHistoryGroup => IsGroupVisible(Filter, 3);
 
     public bool ShowExitGroup => IsExitVisible(Filter);
 
@@ -127,6 +151,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowAppearanceGroup));
         OnPropertyChanged(nameof(ShowTrayGroup));
         OnPropertyChanged(nameof(ShowBehaviorGroup));
+        OnPropertyChanged(nameof(ShowHistoryGroup));
         OnPropertyChanged(nameof(ShowExitGroup));
         OnPropertyChanged(nameof(ShowNoMatches));
     }
@@ -197,6 +222,22 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             // superseded by a newer value
         }
+    }
+
+    partial void OnSelectedRetentionChanged(Option<int> value)
+    {
+        if (_loading) return;
+
+        Save(_settings.Current with { RetentionDays = value.Value });
+        if (value.Value > 0)
+            _ = _repository.PruneOlderThanAsync(DateTimeOffset.UtcNow.AddDays(-value.Value), CancellationToken.None);
+    }
+
+    partial void OnClearOnSignOutChanged(bool value)
+    {
+        if (_loading) return;
+
+        Save(_settings.Current with { ClearOnSignOut = value });
     }
 
     // Theme and backdrop show on screen right away, so they are re-applied as well as saved.

@@ -14,7 +14,7 @@ Settings → culture → logging → single instance → host → backup and mig
 
 ## Data flow
 
-ViewModel → repository (Task.Run + Dapper) → SQLite. Writes evict cache keys and send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw.
+ViewModel → repository (Task.Run + Dapper) → SQLite. Writes evict cache keys and send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
 
 ## Loading states
 
@@ -34,4 +34,4 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 | Clipboard history panel | src/ClipShelf.App/Features/ClipboardPanel/ | Borderless flyout above the taskbar; native frame and monitor placement are in `Platform/PanelFrame.cs`; Win+Shift+V or an immediate tray click toggles it; search, pin, delete, clear, paste on select; history rows update in place |
 | App shell | src/ClipShelf.App/Shell/MainWindow.xaml | NavigationView window with the History and Settings pages; closing only hides it |
 | History page | src/ClipShelf.App/Features/History/HistoryPage.xaml | Full list grouped into Pinned and Recent, search, clip count, clear all with a confirmation dialog |
-| Settings page | src/ClipShelf.App/Features/Settings/SettingsPage.xaml | Appearance, tray and behavior (Windows startup, global shortcut, history size) options |
+| Settings page | src/ClipShelf.App/Features/Settings/SettingsPage.xaml | Appearance, tray, behavior and history (retention, sign-out clear) options, with a search box in the title bar |

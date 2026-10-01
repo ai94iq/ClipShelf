@@ -10,6 +10,7 @@ internal static class NativeMethods
 {
     internal const uint MessageClipboardUpdate = 0x031D;
     internal const uint MessageHotkey = 0x0312;
+    internal const uint MessageEndSession = 0x0016;
 
     internal const uint ClipboardFormatUnicodeText = 13;
     internal const uint GlobalMemoryMoveable = 0x0002;

@@ -1,6 +1,7 @@
 using ClipShelf.App.Features.ClipboardPanel;
 using ClipShelf.App.Features.History;
 using ClipShelf.App.Features.Settings;
+using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Services;
 using ClipShelf.Data.Repositories;
@@ -39,6 +40,8 @@ public static class ServiceRegistration
         // App services
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IStartupRegistration, StartupRegistration>();
+        services.AddSingleton<SessionWatcher>();
+        services.AddSingleton<SessionCleanup>();
         services.AddSingleton<IDateFormatter, DateFormatter>();
         services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
 

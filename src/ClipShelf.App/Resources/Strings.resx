@@ -72,18 +72,27 @@
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
+  <data name="Retention_Day" xml:space="preserve"><value>1 day</value></data>
+  <data name="Retention_Forever" xml:space="preserve"><value>Forever</value></data>
+  <data name="Retention_Month" xml:space="preserve"><value>30 days</value></data>
+  <data name="Retention_Week" xml:space="preserve"><value>7 days</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>
+  <data name="Settings_ClearOnSignOut" xml:space="preserve"><value>Clear history when I sign out</value></data>
+  <data name="Settings_ClearOnSignOutHint" xml:space="preserve"><value>Removes unpinned clips when you sign out or shut down.</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
   <data name="Settings_ExitApp" xml:space="preserve"><value>Exit ClipShelf</value></data>
   <data name="Settings_ExitHint" xml:space="preserve"><value>Stops clipboard capture and removes the tray icon.</value></data>
+  <data name="Settings_History" xml:space="preserve"><value>History</value></data>
   <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
   <data name="Settings_MaxItems" xml:space="preserve"><value>Maximum history items</value></data>
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Older unpinned clips are removed once the limit is passed.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
+  <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
+  <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips are never removed.</value></data>
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>
   <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the notification area.</value></data>
   <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>Search settings</value></data>

@@ -165,6 +165,58 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task Prune_older_than_removes_old_unpinned_clips()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("old", null, T0, ct);
+        await repo.AddOrBumpAsync("new", null, T0.AddDays(10), ct);
+
+        var removed = await repo.PruneOlderThanAsync(T0.AddDays(5), ct);
+
+        Assert.Equal(1, removed);
+        Assert.Equal("new", Assert.Single(await repo.GetRecentAsync(null, 50, ct)).Text);
+    }
+
+    [Fact]
+    public async Task Prune_older_than_keeps_pinned_clips()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("old", null, T0, ct);
+        await repo.AddOrBumpAsync("new", null, T0.AddDays(10), ct);
+        var oldId = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "old").Id;
+        await repo.SetPinnedAsync(oldId, true, ct);
+
+        var removed = await repo.PruneOlderThanAsync(T0.AddDays(5), ct);
+
+        Assert.Equal(0, removed);
+        Assert.Equal(2, (await repo.GetRecentAsync(null, 50, ct)).Count);
+    }
+
+    [Fact]
+    public async Task Clear_unpinned_now_removes_rows_synchronously()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("drop", null, T0, ct);
+        await repo.AddOrBumpAsync("keep", null, T0.AddMinutes(1), ct);
+        var keepId = (await repo.GetRecentAsync(null, 50, ct)).Single(i => i.Text == "keep").Id;
+        await repo.SetPinnedAsync(keepId, true, ct);
+
+        var removed = repo.ClearUnpinned();
+
+        Assert.Equal(1, removed);
+        Assert.Equal("keep", Assert.Single(await repo.GetRecentAsync(null, 50, ct)).Text);
+    }
+
+    [Fact]
     public async Task Writes_notify_open_views()
     {
         using var db = new TempDatabase();
