@@ -38,10 +38,14 @@ jobs:
       - name: Package
         run: .\package.bat --no-pause
 
-      - name: Create release
+      - name: Create or update the release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $msi = (Get-ChildItem artifacts\installer\*.msi).FullName
-          gh release create "$env:GITHUB_REF_NAME" $msi --title "$env:GITHUB_REF_NAME" --generate-notes
+          if (gh release view "$env:GITHUB_REF_NAME" 2>$null) {
+            gh release upload "$env:GITHUB_REF_NAME" $msi --clobber
+          } else {
+            gh release create "$env:GITHUB_REF_NAME" $msi --title "$env:GITHUB_REF_NAME" --generate-notes
+          }
