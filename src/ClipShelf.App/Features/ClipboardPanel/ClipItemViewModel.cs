@@ -32,7 +32,7 @@ public sealed partial class ClipItemViewModel : ObservableObject
     public void UpdateFrom(ClipListItem model, IDateFormatter dates)
     {
         Text = model.Text;
-        AppName = model.AppName;
+        AppName = AppNameText.Display(model.AppName);
         IsPinned = model.IsPinned;
         TimeText = dates.FormatSince(model.CreatedAtUtc);
     }
