@@ -17,7 +17,9 @@ public partial class App : Application
         Culture.Configure(_settings);             // before any window or Tr call
         AppLogging.Configure();
         InitializeComponent();
-        ThemeService.ApplyAccentResources(Resources, _settings.Accent);   // before any control loads
+
+        // The accent is applied in OnLaunched: touching Application.Resources while the app is still
+        // being constructed throws E_UNEXPECTED on Windows App SDK 1.8.
         UnhandledException += (_, e) =>
         {
             Log.Error(e.Exception, "Unhandled UI exception");
@@ -37,6 +39,8 @@ public partial class App : Application
 
         try
         {
+            if (_settings.Accent is not null) ThemeService.ApplyAccentResources(Resources, _settings.Accent);
+
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddSerilog();        // uses the static Log.Logger
             builder.Services.AddAppServices(_settings);
