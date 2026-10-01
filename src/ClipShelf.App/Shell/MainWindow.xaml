@@ -8,18 +8,34 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <!-- Draggable title area; caption buttons are drawn by Windows and follow RTL automatically -->
+    <!-- Draggable title area; caption buttons are drawn by Windows -->
     <Grid x:Name="AppTitleBar" Grid.Row="0" Padding="16,0">
       <TextBlock Text="{l:Tr Key=App_Name}"
                  VerticalAlignment="Center"
                  Style="{StaticResource CaptionTextBlockStyle}" />
     </Grid>
 
-    <!-- Replace with NavigationView when the first feature is added -->
-    <TextBlock Grid.Row="1"
-               Text="{l:Tr Key=App_Welcome}"
-               Style="{StaticResource SubtitleTextBlockStyle}"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center" />
+    <NavigationView x:Name="Nav"
+                    Grid.Row="1"
+                    IsBackButtonVisible="Collapsed"
+                    IsSettingsVisible="False"
+                    PaneDisplayMode="Left"
+                    OpenPaneLength="180"
+                    SelectionChanged="OnSelectionChanged">
+      <NavigationView.MenuItems>
+        <NavigationViewItem Content="{l:Tr Key=Nav_History}" Tag="history">
+          <NavigationViewItem.Icon>
+            <SymbolIcon Symbol="Document" />
+          </NavigationViewItem.Icon>
+        </NavigationViewItem>
+        <NavigationViewItem Content="{l:Tr Key=Nav_Settings}" Tag="settings">
+          <NavigationViewItem.Icon>
+            <SymbolIcon Symbol="Setting" />
+          </NavigationViewItem.Icon>
+        </NavigationViewItem>
+      </NavigationView.MenuItems>
+
+      <Frame x:Name="ContentFrame" />
+    </NavigationView>
   </Grid>
 </Window>

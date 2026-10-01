@@ -1,26 +1,26 @@
 using Microsoft.UI.Xaml.Controls;
-using ClipShelf.App.Shell;
 
 namespace ClipShelf.App.Services;
 
-// Every info, error and confirm dialog goes through here so RTL is handled once.
-// Lazy<MainWindow> avoids a circular dependency (window → view model → dialogs → window).
-public sealed class DialogService(Lazy<MainWindow> window) : IDialogService
+// Every info, error and confirm dialog goes through here. The dialog attaches to the active
+// window's XamlRoot, so the same service works for the shell and the tray flyout.
+public sealed class DialogService(WindowContext context) : IDialogService
 {
     public async Task ShowInfoAsync(string message) => await ShowAsync(message, Tr.Get("Common_Ok"), null);
 
     public async Task ShowErrorAsync(string message) => await ShowAsync(message, Tr.Get("Common_Ok"), null);
 
-    public async Task<bool> ConfirmAsync(string message) =>
-        await ShowAsync(message, Tr.Get("Common_Yes"), Tr.Get("Common_No")) == ContentDialogResult.Primary;
+    public async Task<bool> ConfirmAsync(string message, string confirmText, string cancelText) =>
+        await ShowAsync(message, confirmText, cancelText) == ContentDialogResult.Primary;
 
     private async Task<ContentDialogResult> ShowAsync(string message, string primary, string? close)
     {
+        var root = context.Active?.Content?.XamlRoot;
+        if (root is null) return ContentDialogResult.None;
+
         var dialog = new ContentDialog
         {
-            XamlRoot = window.Value.Content.XamlRoot,
-            FlowDirection = Culture.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
-            Title = Tr.Get("App_Name"),
+            XamlRoot = root,
             Content = message,
             PrimaryButtonText = primary,
             CloseButtonText = close ?? string.Empty,

@@ -1,5 +1,6 @@
 using ClipShelf.App.Features.ClipboardPanel;
 using ClipShelf.App.Features.History;
+using ClipShelf.App.Features.Settings;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Services;
 using ClipShelf.Data.Repositories;
@@ -30,9 +31,12 @@ public static class ServiceRegistration
         services.AddSingleton<AppShellService>();
         services.AddSingleton<ClipboardPanelWindow>();
         services.AddTransient<ClipboardPanelViewModel>();
-        services.AddSingleton<HistoryWindow>();
+        services.AddSingleton<HistoryPage>();
+        services.AddSingleton<SettingsPage>();
+        services.AddSingleton<SettingsViewModel>();
 
         // App services
+        services.AddSingleton<WindowContext>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IDateFormatter, DateFormatter>();
@@ -41,7 +45,6 @@ public static class ServiceRegistration
         // Shell: Singleton. Pages and their ViewModels: Transient.
         // When adding navigation, register WPF-UI services exactly as the installed WPF-UI 4.x sample does.
         services.AddSingleton<MainWindow>();
-        services.AddSingleton<MainWindowViewModel>();
         return services;
     }
 }

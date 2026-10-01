@@ -45,6 +45,13 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
+  <data name="History_Count" xml:space="preserve"><value>{0} clips</value></data>
+  <data name="History_Description" xml:space="preserve"><value>Everything you copied, newest first</value></data>
+  <data name="History_Pinned" xml:space="preserve"><value>Pinned</value></data>
+  <data name="History_Recent" xml:space="preserve"><value>Recent</value></data>
+  <data name="History_Title" xml:space="preserve"><value>History</value></data>
+  <data name="Nav_History" xml:space="preserve"><value>History</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Panel_ClearAll" xml:space="preserve"><value>Clear all</value></data>
   <data name="Panel_ClearConfirm" xml:space="preserve"><value>Clear unpinned clips?</value></data>
   <data name="Panel_ClearYes" xml:space="preserve"><value>Clear</value></data>
@@ -53,6 +60,8 @@
   <data name="Panel_OpenFullHistory" xml:space="preserve"><value>Open full history</value></data>
   <data name="Panel_PinToggle" xml:space="preserve"><value>Pin or unpin</value></data>
   <data name="Panel_SearchPlaceholder" xml:space="preserve"><value>Search your clips</value></data>
+  <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
+  <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>

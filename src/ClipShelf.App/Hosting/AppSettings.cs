@@ -24,4 +24,7 @@ public sealed record AppSettings
 
     // When true, choosing an item also pastes it into the app that had focus.
     public bool PasteOnSelect { get; init; } = true;
+
+    // When true, double-clicking the tray icon opens the full history window.
+    public bool OpenHistoryOnDoubleClick { get; init; } = true;
 }

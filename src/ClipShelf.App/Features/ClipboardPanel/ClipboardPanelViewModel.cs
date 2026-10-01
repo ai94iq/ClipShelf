@@ -24,12 +24,21 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         _clipboard = clipboard;
         _dates = dates;
         ReloadOnChange("clip");
-        Items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasItems));
+        Items.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasItems));
+            OnPropertyChanged(nameof(CountText));
+        };
     }
 
     public ObservableCollection<ClipItemViewModel> Items { get; } = [];
 
+    // Grouped view (Pinned, then Recent) used by the full history page.
+    public ObservableCollection<ClipGroup> Groups { get; } = [];
+
     public bool HasItems => Items.Count > 0;
+
+    public string CountText => Tr.Format("History_Count", Items.Count);
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
@@ -69,9 +78,25 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         Items.Clear();
         foreach (var item in items) Items.Add(new ClipItemViewModel(item, _dates, this));
         IsConfirmingClear = false;
+        RebuildGroups();
         return Items.Count > 0;
     }
 
+    private void RebuildGroups()
+    {
+        Groups.Clear();
+        AddGroup("History_Pinned", Items.Where(i => i.IsPinned));
+        AddGroup("History_Recent", Items.Where(i => !i.IsPinned));
+    }
+
+    private void AddGroup(string titleKey, IEnumerable<ClipItemViewModel> items)
+    {
+        var group = new ClipGroup(Tr.Get(titleKey));
+        foreach (var item in items) group.Add(item);
+        if (group.Count > 0) Groups.Add(group);
+    }
+
+    // Destructive: the Clear button shows an in-window confirmation panel first.
     [RelayCommand]
     private void RequestClear() => IsConfirmingClear = true;
 

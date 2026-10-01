@@ -22,18 +22,26 @@ public sealed partial class ClipboardPanelWindow : Window
 
     private readonly SettingsService _settings;
     private readonly Lazy<AppShellService> _shell;
+    private readonly WindowContext _context;
     private IntPtr _previousWindow = IntPtr.Zero;
 
-    public ClipboardPanelWindow(ClipboardPanelViewModel viewModel, SettingsService settings, Lazy<AppShellService> shell)
+    public ClipboardPanelWindow(
+        ClipboardPanelViewModel viewModel,
+        SettingsService settings,
+        Lazy<AppShellService> shell,
+        WindowContext context)
     {
         ViewModel = viewModel;
         _settings = settings;
         _shell = shell;
+        _context = context;
 
         InitializeComponent();
         Root.DataContext = viewModel;
         Title = Tr.Get("App_Name");
         this.ApplyCultureDirection();
+        DestructiveHover.TintOnHover(ClearAllButton);
+        DestructiveHover.TintOnHover(ConfirmClearButton);
 
         ConfigureChrome();
         ConfigureSurface();
@@ -158,6 +166,7 @@ public sealed partial class ClipboardPanelWindow : Window
             return;
         }
 
+        _context.Active = this;   // dialogs opened from the flyout attach here
         ApplyFrame();
     }
 
@@ -170,7 +179,7 @@ public sealed partial class ClipboardPanelWindow : Window
     private void OnOpenHistoryRequested(object? sender, EventArgs e)
     {
         Hide();
-        _ = _shell.Value.ShowHistoryAsync();
+        _shell.Value.ShowHistory();
     }
 
     private async Task PasteAsync()
@@ -195,7 +204,12 @@ public sealed partial class ClipboardPanelWindow : Window
     {
         if (e.Key != VirtualKey.Escape) return;
 
-        Hide();
+        // Esc cancels the confirmation first, and only then closes the flyout.
+        if (ViewModel.IsConfirmingClear)
+            ViewModel.CancelClearCommand.Execute(null);
+        else
+            Hide();
+
         e.Handled = true;
     }
 }

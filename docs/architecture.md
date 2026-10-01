@@ -32,4 +32,6 @@ ViewModel state → identity maps → IMemoryCache (`GetOrLoadAsync`) → disk c
 | Clipboard capture | src/ClipShelf.App/Services/ClipboardService.cs | Win32 clipboard listener; ignores the app's own writes; stores text with the source app name |
 | Tray icon and lifetime | src/ClipShelf.App/Shell/AppShellService.cs | H.NotifyIcon tray icon and menu; closing a window hides it until the user exits |
 | Clipboard history panel | src/ClipShelf.App/Features/ClipboardPanel/ | Borderless flyout above the taskbar; Win+Shift+V or the tray toggles it; search, pin, delete, clear, paste on select |
-| Full history window | src/ClipShelf.App/Features/History/ | Regular app window opened from the tray or the flyout; same list with search, pin, delete and clear |
+| App shell | src/ClipShelf.App/Shell/MainWindow.xaml | NavigationView window with the History and Settings pages; closing only hides it |
+| History page | src/ClipShelf.App/Features/History/HistoryPage.xaml | Full list grouped into Pinned and Recent, search, clip count, clear all with a confirmation dialog |
+| Settings page | src/ClipShelf.App/Features/Settings/SettingsPage.xaml | Tray options (currently: double-click the tray icon opens the full window) |

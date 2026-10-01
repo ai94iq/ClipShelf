@@ -1,0 +1,16 @@
+<UserControl x:Class="ClipShelf.App.Features.Settings.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:ClipShelf.App.Localization">
+  <ScrollViewer>
+    <StackPanel Padding="24" Spacing="12">
+      <TextBlock Text="{l:Tr Key=Nav_Settings}" Style="{StaticResource TitleTextBlockStyle}" />
+
+      <TextBlock Text="{l:Tr Key=Settings_Tray}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
+                 Margin="0,12,0,0" />
+      <ToggleSwitch Header="{l:Tr Key=Settings_DoubleClickTray}"
+                    IsOn="{x:Bind ViewModel.DoubleClickOpensHistory, Mode=TwoWay}" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

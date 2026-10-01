@@ -96,7 +96,7 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
-    public void Clear_all_is_confirmed_first()
+    public void Clear_confirmation_can_be_cancelled()
     {
         var vm = Create();
 

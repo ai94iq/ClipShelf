@@ -7,5 +7,6 @@ public interface IDialogService
 
     Task ShowErrorAsync(string message);
 
-    Task<bool> ConfirmAsync(string message);
+    // Confirms a destructive action. Both button labels are verbs, and Cancel is the default.
+    Task<bool> ConfirmAsync(string message, string confirmText, string cancelText);
 }

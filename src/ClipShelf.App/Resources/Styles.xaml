@@ -6,8 +6,8 @@
   <!-- Shared resources only. Feature-specific styles stay in the feature folder. -->
   <common:LoadStateToVisibilityConverter x:Key="LoadStateVisible" />
 
-  <!-- App font: overrides the theme font key used by every control and text style -->
-  <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/NotoSansArabic-Regular.ttf#Noto Sans Arabic</FontFamily>
+  <!-- App font: Segoe UI (the app ships English only) -->
+  <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
   <Style TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
   </Style>
@@ -41,23 +41,23 @@
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
         <Button Background="Transparent"
                 BorderThickness="0"
-                Width="28"
-                Height="28"
+                Width="30"
+                Height="30"
                 Padding="0"
                 Command="{Binding TogglePinCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
-          <common:AppIcon Kind="{Binding PinIconKind}" Width="14" Height="14" />
+          <common:AppIcon Kind="{Binding PinIconKind}" Width="16" Height="16" />
         </Button>
         <Button Background="Transparent"
                 BorderThickness="0"
-                Width="28"
-                Height="28"
+                Width="30"
+                Height="30"
                 Padding="0"
                 Command="{Binding DeleteCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"
                 AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
-          <common:AppIcon Kind="Delete" Width="14" Height="14" />
+          <common:AppIcon Kind="Delete" Width="16" Height="16" />
         </Button>
       </StackPanel>
     </Grid>

@@ -11,6 +11,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Show a floating clipboard flyout with Win+Shift+V or a left-click on the tray icon: search, choose an item to paste it, pin, delete or clear all.
 - Use a clipboard icon for the app, and a tray icon that matches the light or dark taskbar.
 - Open a full history window from the tray menu or the flyout to browse, search, pin, delete and clear clips.
+- Full app window (NavigationView) with History and Settings pages; the history list is grouped into Pinned and Recent.
+- Double-click the tray icon opens the full app; this can be turned off on the Settings page.
+- New app icon, and a light/dark tray icon that follows the taskbar theme.
 
 ### Changed
 ### Fixed
