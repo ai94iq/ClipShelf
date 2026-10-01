@@ -80,6 +80,10 @@ public sealed partial class ClipboardPanelWindow : Window
         // Rounded corners like the PowerToys tray flyouts; ignored on Windows 10.
         var corner = NativeMethods.DwmWindowCornerRound;
         NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowCornerPreference, ref corner, sizeof(int));
+
+        // Drop the default 1px frame so the acrylic surface reaches the rounded edge.
+        var border = NativeMethods.DwmColorNone;
+        NativeMethods.DwmSetWindowAttribute(handle, NativeMethods.DwmWindowBorderColor, ref border, sizeof(int));
     }
 
     // Acrylic surface like the PowerToys tray flyouts; solid where acrylic is unavailable.

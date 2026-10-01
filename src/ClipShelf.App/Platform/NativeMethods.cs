@@ -104,6 +104,8 @@ internal static class NativeMethods
 
     internal const int DwmWindowCornerPreference = 33;
     internal const int DwmWindowCornerRound = 2;
+    internal const int DwmWindowBorderColor = 34;
+    internal const int DwmColorNone = unchecked((int)0xFFFFFFFE);
 
     [DllImport("dwmapi.dll")]
     internal static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);

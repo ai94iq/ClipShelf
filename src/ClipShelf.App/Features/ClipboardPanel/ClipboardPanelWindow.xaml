@@ -4,8 +4,7 @@
         xmlns:l="using:ClipShelf.App.Localization"
         xmlns:common="using:ClipShelf.App.Common"
         xmlns:features="using:ClipShelf.App.Features.ClipboardPanel">
-  <Grid x:Name="Root"
-        KeyDown="OnKeyDown">
+  <Grid x:Name="Root" KeyDown="OnKeyDown">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
@@ -13,23 +12,17 @@
     </Grid.RowDefinitions>
 
     <!-- Search -->
-    <Grid Grid.Row="0" Margin="8,8,8,4">
-      <TextBox x:Name="SearchBox"
-               PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
-               Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-               Padding="32,0,8,0" />
-      <common:AppIcon Kind="Search"
-                      Width="16"
-                      Height="16"
-                      Margin="10,0,0,0"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-    </Grid>
+    <AutoSuggestBox x:Name="SearchBox"
+                    Grid.Row="0"
+                    Margin="12,12,12,4"
+                    QueryIcon="Find"
+                    PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
+                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-    <!-- History and its loading/empty/error overlay -->
-    <Grid Grid.Row="1">
+    <!-- History with its loading/empty/error overlay -->
+    <Grid Grid.Row="1" Margin="0,4,0,0">
       <ListView x:Name="ItemList"
+                Padding="4,0"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 SelectionMode="None"
                 IsItemClickEnabled="True"
@@ -37,7 +30,8 @@
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="MinHeight" Value="0" />
           </Style>
         </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
@@ -57,15 +51,24 @@
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
               </StackPanel>
 
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
-                <Button Command="{x:Bind TogglePinCommand}"
+              <StackPanel Grid.Column="1"
+                          Orientation="Horizontal"
+                          Spacing="2"
+                          VerticalAlignment="Center">
+                <Button Background="Transparent"
+                        BorderThickness="0"
+                        Padding="6"
+                        Command="{x:Bind TogglePinCommand}"
                         ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                         AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
                   <common:AppIcon Kind="{x:Bind features:ClipItemIcons.Pin(IsPinned), Mode=OneWay}"
                                   Width="16"
                                   Height="16" />
                 </Button>
-                <Button Command="{x:Bind DeleteCommand}"
+                <Button Background="Transparent"
+                        BorderThickness="0"
+                        Padding="6"
+                        Command="{x:Bind DeleteCommand}"
                         ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"
                         AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
                   <common:AppIcon Kind="Delete" Width="16" Height="16" />
@@ -83,26 +86,31 @@
     </Grid>
 
     <!-- Footer: clear all with an inline confirmation -->
-    <Grid Grid.Row="2" Padding="8">
-      <StackPanel Orientation="Horizontal"
-                  HorizontalAlignment="Right"
-                  Visibility="{x:Bind common:BoolToVisibility.Collapsed(ViewModel.IsConfirmingClear), Mode=OneWay}">
-        <Button Command="{x:Bind ViewModel.RequestClearCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <common:AppIcon Kind="Delete" Width="16" Height="16" />
-            <TextBlock Text="{l:Tr Key=Panel_ClearAll}" />
-          </StackPanel>
-        </Button>
-      </StackPanel>
+    <Border Grid.Row="2"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+      <Grid Padding="8,6">
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Visibility="{x:Bind common:BoolToVisibility.Collapsed(ViewModel.IsConfirmingClear), Mode=OneWay}">
+          <Button Background="Transparent" BorderThickness="0" Padding="10,6"
+                  Command="{x:Bind ViewModel.RequestClearCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <common:AppIcon Kind="Delete" Width="16" Height="16" />
+              <TextBlock Text="{l:Tr Key=Panel_ClearAll}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
 
-      <StackPanel Orientation="Horizontal"
-                  HorizontalAlignment="Right"
-                  Spacing="8"
-                  Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsConfirmingClear), Mode=OneWay}">
-        <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" VerticalAlignment="Center" />
-        <Button Content="{l:Tr Key=Panel_ClearYes}" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
-        <Button Content="{l:Tr Key=Common_Cancel}" Command="{x:Bind ViewModel.CancelClearCommand}" />
-      </StackPanel>
-    </Grid>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsConfirmingClear), Mode=OneWay}">
+          <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" VerticalAlignment="Center" />
+          <Button Content="{l:Tr Key=Panel_ClearYes}" Command="{x:Bind ViewModel.ConfirmClearCommand}" />
+          <Button Content="{l:Tr Key=Common_Cancel}" Command="{x:Bind ViewModel.CancelClearCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
   </Grid>
 </Window>
