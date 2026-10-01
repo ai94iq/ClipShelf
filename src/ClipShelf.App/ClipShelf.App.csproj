@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Fonts\*.ttf" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\*.ico" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Assets\Fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" Condition="Exists('Assets\Fonts\OFL.txt')" />
   </ItemGroup>
   <ItemGroup>

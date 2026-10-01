@@ -30,8 +30,10 @@ public sealed class AppShellService : IDisposable
         Lifetime = lifetime;
 
         _trayIcon.ToolTipText = Tr.Get("App_Name");
-        _trayIcon.IconSource = new BitmapImage(
-            new Uri(Path.Combine(AppContext.BaseDirectory, "Assets", "app.ico")));
+        _trayIcon.IconSource = new BitmapImage(new Uri(Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            SystemTheme.TaskbarIsLight() ? "tray-light.ico" : "tray-dark.ico")));
         _trayIcon.NoLeftClickDelay = true;
         _trayIcon.LeftClickCommand = new AsyncRelayCommand(TogglePanelAsync);
         _trayIcon.ContextFlyout = BuildMenu();
