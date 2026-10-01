@@ -6,15 +6,38 @@ ClipShelf is a Windows clipboard-history app that keeps recently copied text sea
 
 ## Features
 
-- Capture copied text in a local SQLite history; search, pin, delete, or clear unpinned clips.
-- Open the floating flyout with `Win+Shift+V` or a single tray click, then paste a clip into the previously active app.
-- Browse the full history in a separate window, grouped into Pinned and Recent.
-- Choose System, Light, Dark, full black, and a Mica, Mica Alt, Acrylic, or solid backdrop where supported.
-- Choose a filled or outline tray icon, hide the icon, and configure whether a tray double-click opens the full history window.
-- Set the global shortcut by recording a key combination, run at Windows startup, and cap how many clips the history keeps; a search box in the title bar finds settings.
-- Keep clips for a day, a week or a month (or forever), and optionally clear unpinned history when you sign out.
-- Export the saved clips to a JSON or CSV file from Settings, asking for the password when one is set.
-- Save clips into categories; filter the full history by category, keep categorized clips out of Clear, the history limit and retention, and lock a category to hide its clips until it is unlocked with the password.
+**Capture and history**
+- Capture copied text into a local SQLite history; re-copying a clip moves it to the top instead of duplicating it.
+- Browse the full history in its own window, grouped into Pinned and Recent, with readable app names ("Chrome", "Word") and relative times.
+- Search the history, pin clips, delete single clips, or clear everything unpinned; a placeholder explains an empty history, an empty search and an empty category.
+
+**The flyout**
+- Open the floating flyout with `Win+Shift+V` or a single tray click; it appears next to the mouse pointer and closes when you click anywhere else.
+- Pick a clip to copy it and paste it into the app you came from.
+- Select several clips and copy them together as one multi-line text.
+
+**Categories**
+- Save clips into named categories from the folder button on any row; create a category on the spot.
+- Filter the full history by category; categorized clips are kept out of Clear, the history limit and retention.
+- Lock a category to hide its clips from the history, the flyout, search and exports; opening it asks for the password.
+- Choose when locks return — on exit, on minimize, or on shutdown/sign-out.
+
+**Export**
+- Export the whole history to JSON or CSV from Settings, including each clip's category.
+- One password (stored only as a salted hash) guards exporting and locked categories.
+
+**Appearance**
+- Themes: System, Light (pure white surfaces), Dark and Full black.
+- Backgrounds where supported: Mica, Mica Alt, Acrylic or solid.
+
+**Tray and behavior**
+- Filled or outline tray icon, hide the tray icon, and choose whether a tray double-click opens the full history.
+- Record a new global shortcut, run at Windows startup, cap the history size, and set retention (1 day, 7 days, 30 days or forever).
+- Optionally clear unpinned history when you sign out or shut down; a search box in the title bar finds any setting.
+
+**Privacy**
+- The history database is SQLCipher-encrypted with a random key protected by Windows DPAPI for your account.
+- Temporary storage stays in memory, freed memory is scrubbed, and a test proves the database, its sidecars and backups contain no readable clip text.
 - Start in the notification area and keep history and settings on this PC under `%LOCALAPPDATA%\ClipShelf`.
 
 The default shortcut is `Win+Shift+V`; change it in Settings if another app has already registered it.
