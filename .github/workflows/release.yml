@@ -10,6 +10,10 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
+    # Secrets cannot be referenced in step `if` conditions, so the token is lifted to a
+    # job-level variable and the submit step checks that variable instead.
+    env:
+      WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -78,11 +82,9 @@ jobs:
       # Needs a repository secret WINGET_TOKEN (a GitHub token with public_repo). Without it the
       # submission is skipped, and the manifests above stay refreshed for a manual submission.
       - name: Submit to winget
-        if: ${{ secrets.WINGET_TOKEN != '' }}
+        if: ${{ env.WINGET_TOKEN != '' }}
         continue-on-error: true
         shell: pwsh
-        env:
-          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
         run: |
           winget install --id Microsoft.WingetCreate -e --accept-source-agreements --accept-package-agreements
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
