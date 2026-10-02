@@ -134,20 +134,25 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
         Task.Run(() =>
         {
             using var connection = factory.Open();
-            var removed = connection.Execute(
+            using var transaction = connection.BeginTransaction();
+            // The partial index IX_Clip_Prune serves this scan, so the cost tracks the limit,
+            // not the size of the history. In steady state the offset yields a single id.
+            var ids = connection.Query<long>(
                 """
-                DELETE FROM Clip
+                SELECT Id FROM Clip
                 WHERE IsPinned = 0
                   AND CategoryId IS NULL
-                  AND Id NOT IN (
-                      SELECT Id FROM Clip
-                      WHERE IsPinned = 0
-                        AND CategoryId IS NULL
-                      ORDER BY CreatedAtUtc DESC, Id DESC
-                      LIMIT @keepUnpinned
-                  );
+                ORDER BY CreatedAtUtc DESC, Id DESC
+                LIMIT -1 OFFSET @keepUnpinned;
                 """,
-                new { keepUnpinned });
+                new { keepUnpinned }, transaction).ToList();
+
+            var removed = 0;
+            foreach (var batch in ids.Chunk(500))
+                removed += connection.Execute(
+                    "DELETE FROM Clip WHERE Id IN @batch;", new { batch }, transaction);
+            transaction.Commit();
+
             if (removed > 0) changes.Notify(new DataChanged("clip"));
             return removed;
         }, ct);

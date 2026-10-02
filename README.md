@@ -68,6 +68,14 @@ The installer wizard, with the MIT license, install location and finish-page opt
 
 The default shortcut is `Win+Shift+V`; change it in Settings if another app has already registered it.
 
+## Performance
+
+Load-tested through the real encrypted storage pipeline — details and numbers in [docs/performance.md](docs/performance.md):
+
+- 10,000 clips insert in about 2 seconds (~0.2 ms per copy), and the flyout's first page stays under a millisecond.
+- Trimming the history to the limit costs a partial-index seek proportional to the limit; a million stored clips no longer slow captures down (7.6 s per copy before the fix).
+- Search stays within a few milliseconds at the 1,000-item Settings maximum; storage is about 0.43 KB per text clip.
+
 ## Requirements
 
 - Windows 10 version 1809 or later, or Windows 11 (x64)

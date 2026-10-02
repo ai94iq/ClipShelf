@@ -165,6 +165,25 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task Prune_removes_a_large_batch_in_one_pass()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        for (var i = 0; i < 600; i++)
+            await repo.AddOrBumpAsync($"clip {i}", null, T0.AddSeconds(i), ct);
+
+        var removed = await repo.PruneAsync(keepUnpinned: 100, ct);
+
+        Assert.Equal(500, removed);
+        var items = await repo.GetRecentAsync(null, 1000, ct);
+        Assert.Equal(100, items.Count);
+        Assert.Equal("clip 599", items[0].Text);
+        Assert.Equal("clip 500", items[^1].Text);
+    }
+
+    [Fact]
     public async Task Prune_older_than_removes_old_unpinned_clips()
     {
         using var db = new TempDatabase();
