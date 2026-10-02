@@ -35,23 +35,32 @@ flyout issues on open. "Search" is a substring scan; a hit and a miss cost the s
 
 ## One million clips
 
-Measured before the trim fix, on a fresh encrypted database:
+Two runs on fresh encrypted databases with a 1,000-item limit — before and after the trim fix:
 
-| Metric | Value |
-|---|---|
-| Insert | 252 s (0.25 ms per clip) |
-| Flyout page | 20.4 ms average — 31 ms cold, 0.4 ms warm |
-| Search | 3.85 s (hit) / 3.91 s (miss) |
-| Capture + trim per copy | **7.61 s** |
-| 16 concurrent copies and reads | 57.8 s, 2 failures (`SQLITE_BUSY: database is locked`) |
-| Database | 429 MB |
+| Metric | Before | After |
+|---|---|---|
+| Insert | 252 s (0.25 ms per clip) | 321 s (0.32 ms per clip)¹ |
+| Flyout page | 20.4 ms average | 13.1 ms average¹ ² |
+| Search | 3.85 s (hit) / 3.91 s (miss) | 2.37 s (hit) / 2.40 s (miss) |
+| Capture + trim per copy | **7.61 s** | **1.26 ms** |
+| 16 concurrent copies and reads | 57.8 s, 2 failures (`SQLITE_BUSY: database is locked`) | 2.6 s, 0 failures |
+| Database | 429 MB | 520 MB³ |
 
-The per-copy trim and the lock failures share one cause: the old `NOT IN` trim scanned the whole
-table on every copy, held the write lock for seconds and made concurrent captures collide. After
-the fix, a planner check confirms the partial index serves the trim
-(`SCAN Clip USING INDEX IX_Clip_Prune`), and a 20,000-row probe measured the steady-state trim at
-0.15–2.85 ms regardless of the configured limit. The one-million-row re-verification was stopped
-early, so there is no full after-fix table for that size yet.
+¹ Insert and search are not affected by the fix; the spread between runs is machine variance.
+² Includes the first, cold query after the bulk insert; repeated queries are much faster
+(0.4 ms warm in the probe).
+³ Includes the freed pages and WAL left by the one-time bulk trim; SQLite reuses them, and a
+`VACUUM` would shrink the file.
+
+The per-copy trim and the lock failures shared one cause: the old `NOT IN` trim scanned the whole
+table on every copy, held the write lock for seconds and made concurrent captures collide. The
+partial index `IX_Clip_Prune` serves the trim now, so its cost tracks the limit — 1.26 ms per
+copy with a million clips stored — instead of the archive, and the planner confirms the index is
+used (`SCAN Clip USING INDEX IX_Clip_Prune`).
+
+Trimming a history that has already grown far past the limit is a one-time bulk delete: 999,001
+rows in 59.7 s in the "after" run, in a single transaction. Steady state afterwards is back to
+about a millisecond per copy.
 
 ## What is not measured
 

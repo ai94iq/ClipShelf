@@ -5,7 +5,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## [Unreleased]
 
 ### Fixed
-- Capturing a clip no longer scans the whole history when trimming to the limit: with a large archive of pinned or categorized clips every copy could take seconds (7.6 s at 1 million clips); the trim now uses a partial index and costs a seek proportional to the limit (sub-millisecond in steady state).
+- Capturing a clip no longer scans the whole history when trimming to the limit: with a large archive of pinned or categorized clips every copy could take seconds (7.6 s at 1 million clips); the trim now uses a partial index and costs a seek proportional to the limit (about 1 ms per copy at 1 million clips, and no more lock failures under rapid copying).
 
 ## [0.3.0] - 2026-10-02
 
