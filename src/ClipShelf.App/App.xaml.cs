@@ -57,6 +57,14 @@ public sealed partial class App : Application
             var shell = _host.Services.GetRequiredService<AppShellService>();
             shell.ExitRequested += (_, _) => ExitApplication();
 
+            // First run: a small window explains the hotkey and the tray, then never again.
+            var settingsService = _host.Services.GetRequiredService<SettingsService>();
+            if (!settingsService.Current.WelcomeShown)
+            {
+                _host.Services.GetRequiredService<WelcomeWindow>().Activate();
+                settingsService.Update(settingsService.Current with { WelcomeShown = true });
+            }
+
             // Rewrites the startup entry with the current path, so an update that moves the app
             // keeps starting the right executable.
             _host.Services.GetRequiredService<IStartupRegistration>().Apply(_settings.RunAtStartup);

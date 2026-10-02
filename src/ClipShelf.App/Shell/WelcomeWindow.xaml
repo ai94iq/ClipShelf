@@ -1,0 +1,26 @@
+<Window x:Class="ClipShelf.App.Shell.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.App.Localization">
+  <Grid x:Name="Root" Padding="24,0,24,24">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="48" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- Draggable title area; the caption buttons are drawn by Windows -->
+    <Grid x:Name="TitleArea" Grid.Row="0" />
+
+    <StackPanel Grid.Row="1" Spacing="14" VerticalAlignment="Center">
+      <TextBlock Text="{l:Tr Key=App_Welcome}" Style="{StaticResource SubtitleTextBlockStyle}" />
+      <TextBlock Text="{x:Bind WelcomeHotkey}" TextWrapping="Wrap" />
+      <TextBlock Text="{l:Tr Key=Welcome_Tray}"
+                 TextWrapping="Wrap"
+                 Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+      <Button Content="{l:Tr Key=Welcome_Ok}"
+              Click="OnOk"
+              HorizontalAlignment="Right"
+              Margin="0,8,0,0" />
+    </StackPanel>
+  </Grid>
+</Window>

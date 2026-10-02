@@ -58,6 +58,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - Record a new global shortcut, run at Windows startup, cap the history size, and set retention (1 day, 7 days, 30 days or forever).
 - Optionally clear unpinned history when you sign out or shut down; a search box in the title bar finds any setting.
 - Check for a newer release from Settings — ClipShelf looks once per run and links to the download.
+- A welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
 
 **Privacy**
 - The history database is SQLCipher-encrypted with a random key protected by Windows DPAPI for your account.

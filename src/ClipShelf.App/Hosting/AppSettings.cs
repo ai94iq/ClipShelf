@@ -61,4 +61,7 @@ public sealed record AppSettings
     public TrayIconKind TrayIcon { get; init; } = TrayIconKind.Filled;
 
     public bool ShowTrayIcon { get; init; } = true;
+
+    // When true, the first-run welcome window has already been shown.
+    public bool WelcomeShown { get; init; }
 }

@@ -171,4 +171,7 @@
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Welcome_Hotkey" xml:space="preserve"><value>Press {0} anywhere to open the flyout, then pick a clip to paste it into the app you came from.</value></data>
+  <data name="Welcome_Ok" xml:space="preserve"><value>Got it</value></data>
+  <data name="Welcome_Tray" xml:space="preserve"><value>ClipShelf keeps running in the notification area — open Settings or exit from its tray icon.</value></data>
 </root>
