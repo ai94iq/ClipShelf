@@ -4,6 +4,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-02
+
 ### Added
 - Initial project scaffold.
 - Run in the notification area: a tray icon with Settings and Exit, and the app keeps running with no window open.
@@ -45,5 +47,3 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Changing the history size no longer trims on every keystroke or spin click, and the tray icon or shortcut are only re-applied when their own settings change.
 - The history footer reads "1 clip" instead of "1 clips" for a single item.
 - Installing a rebuilt installer now replaces the previous installation instead of adding another entry.
-
-### Removed
