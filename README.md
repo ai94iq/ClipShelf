@@ -4,6 +4,24 @@
 
 ClipShelf is a Windows clipboard-history app that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
 
+## Screenshots
+
+<img src="docs/images/flyout.png" width="360" alt="The clipboard flyout" />
+
+The clipboard flyout opens next to the mouse pointer; pick a clip to paste it into the app you came from.
+
+![The full history window](docs/images/history.png)
+
+The full history window: search, categories, pinned and recent clips, multi-select copy.
+
+![The Settings page](docs/images/settings.png)
+
+Settings: themes and background, the tray, behavior, history, export and category locks.
+
+![The installer](docs/images/installer.png)
+
+The installer wizard, with the MIT license, install location and finish-page options.
+
 ## Features
 
 **Capture and history**
@@ -101,6 +119,10 @@ The UI is currently English-only. `Strings.resx` (neutral) and `Strings.en.resx`
 ## Releases
 
 Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/release.md). History: [CHANGELOG.md](CHANGELOG.md).
+
+## Built with
+
+This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill) — the agent skill that fixed the stack (WinUI 3, .NET 10, SQLite, WiX), the project layout and the UI rules used throughout.
 
 ## License
 
