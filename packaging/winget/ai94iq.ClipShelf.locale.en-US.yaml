@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
 PackageIdentifier: ai94iq.ClipShelf
-PackageVersion: 0.2.0
+PackageVersion: 0.3.0
 PackageLocale: en-US
 Publisher: Abdulwahb Isam
 PublisherUrl: https://github.com/ai94iq
@@ -20,6 +20,6 @@ Tags:
   - clipboard-manager
   - productivity
   - tray
-ReleaseNotesUrl: https://github.com/ai94iq/ClipShelf/releases/tag/v0.2.0
+ReleaseNotesUrl: https://github.com/ai94iq/ClipShelf/releases/tag/v0.3.0
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0
