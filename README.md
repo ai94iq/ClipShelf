@@ -6,21 +6,26 @@ ClipShelf is a Windows clipboard-history app that keeps recently copied text sea
 
 ## Screenshots
 
-<img src="docs/images/flyout.png" width="360" alt="The clipboard flyout" />
+<details>
+<summary>Show screenshots</summary>
+
+<img src="docs/images/flyout.png" width="300" alt="The clipboard flyout" />
 
 The clipboard flyout opens next to the mouse pointer; pick a clip to paste it into the app you came from.
 
-![The full history window](docs/images/history.png)
+<img src="docs/images/history.png" width="640" alt="The full history window" />
 
 The full history window: search, categories, pinned and recent clips, multi-select copy.
 
-![The Settings page](docs/images/settings.png)
+<img src="docs/images/settings.png" width="640" alt="The Settings page" />
 
 Settings: themes and background, the tray, behavior, history, export and category locks.
 
-![The installer](docs/images/installer.png)
+<img src="docs/images/installer.png" width="500" alt="The installer" />
 
 The installer wizard, with the MIT license, install location and finish-page options.
+
+</details>
 
 ## Features
 
