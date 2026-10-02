@@ -585,6 +585,70 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Equal("saved", Assert.Single(vm.Items).Text);
     }
 
+    [Fact]
+    public async Task Arrow_navigation_moves_the_selection()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two"), Item(3, "three") });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        vm.MoveSelection(1);
+        Assert.Equal("one", vm.SelectedItem?.Text);
+        vm.MoveSelection(1);
+        Assert.Equal("two", vm.SelectedItem?.Text);
+        vm.MoveSelection(-1);
+        Assert.Equal("one", vm.SelectedItem?.Text);
+        vm.MoveSelection(-1);
+        Assert.Equal("one", vm.SelectedItem?.Text);
+    }
+
+    [Fact]
+    public async Task Enter_activates_the_selected_clip()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        var signalled = false;
+        vm.ItemActivated += (_, _) => signalled = true;
+        vm.MoveSelection(1);
+        vm.MoveSelection(1);
+
+        vm.ActivateSelected();
+
+        _clipboard.Received(1).WriteText("two");
+        Assert.True(signalled);
+    }
+
+    [Fact]
+    public async Task Enter_without_a_selection_takes_the_first_clip()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        vm.ActivateSelected();
+
+        _clipboard.Received(1).WriteText("one");
+    }
+
+    [Fact]
+    public async Task Opening_the_flyout_clears_the_keyboard_selection()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.MoveSelection(1);
+        Assert.NotNull(vm.SelectedItem);
+
+        vm.ResetTransientState();
+
+        Assert.Null(vm.SelectedItem);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

@@ -187,6 +187,31 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     {
         IsConfirmingClear = false;
         IsSelecting = false;
+        SelectedItem = null;
+    }
+
+    // Keyboard navigation: the flyout moves a selection with the arrow keys and pastes with Enter.
+    [ObservableProperty]
+    public partial ClipItemViewModel? SelectedItem { get; set; }
+
+    public void MoveSelection(int delta)
+    {
+        if (Items.Count == 0) return;
+
+        var index = SelectedItem is null ? -1 : Items.IndexOf(SelectedItem);
+        if (index < 0)
+        {
+            SelectedItem = Items[delta > 0 ? 0 : Items.Count - 1];
+            return;
+        }
+
+        SelectedItem = Items[Math.Clamp(index + delta, 0, Items.Count - 1)];
+    }
+
+    public void ActivateSelected()
+    {
+        var item = SelectedItem ?? Items.FirstOrDefault();
+        if (item is not null) Activate(item);
     }
 
     // Quiet refresh for opening the flyout: keeps the previous list on screen while the

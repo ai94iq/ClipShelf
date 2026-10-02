@@ -36,7 +36,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 
 **The flyout**
 - Open the floating flyout with `Win+Shift+V` or a single tray click; it appears next to the mouse pointer and closes when you click anywhere else.
-- Pick a clip to copy it and paste it into the app you came from.
+- Pick a clip to copy it and paste it into the app you came from; ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
 - Select several clips and copy them together as one multi-line text.
 
 **Categories**

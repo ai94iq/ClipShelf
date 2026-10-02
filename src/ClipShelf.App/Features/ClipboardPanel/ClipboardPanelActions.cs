@@ -1,9 +1,11 @@
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
+using Windows.UI.Core;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
 
@@ -39,6 +41,8 @@ internal sealed class ClipboardPanelActions
 
     public void OnKeyDown(KeyRoutedEventArgs e)
     {
+        if (HandleNavigation(e)) return;
+
         if (e.Key != VirtualKey.Escape) return;
 
         // Esc leaves select mode first, then cancels the confirmation, and only then closes the flyout.
@@ -51,6 +55,37 @@ internal sealed class ClipboardPanelActions
 
         e.Handled = true;
     }
+
+    // Arrow keys move the selection, Enter pastes it, and Ctrl+1..9 paste one of the first nine.
+    private bool HandleNavigation(KeyRoutedEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case VirtualKey.Down:
+                _viewModel.MoveSelection(1);
+                e.Handled = true;
+                return true;
+            case VirtualKey.Up:
+                _viewModel.MoveSelection(-1);
+                e.Handled = true;
+                return true;
+            case VirtualKey.Enter:
+                _viewModel.ActivateSelected();
+                e.Handled = true;
+                return true;
+        }
+
+        if (!IsControlDown() || e.Key is < VirtualKey.Number1 or > VirtualKey.Number9) return false;
+
+        var index = (int)e.Key - (int)VirtualKey.Number1;
+        if (index < _viewModel.Items.Count) _viewModel.Activate(_viewModel.Items[index]);
+        e.Handled = true;
+        return true;
+    }
+
+    private static bool IsControlDown() =>
+        InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control)
+            .HasFlag(CoreVirtualKeyStates.Down);
 
     private void OnItemActivated(object? sender, EventArgs e)
     {

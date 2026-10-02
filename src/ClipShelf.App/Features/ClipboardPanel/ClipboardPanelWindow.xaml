@@ -34,19 +34,26 @@
     <!-- History with its loading/empty/error overlay -->
     <Grid Grid.Row="1">
       <ListView x:Name="ClipList"
-                Padding="12,0"
+                Padding="0"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 ItemTemplate="{StaticResource ClipItemTemplate}"
-                SelectionMode="None"
+                SelectionMode="Single"
+                SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
                 IsItemClickEnabled="True"
                 ItemClick="OnItemClick">
         <ListView.Resources>
-          <!-- Rows are click-to-paste; the hover fill reads like a selection in dark theme. -->
+          <!-- Hover stays quiet; the keyboard selection is a soft accent wash. -->
           <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
           <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
-          <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
-          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
-          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="Transparent" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelected"
+                           Color="{ThemeResource SystemAccentColor}"
+                           Opacity="0.16" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver"
+                           Color="{ThemeResource SystemAccentColor}"
+                           Opacity="0.20" />
+          <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed"
+                           Color="{ThemeResource SystemAccentColor}"
+                           Opacity="0.24" />
         </ListView.Resources>
         <ListView.ItemContainerTransitions>
           <TransitionCollection />
@@ -54,9 +61,9 @@
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="0,5" />
+            <Setter Property="Padding" Value="12,5" />
             <Setter Property="MinHeight" Value="0" />
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="CornerRadius" Value="0" />
           </Style>
         </ListView.ItemContainerStyle>
       </ListView>
