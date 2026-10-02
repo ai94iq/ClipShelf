@@ -258,6 +258,34 @@
         </StackPanel>
       </Border>
 
+      <!-- Updates -->
+      <TextBlock Text="{l:Tr Key=Settings_Updates}"
+                 Style="{StaticResource BodyTextBlockStyle}"
+                 Margin="0,26,0,8"
+                 Visibility="{x:Bind ViewModel.ShowUpdatesGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+      <Border Style="{StaticResource SettingsGroupBorder}"
+              Visibility="{x:Bind ViewModel.ShowUpdatesGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <StackPanel>
+          <common:SettingsCard Header="{l:Tr Key=Settings_CheckUpdates}"
+                               Description="{l:Tr Key=Settings_CheckUpdatesHint}">
+            <Button Content="{l:Tr Key=Settings_CheckUpdatesButton}"
+                    MinHeight="36"
+                    IsEnabled="{x:Bind ViewModel.CanCheckUpdates, Mode=OneWay}"
+                    Click="OnCheckUpdatesClick" />
+          </common:SettingsCard>
+          <TextBlock Text="{x:Bind ViewModel.UpdateStatus, Mode=OneWay}"
+                     Style="{StaticResource CaptionTextBlockStyle}"
+                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                     TextWrapping="Wrap"
+                     Margin="16,0,16,12"
+                     Visibility="{x:Bind ViewModel.HasUpdateStatus, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+          <HyperlinkButton Content="{l:Tr Key=Settings_Download}"
+                           Margin="8,0,0,8"
+                           NavigateUri="https://github.com/ai94iq/ClipShelf/releases/latest"
+                           Visibility="{x:Bind ViewModel.UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+        </StackPanel>
+      </Border>
+
       <!-- Exit -->
       <Border Style="{StaticResource SettingsGroupBorder}"
               Margin="0,26,0,0"

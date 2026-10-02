@@ -116,9 +116,13 @@
   <data name="Settings_Categories" xml:space="preserve"><value>Categories</value></data>
   <data name="Settings_CategoriesEmpty" xml:space="preserve"><value>Press the folder button on any clip to make one.</value></data>
   <data name="Settings_ChangePassword" xml:space="preserve"><value>Change password…</value></data>
+  <data name="Settings_CheckUpdates" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="Settings_CheckUpdatesButton" xml:space="preserve"><value>Check now</value></data>
+  <data name="Settings_CheckUpdatesHint" xml:space="preserve"><value>Compares this build with the newest GitHub release.</value></data>
   <data name="Settings_ClearOnSignOut" xml:space="preserve"><value>Clear history when I sign out</value></data>
   <data name="Settings_ClearOnSignOutHint" xml:space="preserve"><value>Removes unpinned clips when you sign out or shut down.</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
+  <data name="Settings_Download" xml:space="preserve"><value>Download</value></data>
   <data name="Settings_ExitApp" xml:space="preserve"><value>Exit ClipShelf</value></data>
   <data name="Settings_ExitHint" xml:space="preserve"><value>Stops clipboard capture and removes the tray icon.</value></data>
   <data name="Settings_Export" xml:space="preserve"><value>Export clips</value></data>
@@ -154,6 +158,10 @@
   <data name="Settings_Tray" xml:space="preserve"><value>Tray</value></data>
   <data name="Settings_TrayIcon" xml:space="preserve"><value>Tray icon</value></data>
   <data name="Settings_UnlockCategory" xml:space="preserve"><value>Unlock…</value></data>
+  <data name="Settings_UpdateAvailable" xml:space="preserve"><value>Version {0} is available.</value></data>
+  <data name="Settings_UpdateCurrent" xml:space="preserve"><value>ClipShelf {0} is the latest version.</value></data>
+  <data name="Settings_UpdateFailed" xml:space="preserve"><value>Couldn't check for updates.</value></data>
+  <data name="Settings_Updates" xml:space="preserve"><value>Updates</value></data>
   <data name="Theme_Black" xml:space="preserve"><value>Full black</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>

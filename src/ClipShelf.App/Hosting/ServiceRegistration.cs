@@ -50,6 +50,7 @@ public static class ServiceRegistration
         services.AddSingleton<SessionCleanup>();
         services.AddSingleton<IDateFormatter, DateFormatter>();
         services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
+        services.AddSingleton<IUpdateChecker, UpdateChecker>();
 
         // Shell: Singleton. Pages and their ViewModels: Transient.
         // When adding navigation, register WPF-UI services exactly as the installed WPF-UI 4.x sample does.

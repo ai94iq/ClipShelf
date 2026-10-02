@@ -29,6 +29,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return — on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
 - Rename and delete categories in Settings; deleting a category keeps its clips in the history without a category.
 - The flyout is keyboard-first: ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
+- Settings can check GitHub for a newer release — once per run or on demand — and links straight to the download.
 - Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed

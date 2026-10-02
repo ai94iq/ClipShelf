@@ -23,7 +23,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly ICategoryRepository _categories;
     private readonly ICategoryLockService _locks;
     private readonly ILockPasswordService _passwords;
+    private readonly IUpdateChecker _updates;
     private readonly ILogger<SettingsViewModel> _log;
+    private bool _checkedForUpdates;
     private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
 
@@ -36,6 +38,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ICategoryRepository categories,
         ICategoryLockService locks,
         ILockPasswordService passwords,
+        IUpdateChecker updates,
         ILogger<SettingsViewModel> log)
     {
         _settings = settings;
@@ -46,6 +49,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _categories = categories;
         _locks = locks;
         _passwords = passwords;
+        _updates = updates;
         _log = log;
 
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
@@ -204,6 +208,59 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(PasswordButtonText));
     }
 
+    // Update check: once per run from the page, or on demand from the button.
+    [ObservableProperty]
+    public partial string? UpdateStatus { get; set; }
+
+    [ObservableProperty]
+    public partial bool UpdateAvailable { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsCheckingUpdates { get; set; }
+
+    public bool CanCheckUpdates => !IsCheckingUpdates;
+
+    public bool HasUpdateStatus => !string.IsNullOrEmpty(UpdateStatus);
+
+    public async Task CheckForUpdatesOnceAsync()
+    {
+        if (_checkedForUpdates) return;
+
+        // A failed check is retried on the next visit; a successful one is not repeated.
+        _checkedForUpdates = await CheckForUpdatesAsync();
+    }
+
+    public async Task<bool> CheckForUpdatesAsync()
+    {
+        if (IsCheckingUpdates) return false;
+
+        IsCheckingUpdates = true;
+        try
+        {
+            var newer = await _updates.NewerVersionAsync(CancellationToken.None);
+            UpdateAvailable = newer is not null;
+            UpdateStatus = newer is null
+                ? Tr.Format("Settings_UpdateCurrent", UpdateChecker.CurrentVersion)
+                : Tr.Format("Settings_UpdateAvailable", newer);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "Checking for updates failed");
+            UpdateAvailable = false;
+            UpdateStatus = Tr.Get("Settings_UpdateFailed");
+            return false;
+        }
+        finally
+        {
+            IsCheckingUpdates = false;
+        }
+    }
+
+    partial void OnIsCheckingUpdatesChanged(bool value) => OnPropertyChanged(nameof(CanCheckUpdates));
+
+    partial void OnUpdateStatusChanged(string? value) => OnPropertyChanged(nameof(HasUpdateStatus));
+
     // Category locks: each category can hide its clips behind its own password.
     public ObservableCollection<CategoryRow> CategoryRows { get; } = [];
 
@@ -285,6 +342,10 @@ public sealed partial class SettingsViewModel : ObservableObject
             "Settings_LockWhen", "Settings_LockOnExit", "Settings_LockOnMinimize", "Settings_LockOnShutdown",
             "Settings_LockCategory", "Settings_LockNow", "Settings_UnlockCategory", "Settings_RenameCategory",
         ],
+        [
+            "Settings_Updates", "Settings_CheckUpdates", "Settings_CheckUpdatesHint",
+            "Settings_CheckUpdatesButton", "Settings_Download",
+        ],
     ];
 
     private static readonly string[] ExitKeys = ["Settings_ExitApp", "Settings_ExitHint"];
@@ -300,6 +361,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool ShowExportGroup => IsGroupVisible(Filter, 4);
 
     public bool ShowCategoriesGroup => IsGroupVisible(Filter, 5);
+
+    public bool ShowUpdatesGroup => IsGroupVisible(Filter, 6);
 
     public bool ShowExitGroup => IsExitVisible(Filter);
 
@@ -320,6 +383,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowHistoryGroup));
         OnPropertyChanged(nameof(ShowExportGroup));
         OnPropertyChanged(nameof(ShowCategoriesGroup));
+        OnPropertyChanged(nameof(ShowUpdatesGroup));
         OnPropertyChanged(nameof(ShowExitGroup));
         OnPropertyChanged(nameof(ShowNoMatches));
     }

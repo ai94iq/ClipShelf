@@ -24,9 +24,13 @@ public sealed partial class SettingsPage : UserControl
 
     public SettingsViewModel ViewModel { get; }
 
-    public Task LoadAsync() => ViewModel.RefreshCategoriesAsync();
+    public Task LoadAsync() => Task.WhenAll(
+        ViewModel.RefreshCategoriesAsync(), ViewModel.CheckForUpdatesOnceAsync());
 
     private void OnExit(object sender, RoutedEventArgs e) => _shell.Value.Exit();
+
+    private async void OnCheckUpdatesClick(object sender, RoutedEventArgs e) =>
+        await ViewModel.CheckForUpdatesAsync();
 
     private async void OnExportClick(object sender, RoutedEventArgs e)
     {

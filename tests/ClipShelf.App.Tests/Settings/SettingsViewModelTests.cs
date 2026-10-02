@@ -21,6 +21,7 @@ public sealed class SettingsViewModelTests
     private readonly ICategoryRepository _categories = Substitute.For<ICategoryRepository>();
     private readonly CategoryLockService _locks;
     private readonly ILockPasswordService _passwords;
+    private readonly IUpdateChecker _updates = Substitute.For<IUpdateChecker>();
     private readonly FakeStartupRegistration _startup = new();
 
     public SettingsViewModelTests()
@@ -186,6 +187,7 @@ public sealed class SettingsViewModelTests
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 3));
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 4));
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 5));
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 6));
         Assert.True(viewModel.IsExitVisible(viewModel.Filter));
         Assert.False(viewModel.HasNoMatches(viewModel.Filter));
     }
@@ -541,7 +543,77 @@ public sealed class SettingsViewModelTests
         Assert.DoesNotContain(8, _locks.UnlockedCategoryIds);
     }
 
+    [Fact]
+    public async Task Checking_for_updates_reports_a_newer_release()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>()).Returns("0.3.0");
+        var viewModel = Create();
+
+        await viewModel.CheckForUpdatesAsync();
+
+        Assert.True(viewModel.UpdateAvailable);
+        Assert.Equal(Tr.Format("Settings_UpdateAvailable", "0.3.0"), viewModel.UpdateStatus);
+    }
+
+    [Fact]
+    public async Task An_up_to_date_check_reports_the_current_version()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>()).Returns((string?)null);
+        var viewModel = Create();
+
+        await viewModel.CheckForUpdatesAsync();
+
+        Assert.False(viewModel.UpdateAvailable);
+        Assert.Equal(Tr.Format("Settings_UpdateCurrent", UpdateChecker.CurrentVersion), viewModel.UpdateStatus);
+    }
+
+    [Fact]
+    public async Task A_failed_check_reports_it()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<string?>(new IOException("offline")));
+        var viewModel = Create();
+
+        await viewModel.CheckForUpdatesAsync();
+
+        Assert.Equal(Tr.Get("Settings_UpdateFailed"), viewModel.UpdateStatus);
+    }
+
+    [Fact]
+    public async Task The_automatic_check_runs_once()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>()).Returns((string?)null);
+        var viewModel = Create();
+
+        await viewModel.CheckForUpdatesOnceAsync();
+        await viewModel.CheckForUpdatesOnceAsync();
+
+        await _updates.Received(1).NewerVersionAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task A_failed_automatic_check_tries_again_next_time()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<string?>(new IOException("offline")));
+        var viewModel = Create();
+
+        await viewModel.CheckForUpdatesOnceAsync();
+        await viewModel.CheckForUpdatesOnceAsync();
+
+        await _updates.Received(2).NewerVersionAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public void Filtering_by_updates_keeps_the_updates_group()
+    {
+        var viewModel = Create();
+        viewModel.Filter = "updates";
+
+        Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 6));
+    }
+
     private SettingsViewModel Create() =>
-        new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords,
+        new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords, _updates,
             NullLogger<SettingsViewModel>.Instance);
 }
