@@ -49,3 +49,41 @@ jobs:
           } else {
             gh release create "$env:GITHUB_REF_NAME" $msi --title "$env:GITHUB_REF_NAME" --generate-notes
           }
+
+      - name: Refresh the winget manifests
+        shell: pwsh
+        run: |
+          [xml]$props = Get-Content -Raw Directory.Build.props
+          $version = $props.SelectSingleNode('/Project/PropertyGroup/Version').InnerText
+          $msi = (Get-ChildItem artifacts\installer\*.msi -Recurse | Select-Object -First 1).FullName
+          $hash = (Get-FileHash $msi -Algorithm SHA256).Hash
+
+          $installer = New-Object -ComObject WindowsInstaller.Installer
+          $db = $installer.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $installer, @($msi, 0))
+          $view = $db.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $db, @("SELECT Value FROM Property WHERE Property='ProductCode'"))
+          $view.GetType().InvokeMember('Execute', 'InvokeMethod', $null, $view, $null) | Out-Null
+          $record = $view.GetType().InvokeMember('Fetch', 'InvokeMethod', $null, $view, $null)
+          $code = $record.GetType().InvokeMember('StringData', 'GetProperty', $null, $record, 1)
+
+          foreach ($file in Get-ChildItem packaging\winget -Filter '*.yaml') {
+            $text = Get-Content -Raw $file.FullName
+            $text = $text -replace '(?m)^PackageVersion: .*$', "PackageVersion: $version"
+            $text = $text -replace 'https://github\.com/ai94iq/ClipShelf/releases/download/v[\d.]+/ClipShelf-Setup-[\d.]+\.msi', "https://github.com/ai94iq/ClipShelf/releases/download/v$version/ClipShelf-Setup-$version.msi"
+            $text = $text -replace '(?m)^    InstallerSha256: .*$', "    InstallerSha256: $hash"
+            $text = $text -replace '(?m)^ProductCode: .*$', "ProductCode: `"$code`""
+            $text = $text -replace 'https://github\.com/ai94iq/ClipShelf/releases/tag/v[\d.]+', "https://github.com/ai94iq/ClipShelf/releases/tag/v$version"
+            Set-Content $file.FullName $text -NoNewline
+          }
+
+      # Needs a repository secret WINGET_TOKEN (a GitHub token with public_repo). Without it the
+      # submission is skipped, and the manifests above stay refreshed for a manual submission.
+      - name: Submit to winget
+        if: ${{ secrets.WINGET_TOKEN != '' }}
+        continue-on-error: true
+        shell: pwsh
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          winget install --id Microsoft.WingetCreate -e --accept-source-agreements --accept-package-agreements
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          wingetcreate submit --prtitle "New version: ai94iq.ClipShelf version $version" --token $env:WINGET_TOKEN packaging\winget
