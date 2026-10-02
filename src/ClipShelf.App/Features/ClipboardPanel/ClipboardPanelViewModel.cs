@@ -258,7 +258,23 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
             return;
         }
 
+        // Image clips load their full image before it goes back to the clipboard.
+        if (item.HasImage)
+        {
+            _ = ActivateImageAsync(item);
+            return;
+        }
+
         _clipboard.WriteText(item.Text);
+        ItemActivated?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task ActivateImageAsync(ClipItemViewModel item)
+    {
+        var image = await _repository.GetImageAsync(item.Id, CancellationToken.None);
+        if (image is null) return;
+
+        await _clipboard.WriteImageAsync(image);
         ItemActivated?.Invoke(this, EventArgs.Empty);
     }
 
@@ -382,7 +398,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     [RelayCommand]
     private void CopySelected()
     {
-        var texts = Items.Where(item => item.IsSelected).Select(item => item.Text).ToArray();
+        // Images have no text to join; they are left out of a multi-copy.
+        var texts = Items.Where(item => item.IsSelected && !item.HasImage).Select(item => item.Text).ToArray();
         if (texts.Length == 0) return;
 
         _clipboard.WriteText(string.Join("\r\n", texts));

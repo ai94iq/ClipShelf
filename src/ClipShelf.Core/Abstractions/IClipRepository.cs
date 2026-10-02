@@ -7,6 +7,13 @@ public interface IClipRepository
 {
     Task AddOrBumpAsync(string text, string? appName, DateTimeOffset copiedAtUtc, CancellationToken ct);
 
+    // Image clips store the full PNG plus a small thumbnail; re-copying the same image bumps it.
+    Task AddImageAsync(
+        byte[] image, byte[] thumbnail, string? appName, DateTimeOffset copiedAtUtc, CancellationToken ct);
+
+    // The full image for pasting back; null for text clips or missing rows.
+    Task<byte[]?> GetImageAsync(long id, CancellationToken ct);
+
     Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
         PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
         IReadOnlyCollection<long>? unlockedCategories = null);

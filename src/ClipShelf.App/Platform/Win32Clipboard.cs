@@ -43,6 +43,65 @@ internal static class Win32Clipboard
         }
     }
 
+    // True when the clipboard holds an image (CF_DIB, which Windows also synthesizes from CF_DIBV5).
+    public static bool HasImage()
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            if (NativeMethods.OpenClipboard(IntPtr.Zero))
+            {
+                try
+                {
+                    return NativeMethods.IsClipboardFormatAvailable(NativeMethods.ClipboardFormatDib);
+                }
+                finally
+                {
+                    NativeMethods.CloseClipboard();
+                }
+            }
+
+            if (attempt >= Retries) return false;
+            Thread.Sleep(RetryDelayMs);
+        }
+    }
+
+    // The raw CF_DIB bytes; the codec turns them into a PNG.
+    public static byte[]? TryReadImage()
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            if (NativeMethods.OpenClipboard(IntPtr.Zero))
+            {
+                try
+                {
+                    var handle = NativeMethods.GetClipboardData(NativeMethods.ClipboardFormatDib);
+                    if (handle == IntPtr.Zero) return null;
+
+                    var size = (int)NativeMethods.GlobalSize(handle);
+                    var pointer = NativeMethods.GlobalLock(handle);
+                    if (pointer == IntPtr.Zero || size <= 0) return null;
+                    try
+                    {
+                        var bytes = new byte[size];
+                        Marshal.Copy(pointer, bytes, 0, size);
+                        return bytes;
+                    }
+                    finally
+                    {
+                        NativeMethods.GlobalUnlock(handle);
+                    }
+                }
+                finally
+                {
+                    NativeMethods.CloseClipboard();
+                }
+            }
+
+            if (attempt >= Retries) return null;
+            Thread.Sleep(RetryDelayMs);
+        }
+    }
+
     public static bool TryWriteText(string text)
     {
         for (var attempt = 0; ; attempt++)

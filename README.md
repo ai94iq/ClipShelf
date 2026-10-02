@@ -31,6 +31,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 
 **Capture and history**
 - Capture copied text into a local SQLite history; re-copying a clip moves it to the top instead of duplicating it.
+- Copied images are kept alongside text, shown as thumbnails, and paste back as images (multi-copy and export cover text clips).
 - Browse the full history in its own window, grouped into Pinned and Recent, with readable app names ("Chrome", "Word") and relative times.
 - Search the history, pin clips, delete single clips, or clear everything unpinned; a placeholder explains an empty history, an empty search and an empty category.
 
@@ -46,7 +47,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - Choose when locks return — on exit, on minimize, or on shutdown/sign-out.
 
 **Export**
-- Export the whole history to JSON or CSV from Settings, including each clip's category.
+- Export the text history to JSON or CSV from Settings, including each clip's category.
 - One password (stored only as a salted hash) guards exporting and locked categories.
 
 **Appearance**

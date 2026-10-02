@@ -395,6 +395,38 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task An_image_clip_round_trips_with_its_thumbnail()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+        byte[] image = [1, 2, 3, 4, 5];
+        byte[] thumbnail = [9, 9];
+
+        await repo.AddImageAsync(image, thumbnail, "Snipping Tool", T0, ct);
+
+        var item = Assert.Single(await repo.GetRecentAsync(null, 50, ct));
+        Assert.True(item.HasImage);
+        Assert.Equal(thumbnail, item.ThumbnailBytes);
+        Assert.Equal(string.Empty, item.Text);
+        Assert.Equal<byte[]?>(image, await repo.GetImageAsync(item.Id, ct));
+    }
+
+    [Fact]
+    public async Task A_text_clip_has_no_image()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("hello", null, T0, ct);
+        var item = Assert.Single(await repo.GetRecentAsync(null, 50, ct));
+
+        Assert.False(item.HasImage);
+        Assert.Null(await repo.GetImageAsync(item.Id, ct));
+    }
+
+    [Fact]
     public async Task Writes_notify_open_views()
     {
         using var db = new TempDatabase();

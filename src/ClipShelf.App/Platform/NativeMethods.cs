@@ -14,6 +14,7 @@ internal static class NativeMethods
     internal const uint MessageEndSession = 0x0016;
 
     internal const uint ClipboardFormatUnicodeText = 13;
+    internal const uint ClipboardFormatDib = 8;
     internal const uint GlobalMemoryMoveable = 0x0002;
     internal const uint GlobalMemoryZeroInit = 0x0040;
 
@@ -64,6 +65,13 @@ internal static class NativeMethods
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr GetClipboardData(uint format);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool IsClipboardFormatAvailable(uint format);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern nuint GlobalSize(IntPtr memory);
 
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr SetClipboardData(uint format, IntPtr memory);

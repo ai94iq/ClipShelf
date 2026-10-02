@@ -649,6 +649,49 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Null(vm.SelectedItem);
     }
 
+    [Fact]
+    public async Task Activating_an_image_clip_writes_the_image()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>
+            {
+                new(1, string.Empty, "Snipping Tool", false,
+                    new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", 1), null, null, [1, 2, 3]),
+            });
+        _repository.GetImageAsync(1, Arg.Any<CancellationToken>()).Returns(new byte[] { 1, 2, 3 });
+        var vm = Create();
+        await vm.RefreshAsync();
+        var signalled = false;
+        vm.ItemActivated += (_, _) => signalled = true;
+
+        vm.Activate(vm.Items[0]);
+
+        await _clipboard.Received(1).WriteImageAsync(Arg.Is<byte[]>(bytes => bytes.Length == 3));
+        _clipboard.DidNotReceive().WriteText(Arg.Any<string>());
+        Assert.True(signalled);
+    }
+
+    [Fact]
+    public async Task Copying_selected_clips_skips_images()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>
+            {
+                Item(1, "one"),
+                new(2, string.Empty, "Snipping Tool", false,
+                    new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", 2), null, null, [1, 2, 3]),
+            });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        vm.Items[0].IsSelected = true;
+        vm.Items[1].IsSelected = true;
+
+        vm.CopySelectedCommand.Execute(null);
+
+        _clipboard.Received(1).WriteText("one");
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

@@ -31,6 +31,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - The flyout is keyboard-first: ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
 - Settings can check GitHub for a newer release — once per run or on demand — and links straight to the download.
 - A one-time welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
+- Copied images are kept too: rows show a thumbnail and picking one puts the image back on the clipboard; multi-copy and export stay text-only.
 - Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed

@@ -130,7 +130,7 @@
   <data name="Settings_ExportEmpty" xml:space="preserve"><value>There was nothing to export.</value></data>
   <data name="Settings_ExportFailed" xml:space="preserve"><value>The clips couldn't be saved.</value></data>
   <data name="Settings_ExportFileName" xml:space="preserve"><value>{0}-Export-{1}</value></data>
-  <data name="Settings_ExportHint" xml:space="preserve"><value>Save the whole history as a JSON or CSV file.</value></data>
+  <data name="Settings_ExportHint" xml:space="preserve"><value>Save the text history as a JSON or CSV file.</value></data>
   <data name="Settings_History" xml:space="preserve"><value>History</value></data>
   <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>

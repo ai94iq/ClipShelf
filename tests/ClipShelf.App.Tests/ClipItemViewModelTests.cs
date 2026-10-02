@@ -44,7 +44,18 @@ public sealed class ClipItemViewModelTests
         Assert.Equal("Work · now", item.SourceText);
     }
 
-    private ClipItemViewModel Create(string? appName, long? categoryId = null, string? categoryName = null)
+    [Fact]
+    public void An_image_clip_shows_a_thumbnail_instead_of_the_preview()
+    {
+        var item = Create("chrome", thumbnail: [1, 2, 3]);
+
+        Assert.True(item.HasImage);
+        Assert.False(item.ShowPreview);
+        Assert.Equal(new byte[] { 1, 2, 3 }, item.ThumbnailBytes);
+    }
+
+    private ClipItemViewModel Create(
+        string? appName, long? categoryId = null, string? categoryName = null, byte[]? thumbnail = null)
     {
         var panel = new ClipboardPanelViewModel(
             Substitute.For<IClipRepository>(),
@@ -56,7 +67,7 @@ public sealed class ClipItemViewModelTests
             NullLogger<ClipboardPanelViewModel>.Instance);
         var model = new ClipListItem(
             1, "text", appName, false, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero),
-            new PageCursor("k", 1), categoryId, categoryName);
+            new PageCursor("k", 1), categoryId, categoryName, thumbnail);
 
         return new ClipItemViewModel(model, _dates, panel);
     }

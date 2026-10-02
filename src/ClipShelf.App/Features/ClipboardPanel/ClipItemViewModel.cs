@@ -53,6 +53,8 @@ public sealed partial class ClipItemViewModel : ObservableObject
         CategoryId = model.CategoryId;
         CategoryName = model.CategoryName;
         IsPinned = model.IsPinned;
+        HasImage = model.HasImage;
+        ThumbnailBytes = model.ThumbnailBytes;
         TimeText = dates.FormatSince(model.CreatedAtUtc);
     }
 
@@ -61,6 +63,18 @@ public sealed partial class ClipItemViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasImage { get; set; }
+
+    // The bytes the row template turns into the thumbnail.
+    [ObservableProperty]
+    public partial byte[]? ThumbnailBytes { get; set; }
+
+    // Image clips show their thumbnail instead of the text preview.
+    public bool ShowPreview => !HasImage;
+
+    partial void OnHasImageChanged(bool value) => OnPropertyChanged(nameof(ShowPreview));
 
     // The checkbox only exists while the panel is in select mode.
     public bool ShowSelection => _panel.IsSelecting;

@@ -21,6 +21,33 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             changes.Notify(new DataChanged("clip"));
         }, ct);
 
+    public Task AddImageAsync(
+        byte[] image, byte[] thumbnail, string? appName, DateTimeOffset copiedAtUtc, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            connection.Execute(
+                """
+                INSERT INTO Clip (Text, TextHash, AppName, CreatedAtUtc, ImageBytes, ThumbnailBytes)
+                VALUES ('', @hash, @appName, @createdAt, @image, @thumbnail)
+                ON CONFLICT(TextHash) DO UPDATE SET
+                    CreatedAtUtc   = excluded.CreatedAtUtc,
+                    AppName        = excluded.AppName,
+                    ImageBytes     = excluded.ImageBytes,
+                    ThumbnailBytes = excluded.ThumbnailBytes
+                """,
+                new { hash = ClipText.HashBytes(image), appName, createdAt = Iso(copiedAtUtc), image, thumbnail });
+            changes.Notify(new DataChanged("clip"));
+        }, ct);
+
+    public Task<byte[]?> GetImageAsync(long id, CancellationToken ct) =>
+        Task.Run<byte[]?>(() =>
+        {
+            using var connection = factory.Open();
+            return connection.ExecuteScalar<byte[]?>(
+                "SELECT ImageBytes FROM Clip WHERE Id = @id;", new { id });
+        }, ct);
+
     public Task<IReadOnlyList<ClipListItem>> GetRecentAsync(
         PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
         IReadOnlyCollection<long>? unlockedCategories = null) =>
@@ -30,7 +57,7 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             return Read(connection,
                 """
                 SELECT c.Id, c.Text, c.AppName, c.IsPinned, c.CreatedAtUtc, c.CategoryId,
-                       cat.Name AS CategoryName
+                       cat.Name AS CategoryName, c.ThumbnailBytes
                 FROM Clip c
                 LEFT JOIN Category cat ON cat.Id = c.CategoryId
                 WHERE (@key IS NULL
@@ -55,7 +82,7 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
             return Read(connection,
                 """
                 SELECT c.Id, c.Text, c.AppName, c.IsPinned, c.CreatedAtUtc, c.CategoryId,
-                       cat.Name AS CategoryName
+                       cat.Name AS CategoryName, c.ThumbnailBytes
                 FROM Clip c
                 LEFT JOIN Category cat ON cat.Id = c.CategoryId
                 WHERE c.Text LIKE @like ESCAPE '\'
@@ -154,7 +181,8 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 DateTimeOffset.Parse(r.CreatedAtUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
                 new PageCursor(r.CreatedAtUtc, r.Id),
                 r.CategoryId,
-                r.CategoryName))
+                r.CategoryName,
+                r.ThumbnailBytes))
             .ToList();
 
     private static object Paging(
@@ -178,5 +206,12 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
 
     // Row records use only long/string so Dapper's constructor mapping matches SQLite types.
     private sealed record ClipRow(
-        long Id, string Text, string? AppName, long IsPinned, string CreatedAtUtc, long? CategoryId, string? CategoryName);
+        long Id,
+        string Text,
+        string? AppName,
+        long IsPinned,
+        string CreatedAtUtc,
+        long? CategoryId,
+        string? CategoryName,
+        byte[]? ThumbnailBytes);
 }

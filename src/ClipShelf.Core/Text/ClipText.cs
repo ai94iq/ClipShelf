@@ -15,6 +15,9 @@ public static class ClipText
     public static string Hash(string text) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text.ReplaceLineEndings("\n").Trim())));
 
+    // Image clips deduplicate on the bytes themselves.
+    public static string HashBytes(byte[] bytes) => Convert.ToHexString(SHA256.HashData(bytes));
+
     // One flattened line for the list row; the full text is kept for pasting.
     public static string Preview(string text, int maxLength = 200)
     {

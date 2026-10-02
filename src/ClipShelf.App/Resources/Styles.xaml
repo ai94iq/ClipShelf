@@ -7,6 +7,7 @@
   <common:LoadStateToVisibilityConverter x:Key="LoadStateVisible" />
   <common:PinIconConverter x:Key="PinIcon" />
   <common:BoolToVisibilityConverter x:Key="BoolVisible" />
+  <common:BytesToImageConverter x:Key="BytesToImage" />
 
   <!-- App font: Segoe UI (the app ships English only) -->
   <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
@@ -61,10 +62,22 @@
                 Visibility="{Binding ShowSelection, Converter={StaticResource BoolVisible}}" />
 
       <StackPanel Grid.Column="1" VerticalAlignment="Center">
+        <Border Visibility="{Binding HasImage, Converter={StaticResource BoolVisible}}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                HorizontalAlignment="Left"
+                Margin="0,2">
+          <Image Source="{Binding ThumbnailBytes, Converter={StaticResource BytesToImage}}"
+                 MaxWidth="160"
+                 MaxHeight="72"
+                 Stretch="Uniform" />
+        </Border>
         <TextBlock Text="{Binding Preview}"
                    FontSize="13"
                    TextTrimming="CharacterEllipsis"
-                   TextWrapping="NoWrap" />
+                   TextWrapping="NoWrap"
+                   Visibility="{Binding ShowPreview, Converter={StaticResource BoolVisible}}" />
         <TextBlock Text="{Binding SourceText}"
                    FontSize="11"
                    TextTrimming="CharacterEllipsis"
