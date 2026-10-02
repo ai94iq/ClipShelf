@@ -4,6 +4,15 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-02
+
+### Added
+- Rename and delete categories in Settings; deleting a category keeps its clips in the history without a category.
+- The flyout is keyboard-first: ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
+- Settings can check GitHub for a newer release — once per run or on demand — and links straight to the download.
+- A one-time welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
+- Copied images are kept too: rows show a thumbnail and picking one puts the image back on the clipboard; multi-copy and export stay text-only.
+
 ## [0.2.0] - 2026-10-02
 
 ### Added
@@ -27,11 +36,6 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
 - Set a password in Settings; it is asked before exporting the history and before opening a locked category.
 - Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return — on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
-- Rename and delete categories in Settings; deleting a category keeps its clips in the history without a category.
-- The flyout is keyboard-first: ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
-- Settings can check GitHub for a newer release — once per run or on demand — and links straight to the download.
-- A one-time welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
-- Copied images are kept too: rows show a thumbnail and picking one puts the image back on the clipboard; multi-copy and export stay text-only.
 - Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed
