@@ -4,6 +4,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-02
+
 ### Fixed
 - Switching the Windows light/dark theme while ClipShelf runs now updates the tray icon at once; it used to keep the variant it picked at startup until a setting changed or the app restarted.
 
