@@ -2,6 +2,7 @@ using ClipShelf.App.Platform;
 using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 using H.NotifyIcon;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -17,8 +18,11 @@ public sealed class AppShellService : IDisposable
     private readonly SettingsService _settings;
     private readonly ICategoryLockService _locks;
     private readonly TaskbarIcon _trayIcon = new();
+    private readonly SystemThemeWatcher _themeWatcher = new();
+    private readonly DispatcherQueue _dispatcher = DispatcherQueue.GetForCurrentThread();
     private TrayIconKind? _appliedTrayIcon;
     private bool? _appliedShowTrayIcon;
+    private string? _appliedTrayIconFile;
     private HotkeyGesture? _appliedHotkey;
 
     public AppShellService(
@@ -42,9 +46,18 @@ public sealed class AppShellService : IDisposable
         _trayIcon.LeftClickCommand = new AsyncRelayCommand(TogglePanelAsync);
         _trayIcon.DoubleClickCommand = new RelayCommand(OpenHistoryOnDoubleClick);
         _trayIcon.ContextFlyout = BuildMenu();
-        _trayIcon.ForceCreate();
+        // Efficiency Mode (the library's default) throttles the background process: Windows
+        // signalled a theme change at once but scheduled the callback 165-400 ms later, the longer
+        // the app had been idle. Responsiveness matters more than the process's tiny power draw.
+        _trayIcon.ForceCreate(enablesEfficiencyMode: false);
         ApplyTraySettings();
         _settings.Changed += (_, _) => OnSettingsChanged();
+
+        // The taskbar theme can change while the app is running; the registry watch reports the
+        // write the moment it happens, and the pump's WM_SETTINGCHANGE handling stays as the
+        // fallback. Either way the icon picks the matching variant without a restart.
+        _themeWatcher.Changed += OnSystemThemeChanged;
+        MessagePump.SystemThemeChanged += OnSystemThemeChanged;
 
         _hotkey.Pressed += (_, _) => _ = TogglePanelAsync();
         ApplyHotkey();
@@ -73,6 +86,9 @@ public sealed class AppShellService : IDisposable
 
     public void Dispose()
     {
+        _themeWatcher.Changed -= OnSystemThemeChanged;
+        MessagePump.SystemThemeChanged -= OnSystemThemeChanged;
+        _themeWatcher.Dispose();
         _trayIcon.Dispose();
         _hotkey.Dispose();
     }
@@ -113,18 +129,25 @@ public sealed class AppShellService : IDisposable
         _appliedTrayIcon = current.TrayIcon;
         _appliedShowTrayIcon = current.ShowTrayIcon;
         _trayIcon.Visibility = current.ShowTrayIcon ? Visibility.Visible : Visibility.Collapsed;
-        _trayIcon.IconSource = new BitmapImage(new Uri(Path.Combine(
-            AppContext.BaseDirectory, "Assets", TrayIconFile(current.TrayIcon))));
+        ApplyTrayIcon(current.TrayIcon);
     }
 
-    private static string TrayIconFile(TrayIconKind kind)
+    // Re-checks the resolved file first, so repeated theme notifications and settings saves that
+    // resolve to the same variant never churn the shell icon.
+    private void ApplyTrayIcon(TrayIconKind kind)
     {
-        var variant = SystemTheme.TaskbarIsLight()
-            ? kind == TrayIconKind.Outline ? "tray-outline-light.ico" : "tray-light.ico"
-            : kind == TrayIconKind.Outline ? "tray-outline-dark.ico" : "tray-dark.ico";
+        var file = TrayIconFiles.FileName(kind, SystemTheme.TaskbarIsLight());
+        if (file == _appliedTrayIconFile) return;
 
-        return variant;
+        _appliedTrayIconFile = file;
+        _trayIcon.IconSource = new BitmapImage(new Uri(Path.Combine(
+            AppContext.BaseDirectory, "Assets", file)));
     }
+
+    // The registry watch fires on a pool thread, so every signal is queued to the UI thread the
+    // tray icon lives on; the file guard in ApplyTrayIcon squashes duplicates from both signals.
+    private void OnSystemThemeChanged() =>
+        _dispatcher.TryEnqueue(() => ApplyTrayIcon(_settings.Current.TrayIcon));
 
     private MenuFlyout BuildMenu()
     {

@@ -3,8 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace ClipShelf.App.Platform;
 
-// A single hidden, message-only window that receives clipboard and hotkey messages on the UI
-// thread (WinUI pumps them for us). One window is enough for both listeners.
+// A single hidden, top-level window that receives clipboard, hotkey and system setting messages
+// on the UI thread (WinUI pumps them for us). One window is enough for all listeners. It is
+// top-level rather than message-only because Windows broadcasts theme changes (WM_SETTINGCHANGE
+// with "ImmersiveColorSet") only to top-level windows.
 internal static class MessagePump
 {
     private const string ClassName = "ClipShelf.MessageWindow";
@@ -22,6 +24,10 @@ internal static class MessagePump
 
     public static event Action<int>? HotkeyPressed;
 
+    // Raised when Windows switches the light/dark theme; the notification area follows the
+    // taskbar variant, which is read from the registry when this fires.
+    public static event Action? SystemThemeChanged;
+
     public static void EnsureCreated()
     {
         if (Handle != IntPtr.Zero) return;
@@ -29,7 +35,7 @@ internal static class MessagePump
         RegisterClass();
         Handle = NativeMethods.CreateWindowEx(
             0, ClassName, ClassName, 0, 0, 0, 0, 0,
-            NativeMethods.MessageOnlyParent, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
         if (Handle == IntPtr.Zero)
             throw new Win32Exception(Marshal.GetLastWin32Error(), "Creating the message window failed.");
@@ -63,8 +69,18 @@ internal static class MessagePump
             case NativeMethods.MessageHotkey:
                 HotkeyPressed?.Invoke((int)wParam);
                 break;
+            case NativeMethods.MessageSettingChange:
+                if (IsImmersiveColorSet(lParam)) SystemThemeChanged?.Invoke();
+                break;
+            case NativeMethods.MessageThemeChanged:
+                SystemThemeChanged?.Invoke();
+                break;
         }
 
         return NativeMethods.DefWindowProc(window, message, wParam, lParam);
     }
+
+    private static bool IsImmersiveColorSet(IntPtr lParam) =>
+        lParam != IntPtr.Zero
+        && string.Equals(Marshal.PtrToStringUni(lParam), "ImmersiveColorSet", StringComparison.OrdinalIgnoreCase);
 }

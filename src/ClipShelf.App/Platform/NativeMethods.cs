@@ -12,6 +12,8 @@ internal static class NativeMethods
     internal const uint MessageClipboardUpdate = 0x031D;
     internal const uint MessageHotkey = 0x0312;
     internal const uint MessageEndSession = 0x0016;
+    internal const uint MessageSettingChange = 0x001A;
+    internal const uint MessageThemeChanged = 0x031A;
 
     internal const uint ClipboardFormatUnicodeText = 13;
     internal const uint ClipboardFormatDib = 8;
@@ -25,6 +27,12 @@ internal static class NativeMethods
     internal const uint ModNoRepeat = 0x4000;
 
     internal const int ErrorClassAlreadyExists = 1410;
+
+    // HKEY_CURRENT_USER (0x80000001 sign-extended) and the registry-notification flags used by
+    // the theme watcher.
+    internal static readonly IntPtr HkeyCurrentUser = new(unchecked((int)0x80000001));
+    internal const uint KeyNotify = 0x0010;
+    internal const uint NotifyChangeLastSet = 0x00000004;
 
     internal const int GwlExStyle = -20;
     internal const int GwlStyle = -16;
@@ -48,8 +56,20 @@ internal static class NativeMethods
     internal const byte VirtualKeyV = 0x56;
     internal const uint KeyEventKeyUp = 0x0002;
 
-    // HWND_MESSAGE (-3): a message-only window that is never shown.
-    internal static readonly IntPtr MessageOnlyParent = new(-3);
+    // The theme watcher: blocks on (or is signalled by) writes to the Personalize key.
+    [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    internal static extern int RegOpenKeyEx(IntPtr key, string subKey, uint options, uint access, out IntPtr result);
+
+    [DllImport("advapi32.dll", SetLastError = true)]
+    internal static extern int RegCloseKey(IntPtr key);
+
+    [DllImport("advapi32.dll", SetLastError = true)]
+    internal static extern int RegNotifyChangeKeyValue(
+        IntPtr key,
+        [MarshalAs(UnmanagedType.Bool)] bool watchSubtree,
+        uint filter,
+        IntPtr eventHandle,
+        [MarshalAs(UnmanagedType.Bool)] bool asynchronous);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

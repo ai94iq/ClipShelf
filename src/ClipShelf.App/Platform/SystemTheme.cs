@@ -6,10 +6,12 @@ namespace ClipShelf.App.Platform;
 // icon is chosen to stay visible on either a light or a dark taskbar.
 internal static class SystemTheme
 {
+    internal const string PersonalizeKey =
+        @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+
     public static bool TaskbarIsLight()
     {
-        using var key = Registry.CurrentUser.OpenSubKey(
-            @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+        using var key = Registry.CurrentUser.OpenSubKey(PersonalizeKey);
         return key?.GetValue("SystemUsesLightTheme") is int value && value != 0;
     }
 }
