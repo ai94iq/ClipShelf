@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+PackageIdentifier: ai94iq.ClipShelf
+PackageVersion: 0.2.0
+InstallerType: wix
+Scope: machine
+UpgradeBehavior: install
+ProductCode: "{1BBCD6C9-A9BA-4896-9F0B-A3520A3A1BB6}"
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/ai94iq/ClipShelf/releases/download/v0.2.0/ClipShelf-Setup-0.2.0.msi
+    InstallerSha256: 6BFB62CFC29B6CCEA2325A11102210D3053F2300AA3EBE6D05CE87413DB63371
+ManifestType: installer
+ManifestVersion: 1.6.0

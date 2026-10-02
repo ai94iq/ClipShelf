@@ -125,7 +125,7 @@ The UI is currently English-only. `Strings.resx` (neutral) and `Strings.en.resx`
 
 ## Releases
 
-Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/release.md). History: [CHANGELOG.md](CHANGELOG.md).
+Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/release.md). History: [CHANGELOG.md](CHANGELOG.md). winget manifests: [packaging/winget](packaging/winget) (see [docs/winget.md](docs/winget.md)).
 
 ## Built with
 
