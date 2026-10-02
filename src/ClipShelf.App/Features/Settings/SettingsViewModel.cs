@@ -239,6 +239,20 @@ public sealed partial class SettingsViewModel : ObservableObject
         await RefreshCategoriesAsync();
     }
 
+    public async Task<bool> RenameCategoryAsync(long id, string name)
+    {
+        var renamed = await _categories.RenameAsync(id, name.Trim(), CancellationToken.None);
+        if (renamed) await RefreshCategoriesAsync();
+        return renamed;
+    }
+
+    public async Task DeleteCategoryAsync(long id)
+    {
+        await _categories.DeleteAsync(id, CancellationToken.None);
+        _locks.Lock(id);
+        await RefreshCategoriesAsync();
+    }
+
     // Default name for the save dialog: ClipShelf-Export-2026-10-01-1432.
     public string SuggestedExportFileName =>
         Tr.Format("Settings_ExportFileName",
@@ -269,7 +283,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             "Settings_Categories", "Settings_CategoriesEmpty",
             "Settings_LockPassword", "Settings_LockPasswordHint",
             "Settings_LockWhen", "Settings_LockOnExit", "Settings_LockOnMinimize", "Settings_LockOnShutdown",
-            "Settings_LockCategory", "Settings_LockNow", "Settings_UnlockCategory",
+            "Settings_LockCategory", "Settings_LockNow", "Settings_UnlockCategory", "Settings_RenameCategory",
         ],
     ];
 

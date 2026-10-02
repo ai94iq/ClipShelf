@@ -229,18 +229,26 @@
                       <Button Content="{l:Tr Key=Settings_LockCategory}"
                               MinHeight="36"
                               Tag="lock"
-                              Click="OnCategoryLockClick"
+                              Click="OnCategoryActionClick"
                               Visibility="{x:Bind ShowLock, Converter={StaticResource BoolVisible}}" />
                       <Button Content="{l:Tr Key=Settings_UnlockCategory}"
                               MinHeight="36"
                               Tag="unlock"
-                              Click="OnCategoryLockClick"
+                              Click="OnCategoryActionClick"
                               Visibility="{x:Bind ShowUnlock, Converter={StaticResource BoolVisible}}" />
                       <Button Content="{l:Tr Key=Settings_LockNow}"
                               MinHeight="36"
                               Tag="locknow"
-                              Click="OnCategoryLockClick"
+                              Click="OnCategoryActionClick"
                               Visibility="{x:Bind ShowLockNow, Converter={StaticResource BoolVisible}}" />
+                      <Button Content="{l:Tr Key=Settings_RenameCategory}"
+                              MinHeight="36"
+                              Tag="rename"
+                              Click="OnCategoryActionClick" />
+                      <Button Content="{l:Tr Key=Common_Delete}"
+                              MinHeight="36"
+                              Tag="delete"
+                              Click="OnCategoryActionClick" />
                     </StackPanel>
                   </common:SettingsCard>
                 </StackPanel>

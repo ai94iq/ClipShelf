@@ -12,15 +12,20 @@
   <data name="Backdrop_MicaAlt" xml:space="preserve"><value>Mica Alt</value></data>
   <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
   <data name="Category_Create" xml:space="preserve"><value>Create</value></data>
+  <data name="Category_DeleteConfirm" xml:space="preserve"><value>Delete "{0}"? Its clips stay in the history and lose their category.</value></data>
+  <data name="Category_DeleteTitle" xml:space="preserve"><value>Delete category</value></data>
+  <data name="Category_Exists" xml:space="preserve"><value>A category with this name already exists.</value></data>
   <data name="Category_New" xml:space="preserve"><value>New category…</value></data>
   <data name="Category_NewPlaceholder" xml:space="preserve"><value>Category name</value></data>
   <data name="Category_NewTitle" xml:space="preserve"><value>New category</value></data>
   <data name="Category_None" xml:space="preserve"><value>No category</value></data>
+  <data name="Category_RenameTitle" xml:space="preserve"><value>Rename category</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
   <data name="Clip_Time_Now" xml:space="preserve"><value>now</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Common_Disabled" xml:space="preserve"><value>Disabled</value></data>
   <data name="Common_Enabled" xml:space="preserve"><value>Enabled</value></data>
   <data name="Common_Exit" xml:space="preserve"><value>Exit</value></data>
@@ -137,6 +142,7 @@
   <data name="Settings_MaxItems" xml:space="preserve"><value>Maximum history items</value></data>
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
+  <data name="Settings_RenameCategory" xml:space="preserve"><value>Rename…</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>

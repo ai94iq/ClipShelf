@@ -27,6 +27,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
 - Set a password in Settings; it is asked before exporting the history and before opening a locked category.
 - Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return — on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
+- Rename and delete categories in Settings; deleting a category keeps its clips in the history without a category.
 - Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed

@@ -40,7 +40,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - Select several clips and copy them together as one multi-line text.
 
 **Categories**
-- Save clips into named categories from the folder button on any row; create a category on the spot.
+- Save clips into named categories from the folder button on any row; create a category on the spot, and rename or delete them in Settings.
 - Filter the full history by category; categorized clips are kept out of Clear, the history limit and retention.
 - Lock a category to hide its clips from the history, the flyout, search and exports; opening it asks for the password.
 - Choose when locks return — on exit, on minimize, or on shutdown/sign-out.

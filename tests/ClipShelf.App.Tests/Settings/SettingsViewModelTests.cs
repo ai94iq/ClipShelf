@@ -501,6 +501,46 @@ public sealed class SettingsViewModelTests
         Assert.Equal(AppTheme.Light, viewModel.SelectedTheme.Value);
     }
 
+    [Fact]
+    public async Task Renaming_a_category_refreshes_the_list()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>())
+            .Returns(new List<Category> { new(7, "Projects") });
+        _categories.RenameAsync(7, "Projects", Arg.Any<CancellationToken>()).Returns(true);
+        var viewModel = Create();
+
+        var renamed = await viewModel.RenameCategoryAsync(7, " Projects ");
+
+        Assert.True(renamed);
+        await _categories.Received(1).RenameAsync(7, "Projects", Arg.Any<CancellationToken>());
+        Assert.Equal("Projects", Assert.Single(viewModel.CategoryRows).Name);
+    }
+
+    [Fact]
+    public async Task Renaming_to_a_taken_name_changes_nothing()
+    {
+        _categories.RenameAsync(7, "Work", Arg.Any<CancellationToken>()).Returns(false);
+        var viewModel = Create();
+
+        var renamed = await viewModel.RenameCategoryAsync(7, "Work");
+
+        Assert.False(renamed);
+        await _categories.DidNotReceive().GetCategoriesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Deleting_a_category_forgets_its_unlock()
+    {
+        _categories.GetCategoriesAsync(Arg.Any<CancellationToken>()).Returns(new List<Category>());
+        var viewModel = Create();
+        _locks.Unlock(8);
+
+        await viewModel.DeleteCategoryAsync(8);
+
+        await _categories.Received(1).DeleteAsync(8, Arg.Any<CancellationToken>());
+        Assert.DoesNotContain(8, _locks.UnlockedCategoryIds);
+    }
+
     private SettingsViewModel Create() =>
         new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords,
             NullLogger<SettingsViewModel>.Instance);

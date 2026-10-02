@@ -65,7 +65,7 @@ public sealed partial class SettingsPage : UserControl
             await ViewModel.RemoveLockPasswordAsync();
     }
 
-    private async void OnCategoryLockClick(object sender, RoutedEventArgs e)
+    private async void OnCategoryActionClick(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { DataContext: CategoryRow row } element) return;
 
@@ -89,7 +89,69 @@ public sealed partial class SettingsPage : UserControl
                 if (await PasswordPrompt.VerifyAsync(XamlRoot, ViewModel.VerifyLockPassword))
                     await ViewModel.UnlockCategoryAsync(row.Id);
                 break;
+            case "rename":
+                await RenameCategoryAsync(row);
+                break;
+            case "delete":
+                await DeleteCategoryAsync(row);
+                break;
         }
+    }
+
+    private async Task RenameCategoryAsync(CategoryRow row)
+    {
+        var box = new TextBox { Text = row.Name };
+        var error = new TextBlock { TextWrapping = TextWrapping.Wrap, Visibility = Visibility.Collapsed };
+        var content = new StackPanel { Spacing = 8 };
+        content.Children.Add(box);
+        content.Children.Add(error);
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = Tr.Get("Category_RenameTitle"),
+            Content = content,
+            PrimaryButtonText = Tr.Get("Common_Save"),
+            CloseButtonText = Tr.Get("Common_Cancel"),
+            DefaultButton = ContentDialogButton.Primary,
+            IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(row.Name),
+        };
+        box.TextChanged += (_, _) => dialog.IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(box.Text);
+        dialog.PrimaryButtonClick += async (_, args) =>
+        {
+            // Keep the dialog open while the name is checked, and on a taken name.
+            var deferral = args.GetDeferral();
+            try
+            {
+                if (await ViewModel.RenameCategoryAsync(row.Id, box.Text)) return;
+
+                error.Text = Tr.Get("Category_Exists");
+                error.Visibility = Visibility.Visible;
+                args.Cancel = true;
+            }
+            finally
+            {
+                deferral.Complete();
+            }
+        };
+
+        await dialog.ShowAsync();
+    }
+
+    private async Task DeleteCategoryAsync(CategoryRow row)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = Tr.Get("Category_DeleteTitle"),
+            Content = Tr.Format("Category_DeleteConfirm", row.Name),
+            PrimaryButtonText = Tr.Get("Common_Delete"),
+            CloseButtonText = Tr.Get("Common_Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            await ViewModel.DeleteCategoryAsync(row.Id);
     }
 
     private void OnHotkeyClick(object sender, RoutedEventArgs e)

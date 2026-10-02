@@ -42,6 +42,30 @@ public sealed class CategoryRepository(SqliteConnectionFactory factory, IDataCha
             changes.Notify(new DataChanged("clip")); // locking hides the category's clips
         }, ct);
 
+    public Task<bool> RenameAsync(long id, string name, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            var taken = connection.ExecuteScalar<long>(
+                "SELECT COUNT(*) FROM Category WHERE Name = @name COLLATE NOCASE AND Id <> @id;",
+                new { name, id });
+            if (taken > 0) return false;
+
+            connection.Execute("UPDATE Category SET Name = @name WHERE Id = @id;", new { name, id });
+            changes.Notify(new DataChanged("category"));
+            return true;
+        }, ct);
+
+    public Task DeleteAsync(long id, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            // The foreign key clears CategoryId on the category's clips (ON DELETE SET NULL).
+            connection.Execute("DELETE FROM Category WHERE Id = @id;", new { id });
+            changes.Notify(new DataChanged("category"));
+            changes.Notify(new DataChanged("clip"));
+        }, ct);
+
     public Task ClearLocksAsync(CancellationToken ct) =>
         Task.Run(() =>
         {

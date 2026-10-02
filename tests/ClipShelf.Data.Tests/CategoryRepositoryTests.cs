@@ -67,6 +67,55 @@ public sealed class CategoryRepositoryTests
     }
 
     [Fact]
+    public async Task Renaming_a_category_updates_it()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+        var work = await repo.GetOrAddAsync("Work", ct);
+
+        var renamed = await repo.RenameAsync(work.Id, "Projects", ct);
+
+        Assert.True(renamed);
+        Assert.Equal("Projects", Assert.Single(await repo.GetCategoriesAsync(ct)).Name);
+    }
+
+    [Fact]
+    public async Task Renaming_to_a_name_in_use_is_rejected()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+        var work = await repo.GetOrAddAsync("Work", ct);
+        await repo.GetOrAddAsync("Personal", ct);
+
+        var renamed = await repo.RenameAsync(work.Id, "personal", ct);
+
+        Assert.False(renamed);
+        Assert.Equal("Work", (await repo.GetCategoriesAsync(ct)).Single(c => c.Id == work.Id).Name);
+    }
+
+    [Fact]
+    public async Task Deleting_a_category_leaves_its_clips_uncategorized()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var clips = new ClipRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+        var work = await repo.GetOrAddAsync("Work", ct);
+        await clips.AddOrBumpAsync(
+            "saved", null, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), ct);
+        var clip = (await clips.GetRecentAsync(null, 50, ct))[0];
+        await clips.AssignCategoryAsync(clip.Id, work.Id, ct);
+
+        await repo.DeleteAsync(work.Id, ct);
+
+        Assert.Empty(await repo.GetCategoriesAsync(ct));
+        var kept = Assert.Single(await clips.GetRecentAsync(null, 50, ct));
+        Assert.Null(kept.CategoryId);
+    }
+
+    [Fact]
     public async Task Adding_a_category_notifies_open_views()
     {
         using var db = new TempDatabase();
