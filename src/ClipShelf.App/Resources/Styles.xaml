@@ -8,6 +8,7 @@
   <common:PinIconConverter x:Key="PinIcon" />
   <common:BoolToVisibilityConverter x:Key="BoolVisible" />
   <common:BytesToImageConverter x:Key="BytesToImage" />
+  <common:ErrorBrushConverter x:Key="ErrorBrush" />
 
   <!-- App font: Segoe UI (the app ships English only) -->
   <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
@@ -18,6 +19,12 @@
   <!-- Icons take the secondary text color on every theme (destructive buttons tint them on hover). -->
   <Style TargetType="common:AppIcon">
     <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+  </Style>
+
+  <!-- Error messages: the critical system brush, red in every theme. -->
+  <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
 
   <!-- Spacing tokens (4 px grid). Use these instead of literal margins. -->

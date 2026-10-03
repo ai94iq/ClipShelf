@@ -277,6 +277,7 @@ public sealed class SettingsViewModelTests
 
         await _export.Received(1).ExportAsync("out.json", ClipExportFormat.Json, Arg.Any<CancellationToken>());
         Assert.True(viewModel.HasExportStatus);
+        Assert.False(viewModel.IsExportError);
         Assert.Equal(
             Tr.Format("Settings_ExportDone", Tr.Plural("History_Count", 3)),
             viewModel.ExportStatus);
@@ -305,6 +306,21 @@ public sealed class SettingsViewModelTests
         await viewModel.ExportAsync("out.json");
 
         Assert.Equal(Tr.Get("Settings_ExportFailed"), viewModel.ExportStatus);
+        Assert.True(viewModel.IsExportError);
+    }
+
+    [Fact]
+    public async Task Retrying_the_export_clears_the_error_mark()
+    {
+        _export.ExportAsync(Arg.Any<string>(), Arg.Any<ClipExportFormat>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<int>(new IOException("disk full")));
+        var viewModel = Create();
+        await viewModel.ExportAsync("out.json");
+
+        _export.ExportAsync(Arg.Any<string>(), Arg.Any<ClipExportFormat>(), Arg.Any<CancellationToken>()).Returns(2);
+        await viewModel.ExportAsync("out.json");
+
+        Assert.False(viewModel.IsExportError);
     }
 
     [Fact]
@@ -553,6 +569,7 @@ public sealed class SettingsViewModelTests
 
         Assert.True(viewModel.UpdateAvailable);
         Assert.Equal(Tr.Format("Settings_UpdateAvailable", "0.3.0"), viewModel.UpdateStatus);
+        Assert.False(viewModel.IsUpdateError);
     }
 
     [Fact]
@@ -577,6 +594,21 @@ public sealed class SettingsViewModelTests
         await viewModel.CheckForUpdatesAsync();
 
         Assert.Equal(Tr.Get("Settings_UpdateFailed"), viewModel.UpdateStatus);
+        Assert.True(viewModel.IsUpdateError);
+    }
+
+    [Fact]
+    public async Task Retrying_the_update_check_clears_the_error_mark()
+    {
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<string?>(new IOException("offline")));
+        var viewModel = Create();
+        await viewModel.CheckForUpdatesAsync();
+
+        _updates.NewerVersionAsync(Arg.Any<CancellationToken>()).Returns((string?)null);
+        await viewModel.CheckForUpdatesAsync();
+
+        Assert.False(viewModel.IsUpdateError);
     }
 
     [Fact]

@@ -166,7 +166,7 @@
           </common:SettingsCard>
           <TextBlock Text="{x:Bind ViewModel.ExportStatus, Mode=OneWay}"
                      Style="{StaticResource CaptionTextBlockStyle}"
-                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                     Foreground="{x:Bind ViewModel.IsExportError, Mode=OneWay, Converter={StaticResource ErrorBrush}}"
                      TextWrapping="Wrap"
                      Margin="16,0,16,12"
                      Visibility="{x:Bind ViewModel.HasExportStatus, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
@@ -275,7 +275,7 @@
           </common:SettingsCard>
           <TextBlock Text="{x:Bind ViewModel.UpdateStatus, Mode=OneWay}"
                      Style="{StaticResource CaptionTextBlockStyle}"
-                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                     Foreground="{x:Bind ViewModel.IsUpdateError, Mode=OneWay, Converter={StaticResource ErrorBrush}}"
                      TextWrapping="Wrap"
                      Margin="16,0,16,12"
                      Visibility="{x:Bind ViewModel.HasUpdateStatus, Mode=OneWay, Converter={StaticResource BoolVisible}}" />

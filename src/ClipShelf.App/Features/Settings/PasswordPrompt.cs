@@ -132,7 +132,7 @@ internal static class PasswordPrompt
 
     private static TextBlock ErrorText() => new()
     {
-        TextWrapping = TextWrapping.Wrap,
+        Style = (Style)Application.Current.Resources["ErrorTextStyle"],
         Visibility = Visibility.Collapsed,
     };
 }

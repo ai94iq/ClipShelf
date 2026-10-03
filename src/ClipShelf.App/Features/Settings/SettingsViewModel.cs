@@ -174,6 +174,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial string? ExportStatus { get; set; }
 
+    // True while ExportStatus holds a failure, so the page shows it in red.
+    [ObservableProperty]
+    public partial bool IsExportError { get; set; }
+
     public bool CanExport => !IsExporting;
 
     public bool HasExportStatus => !string.IsNullOrEmpty(ExportStatus);
@@ -212,6 +216,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial string? UpdateStatus { get; set; }
 
+    // True while UpdateStatus holds a failure, so the page shows it in red.
+    [ObservableProperty]
+    public partial bool IsUpdateError { get; set; }
+
     [ObservableProperty]
     public partial bool UpdateAvailable { get; set; }
 
@@ -242,6 +250,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             UpdateStatus = newer is null
                 ? Tr.Format("Settings_UpdateCurrent", UpdateChecker.CurrentVersion)
                 : Tr.Format("Settings_UpdateAvailable", newer);
+            IsUpdateError = false;
             return true;
         }
         catch (Exception ex)
@@ -249,6 +258,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             _log.LogError(ex, "Checking for updates failed");
             UpdateAvailable = false;
             UpdateStatus = Tr.Get("Settings_UpdateFailed");
+            IsUpdateError = true;
             return false;
         }
         finally
@@ -501,6 +511,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         IsExporting = true;
         ExportStatus = null;
+        IsExportError = false;
         try
         {
             var count = await _export.ExportAsync(path, SelectedExportFormat.Value, CancellationToken.None);
@@ -512,6 +523,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             _log.LogError(ex, "Exporting clips failed");
             ExportStatus = Tr.Get("Settings_ExportFailed");
+            IsExportError = true;
         }
         finally
         {
