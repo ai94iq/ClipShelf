@@ -4,6 +4,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-03
+
 ### Fixed
 - Errors now show in red: a failed history load, a wrong password, and a failed export or update check stand out from the normal status text.
 
