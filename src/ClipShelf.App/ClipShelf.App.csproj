@@ -15,7 +15,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <SatelliteResourceLanguages>ar;en</SatelliteResourceLanguages>
+    <SatelliteResourceLanguages>ar</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>

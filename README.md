@@ -122,7 +122,7 @@ Uninstalling keeps this folder. The history database is encrypted with SQLCipher
 
 ## Localization
 
-The UI is currently English-only. `Strings.resx` (neutral) and `Strings.en.resx` contain matching English text and keys. Dates and numbers follow the system locale. See [docs/localization.md](docs/localization.md).
+English is the primary language; Arabic ships as a satellite and is selectable in Settings → Appearance → Language (a restart applies it). `Strings.resx` (English, neutral) and `Strings.ar.resx` keep matching keys. See [docs/localization.md](docs/localization.md).
 
 ## Contributing
 

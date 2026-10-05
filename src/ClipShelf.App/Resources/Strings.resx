@@ -135,6 +135,8 @@
   <data name="Settings_Hotkey" xml:space="preserve"><value>Global shortcut</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings_LanguageHint" xml:space="preserve"><value>Takes effect after a restart.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>Lock</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>Lock now</value></data>
   <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit ClipShelf</value></data>

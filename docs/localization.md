@@ -1,11 +1,11 @@
 # Localization
 
-English is the only UI language for now: `Strings.resx` (neutral) and `Strings.en.resx` hold the same English text, so the app shows English on any culture. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this. Adding a language later means filling the satellite file and wiring it in `Culture`.
+English is the neutral language in `Strings.resx`; Arabic ships as the satellite in `Strings.ar.resx`. Pick the language in Settings → Appearance → Language (English / العربية); the change applies after a restart (`Culture.Configure` reads it once) and the layout flips to RTL in Arabic. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this.
 
 ## Key naming
 
 `Feature_Element_Purpose` in PascalCase segments: `People_Search_Placeholder`, `Common_Save`, `Error_Database_Locked`.
-Plurals: `Base_zero`, `Base_one`, `Base_two`, `Base_few`, `Base_many`, `Base_other`, used through `Tr.Plural`.
+Plurals: `Base_zero`, `Base_one`, `Base_two`, `Base_few`, `Base_many`, `Base_other`, used through `Tr.Plural`, which picks English rules (zero/one/other) or Arabic CLDR rules (0, 1, 2, 3-10, 11-99, 100+) by the current UI culture.
 
 ## Glossary
 

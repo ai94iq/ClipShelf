@@ -2,7 +2,7 @@ using System.Resources;
 
 namespace ClipShelf.App.Localization;
 
-// The only way to get user-visible text. Keys live in Resources/Strings.resx (ar) and Strings.en.resx.
+// The only way to get user-visible text. Keys live in Resources/Strings.resx (English, neutral) and Strings.ar.resx.
 public static class Tr
 {
     // RootNamespace + folder + file name. There is deliberately no generated Designer.cs.
@@ -15,17 +15,34 @@ public static class Tr
     public static string Format(string key, params object?[] args) =>
         string.Format(CultureInfo.CurrentCulture, Get(key), args);
 
-    // English plural forms: zero, one, other. The six-key convention (zero/one/two/few/many/other)
-    // keeps the resx ready for a locale with richer rules.
+    // Six-key convention (zero/one/two/few/many/other): English uses zero/one/other,
+    // Arabic uses all six (CLDR: 0, 1, 2, 3-10, 11-99, 100+).
     public static string Plural(string key, int count)
     {
-        var form = count switch
+        var form = Form(count, CultureInfo.CurrentUICulture);
+        return Format($"{key}_{form}", count);
+    }
+
+    private static string Form(int count, CultureInfo culture)
+    {
+        if (culture.TwoLetterISOLanguageName == "ar")
+        {
+            return count switch
+            {
+                0 => "zero",
+                1 => "one",
+                2 => "two",
+                <= 10 => "few",
+                <= 99 => "many",
+                _ => "other",
+            };
+        }
+
+        return count switch
         {
             0 => "zero",
             1 => "one",
             _ => "other",
         };
-
-        return Format($"{key}_{form}", count);
     }
 }

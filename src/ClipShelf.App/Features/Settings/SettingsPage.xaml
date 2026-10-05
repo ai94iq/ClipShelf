@@ -33,6 +33,16 @@
                       DisplayMemberPath="Label"
                       SelectedItem="{x:Bind ViewModel.SelectedBackdrop, Mode=TwoWay}" />
           </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_Language}"
+                               Description="{l:Tr Key=Settings_LanguageHint}">
+            <ComboBox MinWidth="240"
+                      MinHeight="36"
+                      AutomationProperties.Name="{l:Tr Key=Settings_Language}"
+                      ItemsSource="{x:Bind ViewModel.LanguageOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}" />
+          </common:SettingsCard>
         </StackPanel>
       </Border>
 

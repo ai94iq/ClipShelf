@@ -16,6 +16,7 @@ public sealed partial class WelcomeWindow : Window
         AppWindow.Resize(new SizeInt32(460, 360));
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(TitleArea);
+        this.ApplyCultureDirection();
         Center();
 
         WelcomeHotkey = Tr.Format("Welcome_Hotkey", HotkeyText.Format(settings.Current.Hotkey));
