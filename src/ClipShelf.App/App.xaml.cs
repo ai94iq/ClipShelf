@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml.Media;
 using Serilog;
 using ClipShelf.App.Shell;
 
@@ -41,6 +42,9 @@ public sealed partial class App : Application
         try
         {
             ThemeSurfaces.Apply(_settings.Theme);
+            // Control text follows the app font too (TextBlocks read the {l:AppFont} extension).
+            Application.Current.Resources["ContentControlThemeFontFamily"] =
+                new FontFamily(AppFonts.Family(Culture.IsRtl));
 
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddSerilog();        // uses the static Log.Logger

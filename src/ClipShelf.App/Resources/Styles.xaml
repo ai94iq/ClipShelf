@@ -10,10 +10,10 @@
   <common:BytesToImageConverter x:Key="BytesToImage" />
   <common:ErrorBrushConverter x:Key="ErrorBrush" />
 
-  <!-- App font: Segoe UI (the app ships English only) -->
-  <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <!-- App font: the system Segoe stack, or the bundled Noto Sans Arabic in an Arabic UI.
+       Control text uses the ContentControlThemeFontFamily key, set in App.OnLaunched. -->
   <Style TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
+    <Setter Property="FontFamily" Value="{l:AppFont}" />
   </Style>
 
   <!-- Icons take the secondary text color on every theme (destructive buttons tint them on hover). -->
