@@ -4,6 +4,99 @@
              xmlns:l="using:ClipShelf.App.Localization"
              xmlns:common="using:ClipShelf.App.Common"
              xmlns:settings="using:ClipShelf.App.Features.Settings">
+  <UserControl.Resources>
+    <!-- Accent swatches: plain colored circles, no radio glyph. The selected one carries a ring
+         and a check; hover and keyboard focus draw their own rings. Radio semantics are kept. -->
+    <Style x:Key="AccentSwatchRadio" TargetType="RadioButton">
+      <Setter Property="Width" Value="40" />
+      <Setter Property="Height" Value="40" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RadioButton">
+            <Grid Width="40" Height="40" Background="Transparent">
+              <Ellipse x:Name="FocusRing"
+                       Width="40" Height="40"
+                       Stroke="{ThemeResource FocusStrokeColorOuterBrush}"
+                       StrokeThickness="2"
+                       Opacity="0" />
+              <Ellipse x:Name="HoverRing"
+                       Width="34" Height="34"
+                       Stroke="{ThemeResource ControlStrokeColorDefaultBrush}"
+                       StrokeThickness="2"
+                       Opacity="0" />
+              <Ellipse x:Name="SelectionRing"
+                       Width="28" Height="28"
+                       Stroke="{ThemeResource TextFillColorPrimaryBrush}"
+                       StrokeThickness="2"
+                       Opacity="0" />
+              <Ellipse Width="20" Height="20" Fill="{TemplateBinding Background}" />
+              <common:AppIcon x:Name="Check"
+                              Kind="Checkmark"
+                              Width="12" Height="12"
+                              Foreground="White"
+                              Opacity="0" />
+              <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                  <VisualState x:Name="Normal">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="HoverRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="PointerOver">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="HoverRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="Pressed">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="HoverRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="Disabled" />
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="CheckStates">
+                  <VisualState x:Name="Unchecked">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="SelectionRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                      <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="Checked">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="SelectionRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                      <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="Indeterminate" />
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="FocusStates">
+                  <VisualState x:Name="Unfocused">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="PointerFocused">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                  <VisualState x:Name="Focused">
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                    </Storyboard>
+                  </VisualState>
+                </VisualStateGroup>
+              </VisualStateManager.VisualStateGroups>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+
   <ScrollViewer>
     <StackPanel Padding="24,18,24,24">
       <TextBlock Text="{l:Tr Key=Nav_Settings}" Style="{StaticResource TitleTextBlockStyle}" />
@@ -36,15 +129,13 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <!-- Swatches are the one place a literal color is allowed -->
-                  <RadioButton GroupName="Accent"
-                               MinWidth="0"
-                               Padding="6,4"
+                  <RadioButton Style="{StaticResource AccentSwatchRadio}"
+                               GroupName="Accent"
+                               Background="{Binding Value, Converter={StaticResource AccentSwatch}}"
                                IsChecked="{Binding IsSelected, Mode=OneWay}"
                                Checked="OnAccentChecked"
                                ToolTipService.ToolTip="{Binding Label}"
-                               AutomationProperties.Name="{Binding Label}">
-                    <Ellipse Width="20" Height="20" Fill="{Binding Value, Converter={StaticResource AccentSwatch}}" />
-                  </RadioButton>
+                               AutomationProperties.Name="{Binding Label}" />
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
