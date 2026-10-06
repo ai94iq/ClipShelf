@@ -57,6 +57,11 @@ public sealed partial class App : Application
             var database = _host.Services.GetRequiredService<DatabaseInitializer>();
             await Task.Run(database.BackupAndMigrate);
 
+            // SQLCipher derives the key (~0.4 s) on every new physical connection and Dapper warms
+            // its mappers on first use; a few pooled connections warmed in the background keep the
+            // first copy, flyout open or history open from paying that stall.
+            _ = WarmUpAsync(_host.Services);
+
             // Tray-first: nothing opens at startup. The tray icon and the clipboard watcher keep
             // the app alive in the notification area until the user exits from the tray menu.
             var shell = _host.Services.GetRequiredService<AppShellService>();
@@ -98,6 +103,25 @@ public sealed partial class App : Application
     {
         Shutdown();     // disposes the host, which disposes the tray icon and the clipboard watcher
         Exit();
+    }
+
+    // Fire-and-forget: the tray appears immediately; the warm-up finishes within a second or two.
+    private static async Task WarmUpAsync(IServiceProvider services)
+    {
+        try
+        {
+            var clips = services.GetRequiredService<IClipRepository>();
+            var categories = services.GetRequiredService<ICategoryRepository>();
+            await Task.WhenAll(
+                clips.GetRecentAsync(null, 1, CancellationToken.None),
+                clips.CountAsync(null, null, null, CancellationToken.None),
+                categories.GetCategoriesAsync(CancellationToken.None),
+                clips.GetRecentAsync(null, 1, CancellationToken.None));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Database warm-up failed");
+        }
     }
 
     // A language change needs a fresh process: release everything (including the single-instance
