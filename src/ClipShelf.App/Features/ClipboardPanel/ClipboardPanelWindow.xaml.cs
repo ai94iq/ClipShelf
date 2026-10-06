@@ -30,8 +30,6 @@ public sealed partial class ClipboardPanelWindow : Window
 
         // The search box's clear button sits at the end edge; keep its inset on that side in RTL.
         SearchBox.Padding = Culture.IsRtl ? new Thickness(8, 0, 0, 0) : new Thickness(0, 0, 8, 0);
-        DestructiveHover.TintOnHover(ClearAllButton);
-        DestructiveHover.TintOnHover(ConfirmClearButton);
 
         _actions = new ClipboardPanelActions(this, viewModel, shell);
         _handle = WinRT.Interop.WindowNative.GetWindowHandle(this);

@@ -185,12 +185,17 @@
                   Width="32"
                   Height="28"
                   Padding="0"
+                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                   IsEnabled="{x:Bind ViewModel.HasItems, Mode=OneWay}"
                   ToolTipService.ToolTip="{l:Tr Key=Panel_ClearAll}"
                   AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
                   Command="{x:Bind ViewModel.RequestClearCommand}"
                   Visibility="{x:Bind ViewModel.ShowSelectButton, Mode=OneWay, Converter={StaticResource BoolVisible}}">
-            <common:AppIcon Kind="Delete" Width="16" Height="16" />
+            <Button.Resources>
+              <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource SystemFillColorCritical}" />
+              <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource SystemFillColorCritical}" />
+            </Button.Resources>
+            <common:AppIcon Kind="Delete" Width="16" Height="16" Foreground="{Binding Foreground, ElementName=ClearAllButton}" />
           </Button>
         </StackPanel>
       </Grid>
@@ -219,7 +224,12 @@
                     Padding="12,4"
                     FontSize="13"
                     HorizontalContentAlignment="Center"
-                    Command="{x:Bind ViewModel.ConfirmClearCommand}" />
+                    Command="{x:Bind ViewModel.ConfirmClearCommand}">
+              <Button.Resources>
+                <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource SystemFillColorCritical}" />
+                <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource SystemFillColorCritical}" />
+              </Button.Resources>
+            </Button>
             <Button Content="{l:Tr Key=Common_Cancel}"
                     MinWidth="0"
                     Height="28"

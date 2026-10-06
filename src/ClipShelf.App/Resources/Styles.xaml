@@ -134,16 +134,24 @@
                 AutomationProperties.Name="{l:Tr Key=Panel_Category}">
           <common:AppIcon Kind="Folder" Width="16" Height="16" />
         </Button>
-        <Button Background="Transparent"
+        <Button x:Name="DeleteButton"
+                Background="Transparent"
                 BorderThickness="0"
                 Width="30"
                 Height="30"
                 Padding="0"
                 AllowFocusOnInteraction="False"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 Command="{Binding DeleteCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"
                 AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
-          <common:AppIcon Kind="Delete" Width="16" Height="16" />
+          <Button.Resources>
+            <!-- The destructive tint follows the window's theme; a code lookup would read the
+                 system theme's color and wash out on the other one. -->
+            <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource SystemFillColorCritical}" />
+            <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource SystemFillColorCritical}" />
+          </Button.Resources>
+          <common:AppIcon Kind="Delete" Width="16" Height="16" Foreground="{Binding Foreground, ElementName=DeleteButton}" />
         </Button>
       </StackPanel>
     </Grid>

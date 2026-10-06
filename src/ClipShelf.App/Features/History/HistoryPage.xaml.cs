@@ -20,8 +20,6 @@ public sealed partial class HistoryPage : UserControl
         InitializeComponent();
         _grouped.Source = viewModel.Groups;
         ClipList.ItemsSource = _grouped.View;
-        DestructiveHover.TintOnHover(ClearAllButton);
-        DestructiveHover.TintOnHover(ConfirmClearButton);
         viewModel.CategoryMenuRequested += OnCategoryMenuRequested;
     }
 
@@ -59,7 +57,23 @@ public sealed partial class HistoryPage : UserControl
     }
 
     private void OnCategoryMenuRequested(ClipItemViewModel item) =>
-        _ = CategoryMenu.ShowAsync(ClipList.ContainerFromItem(item) as FrameworkElement ?? ClipList, item, ViewModel);
+        _ = CategoryMenu.ShowAsync(RowAnchor(item), item, ViewModel);
+
+    // The grouped source defeats ContainerFromItem, so the menu anchors to the realized row
+    // itself; without one it falls back to the list.
+    private FrameworkElement RowAnchor(ClipItemViewModel item)
+    {
+        if (ClipList.ContainerFromItem(item) is FrameworkElement container) return container;
+
+        if (ClipList.ItemsPanelRoot is { } panel)
+        {
+            foreach (var child in panel.Children)
+                if (child is ListViewItem { Content: ClipItemViewModel candidate } row && ReferenceEquals(candidate, item))
+                    return row;
+        }
+
+        return ClipList;
+    }
 
     // Picking a locked category asks for its password instead of showing an empty list.
     private async void OnCategoryFilterChanged(object sender, SelectionChangedEventArgs e)

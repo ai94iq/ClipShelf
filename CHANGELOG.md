@@ -20,6 +20,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Settings section headers use the stronger Fluent subtitle style.
 
 ### Fixed
+- Menu and dropdown options take the accent wash on hover instead of the default gray fill.
+- The row category menu opens anchored to its row in the history window instead of floating mid-window.
+- The delete hover tint follows the window's theme now (it used the system theme's color, which washed out to near-white on the light window), and the row delete icons get the same tint as the footer ones.
 - The history footer count and the settings status lines were nearly invisible in the Light theme; their color now follows the window's theme instead of the system theme.
 - The history window confirms a copy in green instead of the same gray as the count.
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.
