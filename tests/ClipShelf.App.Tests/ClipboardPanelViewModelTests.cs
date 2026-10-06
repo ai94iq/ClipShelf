@@ -944,6 +944,18 @@ public sealed class ClipboardPanelViewModelTests
         _clipboard.Received(1).WriteText("one");
     }
 
+    [Fact]
+    public async Task The_last_visible_row_follows_the_groups_not_the_raw_order()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(2, "recent"), Item(1, "pinned-oldest", pinned: true) });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        Assert.Equal("pinned-oldest", vm.Items[^1].Text);   // raw order ends on the pinned row
+        Assert.Equal("recent", vm.LastVisibleItem?.Text);   // the visible bottom is Recent's last row
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

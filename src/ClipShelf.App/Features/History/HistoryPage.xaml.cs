@@ -52,7 +52,7 @@ public sealed partial class HistoryPage : UserControl
     {
         if (args.Phase != 0 || args.InRecycleQueue) return;
         if (args.Item is not ClipItemViewModel item) return;
-        if (!ReferenceEquals(item, ViewModel.Items.LastOrDefault())) return;
+        if (!ReferenceEquals(item, ViewModel.LastVisibleItem)) return;
 
         if (ViewModel.LoadMoreCommand.CanExecute(null)) ViewModel.LoadMoreCommand.Execute(null);
     }

@@ -53,6 +53,10 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     // Grouped view (Pinned, then Recent) used by the full history page.
     public ObservableCollection<ClipGroup> Groups { get; } = [];
 
+    // The bottom row on screen: the end of the last group, which is what the views watch to load
+    // the next page. Items' raw order is recency order, not the display order.
+    public ClipItemViewModel? LastVisibleItem => Groups.Count == 0 ? null : Groups[^1].LastOrDefault();
+
     public bool HasItems => Items.Count > 0;
 
     // The total the current query can show, not just the loaded page, so the footer tells the truth.
