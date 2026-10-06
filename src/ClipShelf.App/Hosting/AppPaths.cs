@@ -16,7 +16,5 @@ public static class AppPaths
 
     public static string Backups { get; } = Ensure(Path.Combine(Root, "backups"));
 
-    public static string Cache { get; } = Ensure(Path.Combine(Root, "cache"));
-
     private static string Ensure(string directory) => Directory.CreateDirectory(directory).FullName;
 }

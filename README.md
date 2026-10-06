@@ -115,7 +115,6 @@ All user data is in `%LOCALAPPDATA%\ClipShelf\`:
 | `key.bin` | The database key, protected with Windows DPAPI for the current user |
 | `backups\` | Automatic backups (newest 14) |
 | `logs\` | Daily log files (newest 14) |
-| `cache\` | Rebuildable cache, safe to delete |
 | `settings.json` | User settings |
 
 Uninstalling keeps this folder. The history database is encrypted with SQLCipher; the key in `key.bin` is protected for the current Windows user, so keep it together with `data.db` — without it the history cannot be read.

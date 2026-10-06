@@ -15,7 +15,6 @@ public static class ServiceRegistration
         services.AddSingleton(settings);
         services.AddSingleton<ISettingsStore, FileSettingsStore>();
         services.AddSingleton<SettingsService>();
-        services.AddMemoryCache(o => o.SizeLimit = 2_000);
         services.AddTransient(typeof(Lazy<>), typeof(LazyService<>));
 
         // Data: factory, initializer and repositories are Singletons.
