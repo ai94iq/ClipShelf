@@ -18,6 +18,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     private readonly HashSet<long> _lockedCategoryIds = [];
     private CancellationTokenSource? _searchCts;
     private CancellationTokenSource? _noticeCts;
+    private readonly List<PendingDelete> _pendingDeletes = [];
     private bool _quietRefreshInProgress;
     private bool _quietRefreshRequested;
     private PageCursor? _cursor;
@@ -347,14 +348,85 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         if (image is null) return;
 
         await _clipboard.WriteImageAsync(image);
+        ShowCopyNotice();
         ItemActivated?.Invoke(this, EventArgs.Empty);
     }
 
     public Task TogglePinAsync(ClipItemViewModel item) =>
         _repository.SetPinnedAsync(item.Id, !item.IsPinned, CancellationToken.None);
 
-    public Task DeleteAsync(ClipItemViewModel item) =>
-        _repository.DeleteAsync(item.Id, CancellationToken.None);
+    // Delete is deferred: the row disappears at once and the database delete runs when the
+    // undo window closes, so a misclick never loses a clip.
+    public TimeSpan DeleteUndoWindow { get; set; } = TimeSpan.FromSeconds(6);
+
+    public bool HasPendingDelete => _pendingDeletes.Count > 0;
+
+    public string PendingDeleteText => Tr.Get("Clip_Deleted");
+
+    public Task DeleteAsync(ClipItemViewModel item)
+    {
+        var index = Items.IndexOf(item);
+        if (index < 0) return Task.CompletedTask;
+
+        var cts = new CancellationTokenSource();
+        _pendingDeletes.Add(new PendingDelete(item.Id, item, index, cts));
+        Items.RemoveAt(index);
+        RebuildGroups();
+        NotifyPendingDeleteChanged();
+        _ = CommitDeleteAsync(item.Id, cts.Token);
+        return Task.CompletedTask;
+    }
+
+    private async Task CommitDeleteAsync(long id, CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(DeleteUndoWindow, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return;                                   // undone before the window closed
+        }
+
+        var pending = _pendingDeletes.FirstOrDefault(entry => entry.Id == id);
+        if (pending is null) return;
+
+        _pendingDeletes.Remove(pending);
+        NotifyPendingDeleteChanged();
+        await _repository.DeleteAsync(id, CancellationToken.None);
+    }
+
+    [RelayCommand]
+    private void UndoDelete()
+    {
+        if (_pendingDeletes.Count == 0) return;
+
+        var pending = _pendingDeletes[^1];
+        _pendingDeletes.RemoveAt(_pendingDeletes.Count - 1);
+        pending.Cts.Cancel();
+        Items.Insert(Math.Min(pending.Index, Items.Count), pending.Item);
+        RebuildGroups();
+        NotifyPendingDeleteChanged();
+    }
+
+    // Clearing the history also drops pending deletes; their rows are gone, undo must not revive them.
+    private void ClearPendingDeletes()
+    {
+        if (_pendingDeletes.Count == 0) return;
+
+        foreach (var pending in _pendingDeletes) pending.Cts.Cancel();
+        _pendingDeletes.Clear();
+        NotifyPendingDeleteChanged();
+    }
+
+    private void NotifyPendingDeleteChanged()
+    {
+        OnPropertyChanged(nameof(HasPendingDelete));
+        OnPropertyChanged(nameof(PendingDeleteText));
+    }
+
+    private sealed record PendingDelete(
+        long Id, ClipItemViewModel Item, int Index, CancellationTokenSource Cts);
 
     protected override async Task<bool> LoadCoreAsync(CancellationToken ct)
     {
@@ -391,7 +463,9 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     {
         if (page.Count == 0) return;
 
-        var known = Items.Select(item => item.Id).ToHashSet();
+        var known = Items.Select(item => item.Id)
+            .Concat(_pendingDeletes.Select(entry => entry.Id))
+            .ToHashSet();
         foreach (var model in page)
             if (known.Add(model.Id)) Items.Add(new ClipItemViewModel(model, _dates, this));
         RebuildGroups();
@@ -544,6 +618,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         if (texts.Length == 0) return;
 
         _clipboard.WriteText(string.Join("\r\n", texts));
+        ShowCopyNotice();
         IsSelecting = false;
         SelectionCopied?.Invoke(this, EventArgs.Empty);
     }
@@ -561,6 +636,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     private async Task ConfirmClearAsync()
     {
         await _repository.ClearUnpinnedAsync(CancellationToken.None);
+        ClearPendingDeletes();                        // their rows are gone; undo must not resurrect them
         IsConfirmingClear = false;
     }
 

@@ -73,6 +73,29 @@
                                EmptyText="{x:Bind ViewModel.EmptyTitle, Mode=OneWay}"
                                EmptyHint="{x:Bind ViewModel.EmptyHint, Mode=OneWay}"
                                RetryCommand="{x:Bind ViewModel.ReloadCommand, Mode=OneWay}" />
+
+      <!-- Deferred delete: the row is gone, the delete is not, until the window closes -->
+      <Border Style="{StaticResource UndoBarBorder}"
+              Margin="12,0,12,8"
+              VerticalAlignment="Bottom"
+              Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.HasPendingDelete), Mode=OneWay}">
+        <Grid ColumnSpacing="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0"
+                     Text="{x:Bind ViewModel.PendingDeleteText, Mode=OneWay}"
+                     VerticalAlignment="Center" />
+          <Button Grid.Column="1"
+                  Content="{l:Tr Key=Common_Undo}"
+                  MinWidth="0"
+                  Height="28"
+                  Padding="12,4"
+                  FontSize="13"
+                  Command="{x:Bind ViewModel.UndoDeleteCommand}" />
+        </Grid>
+      </Border>
     </Grid>
 
     <!-- Footer: icon-only actions with tooltips -->

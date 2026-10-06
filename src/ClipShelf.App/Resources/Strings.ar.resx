@@ -20,6 +20,7 @@
   <data name="Category_NewTitle" xml:space="preserve"><value>تصنيف جديد</value></data>
   <data name="Category_None" xml:space="preserve"><value>بلا تصنيف</value></data>
   <data name="Category_RenameTitle" xml:space="preserve"><value>إعادة تسمية التصنيف</value></data>
+  <data name="Clip_Deleted" xml:space="preserve"><value>تم حذف العنصر</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0} ي</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0} س</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0} د</value></data>
@@ -35,6 +36,7 @@
   <data name="Common_Remove" xml:space="preserve"><value>إزالة</value></data>
   <data name="Common_Retry" xml:space="preserve"><value>إعادة المحاولة</value></data>
   <data name="Common_Save" xml:space="preserve"><value>حفظ</value></data>
+  <data name="Common_Undo" xml:space="preserve"><value>تراجع</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>نعم</value></data>
   <data name="Date_Approx" xml:space="preserve"><value>نحو {0}</value></data>
   <data name="Date_HijriApprox" xml:space="preserve"><value>نحو {0} هـ</value></data>

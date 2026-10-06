@@ -20,6 +20,7 @@
   <data name="Category_NewTitle" xml:space="preserve"><value>New category</value></data>
   <data name="Category_None" xml:space="preserve"><value>No category</value></data>
   <data name="Category_RenameTitle" xml:space="preserve"><value>Rename category</value></data>
+  <data name="Clip_Deleted" xml:space="preserve"><value>Clip deleted</value></data>
   <data name="Clip_Time_Days" xml:space="preserve"><value>{0}d</value></data>
   <data name="Clip_Time_Hours" xml:space="preserve"><value>{0}h</value></data>
   <data name="Clip_Time_Minutes" xml:space="preserve"><value>{0}m</value></data>
@@ -35,6 +36,7 @@
   <data name="Common_Remove" xml:space="preserve"><value>Remove</value></data>
   <data name="Common_Retry" xml:space="preserve"><value>Retry</value></data>
   <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Undo" xml:space="preserve"><value>Undo</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Date_Approx" xml:space="preserve"><value>c. {0}</value></data>
   <data name="Date_HijriApprox" xml:space="preserve"><value>c. {0} AH</value></data>

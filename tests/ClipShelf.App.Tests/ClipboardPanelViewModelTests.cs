@@ -143,16 +143,72 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
-    public async Task Deleting_an_item_calls_the_repository()
+    public async Task Deleting_a_row_hides_it_at_once_and_commits_after_the_undo_window()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
-            .Returns(new List<ClipListItem> { Item(1, "hello") });
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
         var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(30);
         await vm.RefreshAsync();
 
         await vm.DeleteAsync(vm.Items[0]);
 
+        Assert.Equal(new long[] { 2 }, vm.Items.Select(item => item.Id));
+        Assert.True(vm.HasPendingDelete);
+        await _repository.DidNotReceive().DeleteAsync(Arg.Any<long>(), Arg.Any<CancellationToken>());
+
+        await WaitUntilAsync(() => !vm.HasPendingDelete, TestContext.Current.CancellationToken);
+
         await _repository.Received(1).DeleteAsync(1, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Undo_restores_the_row_in_its_place_and_cancels_the_delete()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two"), Item(3, "three") });
+        var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(40);
+        await vm.RefreshAsync();
+        await vm.DeleteAsync(vm.Items[1]);
+
+        vm.UndoDeleteCommand.Execute(null);
+        await Task.Delay(120, TestContext.Current.CancellationToken);
+
+        Assert.Equal(new long[] { 1, 2, 3 }, vm.Items.Select(item => item.Id));
+        Assert.False(vm.HasPendingDelete);
+        await _repository.DidNotReceive().DeleteAsync(Arg.Any<long>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task A_refresh_during_the_undo_window_keeps_the_row_hidden()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
+        var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromSeconds(5);
+        await vm.RefreshAsync();
+        await vm.DeleteAsync(vm.Items[0]);
+
+        await vm.RefreshAsync();
+
+        Assert.Equal(new long[] { 2 }, vm.Items.Select(item => item.Id));
+    }
+
+    [Fact]
+    public async Task Clearing_everything_drops_pending_undos()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromSeconds(5);
+        await vm.RefreshAsync();
+        await vm.DeleteAsync(vm.Items[0]);
+        Assert.True(vm.HasPendingDelete);
+
+        await vm.ConfirmClearCommand.ExecuteAsync(null);
+
+        Assert.False(vm.HasPendingDelete);
     }
 
     [Fact]

@@ -46,10 +46,20 @@
     <Setter Property="Background" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
   </Style>
 
+  <!-- Deferred-delete bar: "Clip deleted  [Undo]" shown while undo is still possible. -->
+  <Style x:Key="UndoBarBorder" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorTertiaryBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
+    <Setter Property="Padding" Value="12,6" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+  </Style>
+
   <!-- One history row, used by the flyout and the full history window.
        Classic {Binding} because x:Bind needs a code-behind class in a resource dictionary. -->
   <DataTemplate x:Key="ClipItemTemplate">
-    <Grid>
+    <Grid ColumnSpacing="6">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
