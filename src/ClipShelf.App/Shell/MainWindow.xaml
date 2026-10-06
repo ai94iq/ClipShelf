@@ -1,6 +1,7 @@
 <Window x:Class="ClipShelf.App.Shell.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:common="using:ClipShelf.App.Common"
         xmlns:l="using:ClipShelf.App.Localization">
   <Grid x:Name="Root">
     <Grid.RowDefinitions>
@@ -34,14 +35,14 @@
       <NavigationView.MenuItems>
         <NavigationViewItem Content="{l:Tr Key=Nav_History}" Tag="history">
           <NavigationViewItem.Icon>
-            <SymbolIcon Symbol="Document" />
+            <PathIcon Data="{common:IconData Kind=Document}" />
           </NavigationViewItem.Icon>
         </NavigationViewItem>
       </NavigationView.MenuItems>
       <NavigationView.FooterMenuItems>
         <NavigationViewItem Content="{l:Tr Key=Nav_Settings}" Tag="settings">
           <NavigationViewItem.Icon>
-            <SymbolIcon Symbol="Setting" />
+            <PathIcon Data="{common:IconData Kind=Settings}" />
           </NavigationViewItem.Icon>
         </NavigationViewItem>
       </NavigationView.FooterMenuItems>

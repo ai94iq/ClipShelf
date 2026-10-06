@@ -5,7 +5,8 @@ namespace ClipShelf.App.Tests;
 // A misspelled Kind="..." only fails when the screen opens, so check every usage here.
 public sealed class IconTests
 {
-    private static readonly Regex KindUsage = new(@"AppIcon\b[^>]*?\sKind=""(?<k>\w+)""", RegexOptions.Compiled);
+    private static readonly Regex KindUsage = new(
+        @"AppIcon\b[^>]*?\sKind=""(?<k>\w+)""|IconData\s+Kind=(?<k>\w+)", RegexOptions.Compiled);
 
     [Fact]
     public void Every_icon_used_in_xaml_exists()
