@@ -13,6 +13,9 @@ public static class ClipExportSerializer
 
     private static readonly char[] CsvSpecials = [',', '"', '\r', '\n'];
 
+    // A cell that starts with one of these can be read as a formula by spreadsheet apps.
+    private static readonly char[] FormulaLeaders = ['=', '+', '-', '@', '\t', '\r'];
+
     public static string Serialize(IReadOnlyList<ClipExportRow> rows, ClipExportFormat format) =>
         format == ClipExportFormat.Csv ? ToCsv(rows) : JsonSerializer.Serialize(rows, JsonOptions);
 
@@ -32,7 +35,11 @@ public static class ClipExportSerializer
         return builder.ToString();
     }
 
-    // RFC 4180: quote a field that holds a comma, a quote or a line break, and double its quotes.
-    private static string Escape(string value) =>
-        value.IndexOfAny(CsvSpecials) < 0 ? value : $"\"{value.Replace("\"", "\"\"")}\"";
+    // RFC 4180 quoting, plus the OWASP mitigation for formula-leading text: a leading apostrophe
+    // makes spreadsheets treat the cell as text (they hide the mark); JSON exports stay untouched.
+    private static string Escape(string value)
+    {
+        if (value.Length > 0 && FormulaLeaders.Contains(value[0])) value = "'" + value;
+        return value.IndexOfAny(CsvSpecials) < 0 ? value : $"\"{value.Replace("\"", "\"\"")}\"";
+    }
 }

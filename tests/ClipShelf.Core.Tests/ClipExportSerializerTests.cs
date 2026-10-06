@@ -61,6 +61,29 @@ public sealed class ClipExportSerializerTests
         Assert.Contains("\"line1\nline2\"", csv);
     }
 
+    [Theory]
+    [InlineData("=1+1")]
+    [InlineData("+SUM(A1)")]
+    [InlineData("-2+3")]
+    [InlineData("- bullet")]
+    [InlineData("@cmd")]
+    public void Csv_neutralizes_text_that_looks_like_a_formula(string text)
+    {
+        var csv = ClipExportSerializer.Serialize([Row(text)], ClipExportFormat.Csv);
+
+        var line = csv.Split("\r\n")[1];
+        Assert.StartsWith($"'{text}", line);
+    }
+
+    [Fact]
+    public void Csv_leaves_normal_text_alone()
+    {
+        var csv = ClipExportSerializer.Serialize([Row("plain text")], ClipExportFormat.Csv);
+
+        var line = csv.Split("\r\n")[1];
+        Assert.StartsWith("plain text,", line);
+    }
+
     private static ClipExportRow Row(string text, bool pinned = false, string? category = null) =>
         new(text, "Notepad", pinned, new DateTimeOffset(2026, 1, 2, 3, 4, 5, TimeSpan.Zero), category);
 }

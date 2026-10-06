@@ -18,6 +18,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - RTL polish: start/end alignment and spacing follow the Arabic layout, and the empty-state hint text meets the contrast minimum.
 - Arabic dates follow the system calendar (Umm al-Qura for ar-SA) instead of always using Gregorian.
 
+### Security
+- CSV exports neutralize text that begins with a spreadsheet formula character (`=`, `+`, `-`, `@`), so a copied snippet cannot run as a formula when the export is opened in Excel.
+
 ## [0.3.3] - 2026-10-03
 
 ### Fixed
