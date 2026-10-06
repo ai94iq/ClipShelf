@@ -58,6 +58,7 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
+  <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>1 clip</value></data>

@@ -58,6 +58,7 @@
   <data name="HijriMonth_7" xml:space="preserve"><value>رجب</value></data>
   <data name="HijriMonth_8" xml:space="preserve"><value>شعبان</value></data>
   <data name="HijriMonth_9" xml:space="preserve"><value>رمضان</value></data>
+  <data name="History_Copied" xml:space="preserve"><value>تم النسخ</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} عناصر</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} عنصرًا</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>عنصر واحد</value></data>

@@ -505,6 +505,21 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task Copying_selected_clips_shows_the_copy_notice()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.ToggleSelectionCommand.Execute(null);
+        vm.Items[0].IsSelected = true;
+
+        vm.CopySelectedCommand.Execute(null);
+
+        Assert.True(vm.HasCopyNotice);
+    }
+
+    [Fact]
     public void Reset_transient_state_leaves_select_mode()
     {
         var vm = Create();
@@ -752,6 +767,70 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task Activating_a_clip_shows_a_copy_notice()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        vm.Activate(vm.Items[0]);
+
+        Assert.True(vm.HasCopyNotice);
+        Assert.NotNull(vm.CopyNotice);
+        Assert.Equal(vm.CopyNotice, vm.FooterText);
+    }
+
+    [Fact]
+    public async Task The_copy_notice_clears_after_its_window()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        vm.CopyNoticeDuration = TimeSpan.FromMilliseconds(30);
+        await vm.RefreshAsync();
+
+        vm.Activate(vm.Items[0]);
+        await WaitUntilAsync(() => !vm.HasCopyNotice, TestContext.Current.CancellationToken);
+
+        Assert.False(vm.HasCopyNotice);
+        Assert.Equal(vm.CountText, vm.FooterText);
+    }
+
+    [Fact]
+    public async Task Activating_an_image_clip_shows_the_copy_notice()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem>
+            {
+                new(1, string.Empty, "Snipping Tool", false,
+                    new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", 1), null, null, [1, 2, 3]),
+            });
+        _repository.GetImageAsync(1, Arg.Any<CancellationToken>()).Returns(new byte[] { 1, 2, 3 });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        vm.Activate(vm.Items[0]);
+
+        Assert.True(vm.HasCopyNotice);
+    }
+
+    [Fact]
+    public async Task Reset_transient_state_clears_the_copy_notice()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.Activate(vm.Items[0]);
+        Assert.True(vm.HasCopyNotice);
+
+        vm.ResetTransientState();
+
+        Assert.False(vm.HasCopyNotice);
+    }
+
+    [Fact]
     public async Task Opening_the_flyout_clears_the_keyboard_selection()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
@@ -812,6 +891,12 @@ public sealed class ClipboardPanelViewModelTests
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);
+
+    private static async Task WaitUntilAsync(Func<bool> condition, CancellationToken ct)
+    {
+        for (var attempt = 0; attempt < 100 && !condition(); attempt++)
+            await Task.Delay(20, ct);
+    }
 
     private static ClipListItem Item(long id, string text, bool pinned = false) =>
         new(id, text, "Notepad", pinned, new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), new PageCursor("k", id));

@@ -17,6 +17,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     private readonly IDateFormatter _dates;
     private readonly HashSet<long> _lockedCategoryIds = [];
     private CancellationTokenSource? _searchCts;
+    private CancellationTokenSource? _noticeCts;
     private bool _quietRefreshInProgress;
     private bool _quietRefreshRequested;
     private PageCursor? _cursor;
@@ -135,7 +136,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
 
     public bool CanCopySelection => SelectedCount > 0;
 
-    public string FooterText => IsSelecting ? SelectionCountText : CountText;
+    // While a copy confirmation is showing, the footer shows it instead of the count.
+    public string FooterText => IsSelecting ? SelectionCountText : CopyNotice ?? CountText;
 
     public bool ShowSelectButton => !IsSelecting;
 
@@ -165,6 +167,15 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
 
     [ObservableProperty]
     public partial bool IsSelecting { get; set; }
+
+    // Transient "Copied" feedback in the footer; the flyout hides on pick, so only History shows it.
+    [ObservableProperty]
+    public partial string? CopyNotice { get; set; }
+
+    public bool HasCopyNotice => CopyNotice is not null;
+
+    // Tests shorten this; the UI keeps it long enough to read.
+    public TimeSpan CopyNoticeDuration { get; set; } = TimeSpan.FromSeconds(2.5);
 
     // Raised when the user picks an item; the window hides and optionally pastes.
     public event EventHandler? ItemActivated;
@@ -200,6 +211,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         IsConfirmingClear = false;
         IsSelecting = false;
         SelectedItem = null;
+        _noticeCts?.Cancel();
+        CopyNotice = null;
     }
 
     // Esc: leave select mode, then cancel the clear confirmation. False = nothing left to dismiss.
@@ -218,6 +231,33 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         }
 
         return false;
+    }
+
+    private void ShowCopyNotice()
+    {
+        _noticeCts?.Cancel();
+        var cts = _noticeCts = new CancellationTokenSource();
+        CopyNotice = Tr.Get("History_Copied");
+        _ = ClearCopyNoticeAsync(cts.Token);
+    }
+
+    private async Task ClearCopyNoticeAsync(CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(CopyNoticeDuration, ct);
+            CopyNotice = null;
+        }
+        catch (OperationCanceledException)
+        {
+            // superseded by a newer copy or a reset
+        }
+    }
+
+    partial void OnCopyNoticeChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasCopyNotice));
+        OnPropertyChanged(nameof(FooterText));
     }
 
     // Keyboard navigation: the flyout moves a selection with the arrow keys and pastes with Enter.
@@ -297,6 +337,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         }
 
         _clipboard.WriteText(item.Text);
+        ShowCopyNotice();
         ItemActivated?.Invoke(this, EventArgs.Empty);
     }
 
@@ -404,6 +445,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         var desired = new List<ClipItemViewModel>();
         foreach (var model in items)
         {
+            if (_pendingDeletes.Any(entry => entry.Id == model.Id)) continue;   // still waiting on undo
+
             if (existing.TryGetValue(model.Id, out var item))
             {
                 item.UpdateFrom(model, _dates);
