@@ -22,6 +22,7 @@ public sealed class SettingsViewModelTests
     private readonly CategoryLockService _locks;
     private readonly ILockPasswordService _passwords;
     private readonly IUpdateChecker _updates = Substitute.For<IUpdateChecker>();
+    private readonly IHotkeyRegistration _hotkeyRegistration = Substitute.For<IHotkeyRegistration>();
     private readonly FakeStartupRegistration _startup = new();
 
     public SettingsViewModelTests()
@@ -29,6 +30,7 @@ public sealed class SettingsViewModelTests
         _service = new SettingsService(_store, new AppSettings());
         _passwords = new LockPasswordService(_service);
         _locks = new CategoryLockService(_service, Substitute.For<IDataChangeNotifier>());
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(true);
     }
 
     [Fact]
@@ -116,6 +118,97 @@ public sealed class SettingsViewModelTests
         var viewModel = Create();
 
         Assert.Equal("Ctrl+Shift+A", viewModel.HotkeyDisplay);
+    }
+
+    [Fact]
+    public void A_taken_hotkey_warns_and_keeps_the_previous_shortcut_active()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(false);
+        _hotkeyRegistration.RegisteredHotkey
+            .Returns(new HotkeyGesture(HotkeyModifiers.Win | HotkeyModifiers.Shift, 0x56));
+        var viewModel = Create();
+
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+
+        Assert.True(viewModel.HasHotkeyWarning);
+        Assert.Equal(Tr.Get("Settings_HotkeyConflict"), viewModel.HotkeyConflictTitle);
+        Assert.Equal(
+            Tr.Format("Settings_HotkeyStillUsing", "Win+Shift+V"),
+            viewModel.HotkeyConflictDetail);
+    }
+
+    [Fact]
+    public void A_taken_hotkey_with_no_active_shortcut_explains_it()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(false);
+        _hotkeyRegistration.RegisteredHotkey.Returns((HotkeyGesture?)null);
+        var viewModel = Create();
+
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+
+        Assert.True(viewModel.HasHotkeyWarning);
+        Assert.Equal(Tr.Get("Settings_HotkeyNoShortcut"), viewModel.HotkeyConflictDetail);
+    }
+
+    [Fact]
+    public void A_working_hotkey_shows_no_warning()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(true);
+        _hotkeyRegistration.RegisteredHotkey
+            .Returns(new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43));
+        var viewModel = Create();
+
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+
+        Assert.False(viewModel.HasHotkeyWarning);
+        Assert.Empty(viewModel.HotkeyAlternatives);
+    }
+
+    [Fact]
+    public void The_warning_offers_alternatives_that_are_not_already_taken()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(false);
+        _hotkeyRegistration.RegisteredHotkey
+            .Returns(new HotkeyGesture(HotkeyModifiers.Win | HotkeyModifiers.Shift, 0x56));
+        var viewModel = Create();
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+
+        Assert.NotEmpty(viewModel.HotkeyAlternatives);
+        Assert.DoesNotContain(viewModel.HotkeyAlternatives, option => option.Value == viewModel.Hotkey);
+        Assert.DoesNotContain(
+            viewModel.HotkeyAlternatives,
+            option => option.Value == _hotkeyRegistration.RegisteredHotkey);
+    }
+
+    [Fact]
+    public void Choosing_an_alternative_sets_the_hotkey()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(false);
+        _hotkeyRegistration.RegisteredHotkey.Returns((HotkeyGesture?)null);
+        var viewModel = Create();
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+        var alternative = viewModel.HotkeyAlternatives[0].Value;
+
+        viewModel.ApplyHotkeyAlternative(alternative);
+
+        Assert.Equal(alternative, _store.Saved?.Hotkey);
+    }
+
+    [Fact]
+    public void Applying_a_working_alternative_clears_the_warning()
+    {
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(false);
+        _hotkeyRegistration.RegisteredHotkey.Returns((HotkeyGesture?)null);
+        var viewModel = Create();
+        viewModel.Hotkey = new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x43);
+        Assert.True(viewModel.HasHotkeyWarning);
+        var alternative = viewModel.HotkeyAlternatives[0].Value;
+        _hotkeyRegistration.IsCurrentHotkeyRegistered.Returns(true);
+        _hotkeyRegistration.RegisteredHotkey.Returns(alternative);
+
+        viewModel.ApplyHotkeyAlternative(alternative);
+
+        Assert.False(viewModel.HasHotkeyWarning);
     }
 
     [Fact]
@@ -647,5 +740,6 @@ public sealed class SettingsViewModelTests
 
     private SettingsViewModel Create() =>
         new(_service, _theme, _repository, _startup, _export, _categories, _locks, _passwords, _updates,
+            new Lazy<IHotkeyRegistration>(() => _hotkeyRegistration),
             NullLogger<SettingsViewModel>.Instance);
 }

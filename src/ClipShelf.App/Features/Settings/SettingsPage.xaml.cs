@@ -1,6 +1,7 @@
 using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
 using ClipShelf.Core.Export;
+using ClipShelf.Core.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -190,5 +191,11 @@ public sealed partial class SettingsPage : UserControl
     {
         _recordingHotkey = false;
         HotkeyButton.Content = ViewModel.HotkeyDisplay;
+    }
+
+    private void OnHotkeyAlternativeClick(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is Option<HotkeyGesture> option)
+            ViewModel.ApplyHotkeyAlternative(option.Value);
     }
 }

@@ -10,7 +10,7 @@ namespace ClipShelf.App.Shell;
 
 // Owns the tray icon, the global hotkey and the app's window lifetime. Because closing a window
 // only hides it, the process stays alive in the notification area until the user picks Exit.
-public sealed class AppShellService : IDisposable
+public sealed class AppShellService : IDisposable, IHotkeyRegistration
 {
     private readonly Lazy<MainWindow> _mainWindow;
     private readonly Lazy<Features.ClipboardPanel.ClipboardPanelWindow> _panel;
@@ -24,6 +24,7 @@ public sealed class AppShellService : IDisposable
     private bool? _appliedShowTrayIcon;
     private string? _appliedTrayIconFile;
     private HotkeyGesture? _appliedHotkey;
+    private HotkeyGesture? _registeredHotkey;
 
     public AppShellService(
         Lazy<MainWindow> mainWindow,
@@ -69,6 +70,10 @@ public sealed class AppShellService : IDisposable
 
     public AppLifetime Lifetime { get; }
 
+    public bool IsCurrentHotkeyRegistered => _registeredHotkey == _settings.Current.Hotkey;
+
+    public HotkeyGesture? RegisteredHotkey => _registeredHotkey;
+
     // Used by the settings page to anchor system pickers to the app window.
     public IntPtr MainWindowHandle => WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow.Value);
 
@@ -110,8 +115,18 @@ public sealed class AppShellService : IDisposable
     // change it on the Settings page and this re-registers on every change.
     private void ApplyHotkey()
     {
-        _appliedHotkey = _settings.Current.Hotkey;
-        _hotkey.Register((uint)_appliedHotkey.Modifiers, _appliedHotkey.VirtualKey);
+        var desired = _settings.Current.Hotkey;
+        _appliedHotkey = desired;
+
+        if (_hotkey.Register((uint)desired.Modifiers, desired.VirtualKey))
+        {
+            _registeredHotkey = desired;
+            return;
+        }
+
+        // A failed change must not cost the shortcut that already worked.
+        if (_registeredHotkey is not null)
+            _hotkey.Register((uint)_registeredHotkey.Modifiers, _registeredHotkey.VirtualKey);
     }
 
     private void OpenHistoryOnDoubleClick()

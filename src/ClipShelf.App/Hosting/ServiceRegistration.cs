@@ -33,6 +33,7 @@ public static class ServiceRegistration
         services.AddSingleton<GlobalHotkey>();
         services.AddSingleton<AppLifetime>();
         services.AddSingleton<AppShellService>();
+        services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<AppShellService>());
         services.AddSingleton<ClipboardPanelWindow>();
         services.AddTransient<ClipboardPanelViewModel>();
         services.AddSingleton<HistoryPage>();

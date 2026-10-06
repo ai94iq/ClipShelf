@@ -24,6 +24,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly ICategoryLockService _locks;
     private readonly ILockPasswordService _passwords;
     private readonly IUpdateChecker _updates;
+    private readonly Lazy<IHotkeyRegistration> _hotkeyRegistration;
     private readonly ILogger<SettingsViewModel> _log;
     private bool _checkedForUpdates;
     private CancellationTokenSource? _pruneCts;
@@ -39,6 +40,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ICategoryLockService locks,
         ILockPasswordService passwords,
         IUpdateChecker updates,
+        Lazy<IHotkeyRegistration> hotkeyRegistration,
         ILogger<SettingsViewModel> log)
     {
         _settings = settings;
@@ -50,6 +52,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _locks = locks;
         _passwords = passwords;
         _updates = updates;
+        _hotkeyRegistration = hotkeyRegistration;
         _log = log;
 
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
@@ -75,6 +78,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         });
 
         _loading = false;
+        RefreshHotkeyState();
     }
 
     public IReadOnlyList<Option<AppTheme>> ThemeOptions { get; } =
@@ -415,6 +419,19 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string HotkeyDisplay => HotkeyText.Format(Hotkey);
 
+    // Hotkey conflict warning: shown when the chosen shortcut could not be registered.
+    [ObservableProperty]
+    public partial bool HasHotkeyWarning { get; set; }
+
+    [ObservableProperty]
+    public partial string? HotkeyConflictTitle { get; set; }
+
+    [ObservableProperty]
+    public partial string? HotkeyConflictDetail { get; set; }
+
+    [ObservableProperty]
+    public partial IReadOnlyList<Option<HotkeyGesture>> HotkeyAlternatives { get; set; } = [];
+
     partial void OnSelectedThemeChanged(Option<AppTheme> value) =>
         ApplyTheme(_settings.Current with { Theme = value.Value });
 
@@ -440,6 +457,39 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (_loading) return;
 
         Save(_settings.Current with { Hotkey = value });
+        RefreshHotkeyState();
+    }
+
+    // The view's alternative buttons call this; it goes through the same save/register path.
+    public void ApplyHotkeyAlternative(HotkeyGesture gesture) => Hotkey = gesture;
+
+    // Reads what actually registered; a failed change keeps the previous shortcut working.
+    private void RefreshHotkeyState()
+    {
+        var registered = _hotkeyRegistration.Value.RegisteredHotkey;
+        var conflict = !_hotkeyRegistration.Value.IsCurrentHotkeyRegistered;
+        HasHotkeyWarning = conflict;
+        HotkeyConflictTitle = conflict ? Tr.Get("Settings_HotkeyConflict") : null;
+        HotkeyConflictDetail = conflict
+            ? registered is null
+                ? Tr.Get("Settings_HotkeyNoShortcut")
+                : Tr.Format("Settings_HotkeyStillUsing", HotkeyText.Format(registered))
+            : null;
+        HotkeyAlternatives = conflict ? BuildHotkeyAlternatives(registered) : [];
+    }
+
+    private IReadOnlyList<Option<HotkeyGesture>> BuildHotkeyAlternatives(HotkeyGesture? registered)
+    {
+        HotkeyGesture[] candidates =
+        [
+            new(HotkeyModifiers.Control | HotkeyModifiers.Shift, 0x56),   // Ctrl+Shift+V
+            new(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x56),     // Ctrl+Alt+V
+            new(HotkeyModifiers.Win | HotkeyModifiers.Alt, 0x56),         // Win+Alt+V
+        ];
+        return candidates
+            .Where(candidate => candidate != Hotkey && candidate != registered)
+            .Select(candidate => new Option<HotkeyGesture>(candidate, HotkeyText.Format(candidate)))
+            .ToList();
     }
 
     partial void OnRunAtStartupChanged(bool value)

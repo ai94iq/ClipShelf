@@ -7,6 +7,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ### Added
 - Arabic UI: pick English or العربية in Settings → Appearance → Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
 - Browse the full history beyond the first page: the window loads older clips as you scroll, and the footer shows the total count instead of just the loaded page.
+- A shortcut that another app has taken now warns in Settings, names the shortcut that still works, and suggests alternatives.
 
 ### Fixed
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.

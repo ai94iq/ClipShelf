@@ -110,6 +110,40 @@
         </StackPanel>
       </Border>
 
+      <!-- A chosen shortcut that could not be registered; the previous one keeps working. -->
+      <InfoBar Severity="Warning"
+               IsClosable="False"
+               IsOpen="{x:Bind ViewModel.HasHotkeyWarning, Mode=OneWay}"
+               Title="{x:Bind ViewModel.HotkeyConflictTitle, Mode=OneWay}"
+               Message="{x:Bind ViewModel.HotkeyConflictDetail, Mode=OneWay}"
+               Margin="0,8,0,0"
+               Visibility="{x:Bind ViewModel.ShowBehaviorGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <InfoBar.Content>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{l:Tr Key=Settings_HotkeyAlternatives}"
+                       VerticalAlignment="Center"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            <ItemsControl ItemsSource="{x:Bind ViewModel.HotkeyAlternatives, Mode=OneWay}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Content="{Binding Label}"
+                          MinWidth="0"
+                          Height="28"
+                          Padding="12,4"
+                          FontSize="13"
+                          Click="OnHotkeyAlternativeClick" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </InfoBar.Content>
+      </InfoBar>
+
       <!-- History -->
       <TextBlock Text="{l:Tr Key=Settings_History}"
                  Style="{StaticResource BodyTextBlockStyle}"

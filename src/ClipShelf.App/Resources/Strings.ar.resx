@@ -134,8 +134,12 @@
   <data name="Settings_ExportHint" xml:space="preserve"><value>احفظ سجل النصوص كملف JSON أو CSV.</value></data>
   <data name="Settings_History" xml:space="preserve"><value>السجل</value></data>
   <data name="Settings_Hotkey" xml:space="preserve"><value>الاختصار العام</value></data>
+  <data name="Settings_HotkeyAlternatives" xml:space="preserve"><value>جرّب أحد هذه الاختصارات:</value></data>
+  <data name="Settings_HotkeyConflict" xml:space="preserve"><value>هذا الاختصار مستخدم بالفعل من تطبيق آخر.</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>انقر على الاختصار ثم اضغط تركيبة مفاتيح مع Ctrl أو Alt أو Shift أو Win. يلغي Esc.</value></data>
+  <data name="Settings_HotkeyNoShortcut" xml:space="preserve"><value>لن يعمل اختصار ClipShelf حتى تختار اختصارًا متاحًا.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>اضغط تركيبة مفاتيح</value></data>
+  <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>لا يزال ClipShelf يستخدم {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>اللغة</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>يسري التغيير بعد إعادة التشغيل.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>قفل</value></data>
