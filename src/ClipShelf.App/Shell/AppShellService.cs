@@ -24,7 +24,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     private bool? _appliedShowTrayIcon;
     private string? _appliedTrayIconFile;
     private HotkeyGesture? _appliedHotkey;
-    private HotkeyGesture? _registeredHotkey;
+    private readonly HotkeyRegistrationState _hotkeyState = new();
 
     public AppShellService(
         Lazy<MainWindow> mainWindow,
@@ -70,9 +70,9 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public AppLifetime Lifetime { get; }
 
-    public bool IsCurrentHotkeyRegistered => _registeredHotkey == _settings.Current.Hotkey;
+    public bool IsCurrentHotkeyRegistered => _hotkeyState.Registered == _settings.Current.Hotkey;
 
-    public HotkeyGesture? RegisteredHotkey => _registeredHotkey;
+    public HotkeyGesture? RegisteredHotkey => _hotkeyState.Registered;
 
     // Used by the settings page to anchor system pickers to the app window.
     public IntPtr MainWindowHandle => WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow.Value);
@@ -115,18 +115,9 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     // change it on the Settings page and this re-registers on every change.
     private void ApplyHotkey()
     {
-        var desired = _settings.Current.Hotkey;
-        _appliedHotkey = desired;
-
-        if (_hotkey.Register((uint)desired.Modifiers, desired.VirtualKey))
-        {
-            _registeredHotkey = desired;
-            return;
-        }
-
-        // A failed change must not cost the shortcut that already worked.
-        if (_registeredHotkey is not null)
-            _hotkey.Register((uint)_registeredHotkey.Modifiers, _registeredHotkey.VirtualKey);
+        _appliedHotkey = _settings.Current.Hotkey;
+        _hotkeyState.Apply(
+            _appliedHotkey, gesture => _hotkey.Register((uint)gesture.Modifiers, gesture.VirtualKey));
     }
 
     private void OpenHistoryOnDoubleClick()
