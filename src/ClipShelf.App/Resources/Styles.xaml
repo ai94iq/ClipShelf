@@ -9,6 +9,7 @@
   <common:BoolToVisibilityConverter x:Key="BoolVisible" />
   <common:BytesToImageConverter x:Key="BytesToImage" />
   <common:ErrorBrushConverter x:Key="ErrorBrush" />
+  <common:AccentSwatchConverter x:Key="AccentSwatch" />
 
   <!-- App font: the system Segoe stack, or the bundled Noto Sans Arabic in an Arabic UI.
        Control text uses the ContentControlThemeFontFamily key, set in App.OnLaunched. -->

@@ -229,6 +229,7 @@ public sealed class SettingsViewModelTests
         viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "ar-SA");
 
         Assert.True(viewModel.HasLanguageChange);
+        Assert.True(viewModel.NeedsRestart);
     }
 
     [Fact]
@@ -240,6 +241,54 @@ public sealed class SettingsViewModelTests
         viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "en-US");
 
         Assert.False(viewModel.HasLanguageChange);
+    }
+
+    [Fact]
+    public void The_accent_options_offer_windows_and_every_preset()
+    {
+        var viewModel = Create();
+
+        Assert.Equal(AccentPresets.All.Count + 1, viewModel.AccentOptions.Count);
+        Assert.Null(viewModel.AccentOptions[0].Value);
+        Assert.Equal(AccentPresets.All.Select(p => p.Hex), viewModel.AccentOptions.Skip(1).Select(o => o.Value));
+        Assert.True(viewModel.AccentOptions[0].IsSelected);
+    }
+
+    [Fact]
+    public void Choosing_an_accent_saves_it_and_flags_a_restart()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == "#5C2E91");
+
+        Assert.True(_store.Saved is { Accent: "#5C2E91" });
+        Assert.True(viewModel.HasAccentChange);
+        Assert.True(viewModel.NeedsRestart);
+        Assert.True(viewModel.SelectedAccent.IsSelected);
+        Assert.Single(viewModel.AccentOptions, o => o.IsSelected);
+    }
+
+    [Fact]
+    public void Going_back_to_the_saved_accent_needs_no_restart()
+    {
+        var viewModel = Create();
+        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == "#5C2E91");
+
+        viewModel.SelectedAccent = viewModel.AccentOptions[0];
+
+        Assert.False(viewModel.HasAccentChange);
+        Assert.False(viewModel.NeedsRestart);
+    }
+
+    [Fact]
+    public void A_saved_accent_is_preselected()
+    {
+        _service.Update(_service.Current with { Accent = "#107C10" });
+
+        var viewModel = Create();
+
+        Assert.Equal("#107C10", viewModel.SelectedAccent.Value);
+        Assert.False(viewModel.HasAccentChange);
     }
 
     [Fact]

@@ -61,4 +61,26 @@ public sealed class ThemeService(SettingsService settings) : IThemeService
 
         WindowSurface.ApplyBackdrop(window, panel, current.Backdrop);
     }
+
+    // Called once at startup, before any control loads: WinUI reads the accent resources when
+    // controls are created, so the override cannot be applied later. Null keeps the Windows accent.
+    public static void ApplyAccentResources(ResourceDictionary resources, string? accentHex)
+    {
+        if (accentHex is null) return;
+
+        var shades = AccentPalette.Shades(accentHex);
+        resources["SystemAccentColor"] = ToColor(shades.Base);
+        resources["SystemAccentColorLight1"] = ToColor(shades.Light1);
+        resources["SystemAccentColorLight2"] = ToColor(shades.Light2);
+        resources["SystemAccentColorLight3"] = ToColor(shades.Light3);
+        resources["SystemAccentColorDark1"] = ToColor(shades.Dark1);
+        resources["SystemAccentColorDark2"] = ToColor(shades.Dark2);
+        resources["SystemAccentColorDark3"] = ToColor(shades.Dark3);
+    }
+
+    private static Windows.UI.Color ToColor(string hex)
+    {
+        var (r, g, b) = AccentPalette.Parse(hex);
+        return ColorHelper.FromArgb(255, r, g, b);
+    }
 }

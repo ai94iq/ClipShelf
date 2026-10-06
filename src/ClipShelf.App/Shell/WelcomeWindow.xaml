@@ -19,6 +19,7 @@
                  TextWrapping="Wrap"
                  Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
       <Button Content="{l:Tr Key=Welcome_Ok}"
+              Style="{StaticResource AccentButtonStyle}"
               Click="OnOk"
               HorizontalAlignment="{common:RtlAlign Desired=Right}"
               Margin="0,8,0,0" />

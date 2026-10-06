@@ -4,6 +4,14 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Accent_Blue" xml:space="preserve"><value>أزرق</value></data>
+  <data name="Accent_Graphite" xml:space="preserve"><value>رمادي</value></data>
+  <data name="Accent_Green" xml:space="preserve"><value>أخضر</value></data>
+  <data name="Accent_Orange" xml:space="preserve"><value>برتقالي</value></data>
+  <data name="Accent_Purple" xml:space="preserve"><value>بنفسجي</value></data>
+  <data name="Accent_Rose" xml:space="preserve"><value>وردي</value></data>
+  <data name="Accent_Teal" xml:space="preserve"><value>أزرق مخضر</value></data>
+  <data name="Accent_Windows" xml:space="preserve"><value>لون Windows</value></data>
   <data name="App_AlreadyRunning" xml:space="preserve"><value>التطبيق يعمل بالفعل.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
@@ -98,6 +106,8 @@
   <data name="Selection_Count" xml:space="preserve"><value>تم تحديد {0}</value></data>
   <data name="Selection_Copy" xml:space="preserve"><value>نسخ</value></data>
   <data name="Selection_Select" xml:space="preserve"><value>تحديد</value></data>
+  <data name="Settings_Accent" xml:space="preserve"><value>لون التمييز</value></data>
+  <data name="Settings_AccentHint" xml:space="preserve"><value>يسري التغيير بعد إعادة التشغيل.</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>المظهر</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>الخلفية</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>السلوك</value></data>
@@ -129,7 +139,6 @@
   <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>لا يزال ClipShelf يستخدم {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>اللغة</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>يسري التغيير بعد إعادة التشغيل.</value></data>
-  <data name="Settings_LanguageRestart" xml:space="preserve"><value>أعد تشغيل ClipShelf لتطبيق تغيير اللغة.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>قفل</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>اقفل الآن</value></data>
   <data name="Settings_LockOnExit" xml:space="preserve"><value>عند خروجي من ClipShelf</value></data>
@@ -142,6 +151,7 @@
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>تُزال العناصر خارج التصنيفات عند تجاوز الحد؛ وتبقى المثبَّتة.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>لا توجد إعدادات مطابقة لبحثك.</value></data>
   <data name="Settings_RenameCategory" xml:space="preserve"><value>إعادة تسمية…</value></data>
+  <data name="Settings_RestartHint" xml:space="preserve"><value>أعد تشغيل ClipShelf لتطبيق التغيير.</value></data>
   <data name="Settings_RestartNow" xml:space="preserve"><value>إعادة التشغيل الآن</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>الاحتفاظ بالعناصر لمدة</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>لا تُزال العناصر المثبَّتة أو الموجودة في تصنيف أبدًا.</value></data>

@@ -15,6 +15,9 @@ public sealed record AppSettings
     [JsonConverter(typeof(JsonStringEnumConverter<AppTheme>))]
     public AppTheme Theme { get; init; } = AppTheme.System;
 
+    // #RRGGBB accent override; null follows the Windows accent. Takes effect after a restart.
+    public string? Accent { get; init; }
+
     // Window backdrop, from WinUI 3.
     [JsonConverter(typeof(JsonStringEnumConverter<BackdropKind>))]
     public BackdropKind Backdrop { get; init; } = BackdropKind.Mica;

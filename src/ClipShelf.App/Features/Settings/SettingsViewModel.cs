@@ -27,6 +27,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly Lazy<IHotkeyRegistration> _hotkeyRegistration;
     private readonly ILogger<SettingsViewModel> _log;
     private readonly string _initialLanguage;
+    private readonly string? _initialAccent;
     private bool _checkedForUpdates;
     private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
@@ -56,12 +57,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         _hotkeyRegistration = hotkeyRegistration;
         _log = log;
         _initialLanguage = settings.Current.Language;
+        _initialAccent = settings.Current.Accent;
 
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
             ?? ThemeOptions.First(o => o.Value == AppTheme.Light);
         SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
         SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
         SelectedLanguage = LanguageOptions.FirstOrDefault(o => o.Value == settings.Current.Language) ?? LanguageOptions[0];
+        AccentOptions = BuildAccentOptions();
+        SelectedAccent = AccentOptions.FirstOrDefault(o => o.Value == settings.Current.Accent) ?? AccentOptions[0];
         SelectedRetention = RetentionOptions.FirstOrDefault(o => o.Value == settings.Current.RetentionDays)
             ?? RetentionOptions[^1];
         ShowTrayIcon = settings.Current.ShowTrayIcon;
@@ -99,6 +103,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         new(BackdropKind.None, Tr.Get("Backdrop_None")),
     ];
 
+    // "Windows accent" first, then the presets; labels come from resx keys "Accent_{Key}".
+    public IReadOnlyList<AccentOption> AccentOptions { get; }
+
+    private static IReadOnlyList<AccentOption> BuildAccentOptions()
+    {
+        var options = new List<AccentOption> { new(null, Tr.Get("Accent_Windows")) };
+        options.AddRange(AccentPresets.All.Select(preset => new AccentOption(preset.Hex, Tr.Get($"Accent_{preset.Key}"))));
+        return options;
+    }
+
     public IReadOnlyList<Option<TrayIconKind>> TrayIconOptions { get; } =
     [
         new(TrayIconKind.Filled, Tr.Get("TrayIcon_Filled")),
@@ -125,6 +139,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial Option<BackdropKind> SelectedBackdrop { get; set; }
+
+    [ObservableProperty]
+    public partial AccentOption SelectedAccent { get; set; }
 
     [ObservableProperty]
     public partial Option<TrayIconKind> SelectedTrayIcon { get; set; }
@@ -350,7 +367,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     // Resx keys per settings group, in the page's order, so a search can hide whole groups.
     private static readonly string[][] Groups =
     [
-        ["Settings_Theme", "Settings_Backdrop", "Theme_Black", "Settings_Language", "Settings_LanguageHint"],
+        ["Settings_Theme", "Settings_Accent", "Settings_AccentHint", "Settings_Backdrop", "Theme_Black", "Settings_Language", "Settings_LanguageHint"],
         ["Settings_TrayIcon", "Settings_ShowTrayIcon", "Settings_DoubleClickTray"],
         [
             "Settings_RunAtStartup", "Settings_RunAtStartupHint",
@@ -446,11 +463,26 @@ public sealed partial class SettingsViewModel : ObservableObject
     // The language only applies on a fresh start; the page offers a restart when it differs.
     public bool HasLanguageChange => SelectedLanguage is { } selected && selected.Value != _initialLanguage;
 
+    // The accent applies at startup too: WinUI reads the accent resources when controls load.
+    public bool HasAccentChange => SelectedAccent.Value != _initialAccent;
+
+    public bool NeedsRestart => HasLanguageChange || HasAccentChange;
+
     // AppSettings.Language takes effect on the next start; Culture.Configure reads it once.
     partial void OnSelectedLanguageChanged(Option<string> value)
     {
         Save(_settings.Current with { Language = value.Value });
         OnPropertyChanged(nameof(HasLanguageChange));
+        OnPropertyChanged(nameof(NeedsRestart));
+    }
+
+    partial void OnSelectedAccentChanged(AccentOption value)
+    {
+        foreach (var option in AccentOptions) option.IsSelected = option == value;
+
+        Save(_settings.Current with { Accent = value.Value });
+        OnPropertyChanged(nameof(HasAccentChange));
+        OnPropertyChanged(nameof(NeedsRestart));
     }
 
     partial void OnShowTrayIconChanged(bool value) =>

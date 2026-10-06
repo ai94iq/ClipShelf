@@ -4,6 +4,14 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Accent_Blue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Accent_Graphite" xml:space="preserve"><value>Graphite</value></data>
+  <data name="Accent_Green" xml:space="preserve"><value>Green</value></data>
+  <data name="Accent_Orange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Accent_Purple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Accent_Rose" xml:space="preserve"><value>Rose</value></data>
+  <data name="Accent_Teal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Accent_Windows" xml:space="preserve"><value>Windows accent</value></data>
   <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
@@ -98,6 +106,8 @@
   <data name="Selection_Count" xml:space="preserve"><value>{0} selected</value></data>
   <data name="Selection_Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="Selection_Select" xml:space="preserve"><value>Select</value></data>
+  <data name="Settings_Accent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Settings_AccentHint" xml:space="preserve"><value>Takes effect after a restart.</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>Appearance</value></data>
   <data name="Settings_Backdrop" xml:space="preserve"><value>Background</value></data>
   <data name="Settings_Behavior" xml:space="preserve"><value>Behavior</value></data>
@@ -129,7 +139,6 @@
   <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>ClipShelf is still using {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>Takes effect after a restart.</value></data>
-  <data name="Settings_LanguageRestart" xml:space="preserve"><value>Restart ClipShelf to apply the language change.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>Lock</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>Lock now</value></data>
   <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit ClipShelf</value></data>
@@ -142,6 +151,7 @@
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
   <data name="Settings_RenameCategory" xml:space="preserve"><value>Rename…</value></data>
+  <data name="Settings_RestartHint" xml:space="preserve"><value>Restart ClipShelf to apply the change.</value></data>
   <data name="Settings_RestartNow" xml:space="preserve"><value>Restart now</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>

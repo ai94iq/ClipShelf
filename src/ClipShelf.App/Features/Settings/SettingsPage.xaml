@@ -10,7 +10,7 @@
 
       <!-- Appearance -->
       <TextBlock Text="{l:Tr Key=Settings_Appearance}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowAppearanceGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -23,6 +23,31 @@
                       ItemsSource="{x:Bind ViewModel.ThemeOptions}"
                       DisplayMemberPath="Label"
                       SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+          </common:SettingsCard>
+          <Border Style="{StaticResource SettingsGroupDivider}" />
+          <common:SettingsCard Header="{l:Tr Key=Settings_Accent}"
+                               Description="{l:Tr Key=Settings_AccentHint}">
+            <ItemsControl ItemsSource="{x:Bind ViewModel.AccentOptions}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="4" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <!-- Swatches are the one place a literal color is allowed -->
+                  <RadioButton GroupName="Accent"
+                               MinWidth="0"
+                               Padding="6,4"
+                               IsChecked="{Binding IsSelected, Mode=OneWay}"
+                               Checked="OnAccentChecked"
+                               ToolTipService.ToolTip="{Binding Label}"
+                               AutomationProperties.Name="{Binding Label}">
+                    <Ellipse Width="20" Height="20" Fill="{Binding Value, Converter={StaticResource AccentSwatch}}" />
+                  </RadioButton>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
           </common:SettingsCard>
           <Border Style="{StaticResource SettingsGroupDivider}" />
           <common:SettingsCard Header="{l:Tr Key=Settings_Backdrop}">
@@ -46,21 +71,23 @@
         </StackPanel>
       </Border>
 
-      <!-- A language change needs a fresh process; offer it right here. -->
+      <!-- A language or accent change needs a fresh process; offer it right here. -->
       <InfoBar Severity="Informational"
                IsClosable="False"
-               IsOpen="{x:Bind ViewModel.HasLanguageChange, Mode=OneWay}"
-               Title="{l:Tr Key=Settings_LanguageRestart}"
+               IsOpen="{x:Bind ViewModel.NeedsRestart, Mode=OneWay}"
+               Title="{l:Tr Key=Settings_RestartHint}"
                Margin="0,8,0,0"
                Visibility="{x:Bind ViewModel.ShowAppearanceGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
         <InfoBar.ActionButton>
-          <Button Content="{l:Tr Key=Settings_RestartNow}" Click="OnRestartClick" />
+          <Button Content="{l:Tr Key=Settings_RestartNow}"
+                  Style="{StaticResource AccentButtonStyle}"
+                  Click="OnRestartClick" />
         </InfoBar.ActionButton>
       </InfoBar>
 
       <!-- Tray -->
       <TextBlock Text="{l:Tr Key=Settings_Tray}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowTrayGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -93,7 +120,7 @@
 
       <!-- Behavior -->
       <TextBlock Text="{l:Tr Key=Settings_Behavior}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowBehaviorGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -158,7 +185,7 @@
 
       <!-- History -->
       <TextBlock Text="{l:Tr Key=Settings_History}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowHistoryGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -198,7 +225,7 @@
 
       <!-- Export -->
       <TextBlock Text="{l:Tr Key=Common_Export}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowExportGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -214,6 +241,7 @@
                         DisplayMemberPath="Label"
                         SelectedItem="{x:Bind ViewModel.SelectedExportFormat, Mode=TwoWay}" />
               <Button Content="{l:Tr Key=Common_Export}"
+                      Style="{StaticResource AccentButtonStyle}"
                       MinHeight="36"
                       IsEnabled="{x:Bind ViewModel.CanExport, Mode=OneWay}"
                       Click="OnExportClick"
@@ -231,7 +259,7 @@
 
       <!-- Categories and locks -->
       <TextBlock Text="{l:Tr Key=Settings_Categories}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowCategoriesGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"
@@ -316,7 +344,7 @@
 
       <!-- Updates -->
       <TextBlock Text="{l:Tr Key=Settings_Updates}"
-                 Style="{StaticResource BodyTextBlockStyle}"
+                 Style="{StaticResource SubtitleTextBlockStyle}"
                  Margin="0,26,0,8"
                  Visibility="{x:Bind ViewModel.ShowUpdatesGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
       <Border Style="{StaticResource SettingsGroupBorder}"

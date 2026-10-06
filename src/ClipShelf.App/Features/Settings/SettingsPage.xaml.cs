@@ -200,4 +200,10 @@ public sealed partial class SettingsPage : UserControl
         if ((sender as FrameworkElement)?.DataContext is Option<HotkeyGesture> option)
             ViewModel.ApplyHotkeyAlternative(option.Value);
     }
+
+    private void OnAccentChecked(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is AccentOption option && ViewModel.SelectedAccent != option)
+            ViewModel.SelectedAccent = option;
+    }
 }

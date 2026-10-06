@@ -5,13 +5,17 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## [Unreleased]
 
 ### Added
+- Accent color: follow the Windows accent or pick one of seven presets in Settings → Appearance. Primary actions, selection, focus and toggles use it (a restart applies the change).
 - Arabic UI: pick English or العربية in Settings → Appearance → Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
 - Browse the full history beyond the first page: the window loads older clips as you scroll, and the footer shows the total count instead of just the loaded page.
 - The flyout loads older clips as you scroll too, so the whole history is reachable from the shortcut.
 - Undo a deleted clip: deleting hides the row at once and the delete only lands after a few seconds, with an Undo bar in both windows.
 - A shortcut that another app has taken now warns in Settings, names the shortcut that still works, and suggests alternatives.
 - The Arabic UI uses the bundled Noto Sans Arabic font.
-- Changing the language now offers a one-click restart, since it only takes effect on a fresh start.
+- Changing the language or the accent now offers a one-click restart, since they only take effect on a fresh start.
+
+### Changed
+- Settings section headers use the stronger Fluent subtitle style.
 
 ### Fixed
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.
