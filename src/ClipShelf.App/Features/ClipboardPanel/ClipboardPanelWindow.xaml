@@ -39,7 +39,8 @@
                 SelectionMode="Single"
                 SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
                 IsItemClickEnabled="True"
-                ItemClick="OnItemClick">
+                ItemClick="OnItemClick"
+                ContainerContentChanging="OnClipListContainerChanging">
         <ListView.Resources>
           <!-- Hover stays quiet; the keyboard selection is a soft accent wash. -->
           <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
