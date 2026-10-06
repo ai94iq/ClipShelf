@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Windows.System;
 
 namespace ClipShelf.App.Features.History;
@@ -59,20 +60,28 @@ public sealed partial class HistoryPage : UserControl
     private void OnCategoryMenuRequested(ClipItemViewModel item) =>
         _ = CategoryMenu.ShowAsync(RowAnchor(item), item, ViewModel);
 
-    // The grouped source defeats ContainerFromItem, so the menu anchors to the realized row
-    // itself; without one it falls back to the list.
+    // The grouped source defeats ContainerFromItem, and group items hide the rows from a flat
+    // walk, so the menu anchors to the realized row found anywhere under the list.
     private FrameworkElement RowAnchor(ClipItemViewModel item)
     {
         if (ClipList.ContainerFromItem(item) is FrameworkElement container) return container;
 
-        if (ClipList.ItemsPanelRoot is { } panel)
+        return FindContainer(ClipList, item) ?? ClipList;
+    }
+
+    private static FrameworkElement? FindContainer(DependencyObject root, ClipItemViewModel item)
+    {
+        var count = VisualTreeHelper.GetChildrenCount(root);
+        for (var i = 0; i < count; i++)
         {
-            foreach (var child in panel.Children)
-                if (child is ListViewItem { Content: ClipItemViewModel candidate } row && ReferenceEquals(candidate, item))
-                    return row;
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is ListViewItem { Content: ClipItemViewModel candidate } row && ReferenceEquals(candidate, item))
+                return row;
+
+            if (FindContainer(child, item) is { } found) return found;
         }
 
-        return ClipList;
+        return null;
     }
 
     // Picking a locked category asks for its password instead of showing an empty list.
