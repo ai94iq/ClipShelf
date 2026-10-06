@@ -129,6 +129,7 @@
   <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>لا يزال ClipShelf يستخدم {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>اللغة</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>يسري التغيير بعد إعادة التشغيل.</value></data>
+  <data name="Settings_LanguageRestart" xml:space="preserve"><value>أعد تشغيل ClipShelf لتطبيق تغيير اللغة.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>قفل</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>اقفل الآن</value></data>
   <data name="Settings_LockOnExit" xml:space="preserve"><value>عند خروجي من ClipShelf</value></data>
@@ -141,6 +142,7 @@
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>تُزال العناصر خارج التصنيفات عند تجاوز الحد؛ وتبقى المثبَّتة.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>لا توجد إعدادات مطابقة لبحثك.</value></data>
   <data name="Settings_RenameCategory" xml:space="preserve"><value>إعادة تسمية…</value></data>
+  <data name="Settings_RestartNow" xml:space="preserve"><value>إعادة التشغيل الآن</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>الاحتفاظ بالعناصر لمدة</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>لا تُزال العناصر المثبَّتة أو الموجودة في تصنيف أبدًا.</value></data>
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>التشغيل مع بدء Windows</value></data>

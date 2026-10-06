@@ -129,6 +129,7 @@
   <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>ClipShelf is still using {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>Takes effect after a restart.</value></data>
+  <data name="Settings_LanguageRestart" xml:space="preserve"><value>Restart ClipShelf to apply the language change.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>Lock</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>Lock now</value></data>
   <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit ClipShelf</value></data>
@@ -141,6 +142,7 @@
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
   <data name="Settings_RenameCategory" xml:space="preserve"><value>Rename…</value></data>
+  <data name="Settings_RestartNow" xml:space="preserve"><value>Restart now</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>
   <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>

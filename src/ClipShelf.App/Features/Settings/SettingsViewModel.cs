@@ -26,6 +26,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly IUpdateChecker _updates;
     private readonly Lazy<IHotkeyRegistration> _hotkeyRegistration;
     private readonly ILogger<SettingsViewModel> _log;
+    private readonly string _initialLanguage;
     private bool _checkedForUpdates;
     private CancellationTokenSource? _pruneCts;
     private bool _loading = true;
@@ -54,6 +55,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _updates = updates;
         _hotkeyRegistration = hotkeyRegistration;
         _log = log;
+        _initialLanguage = settings.Current.Language;
 
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
             ?? ThemeOptions.First(o => o.Value == AppTheme.Light);
@@ -441,9 +443,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnSelectedTrayIconChanged(Option<TrayIconKind> value) =>
         Save(_settings.Current with { TrayIcon = value.Value });
 
+    // The language only applies on a fresh start; the page offers a restart when it differs.
+    public bool HasLanguageChange => SelectedLanguage is { } selected && selected.Value != _initialLanguage;
+
     // AppSettings.Language takes effect on the next start; Culture.Configure reads it once.
-    partial void OnSelectedLanguageChanged(Option<string> value) =>
+    partial void OnSelectedLanguageChanged(Option<string> value)
+    {
         Save(_settings.Current with { Language = value.Value });
+        OnPropertyChanged(nameof(HasLanguageChange));
+    }
 
     partial void OnShowTrayIconChanged(bool value) =>
         Save(_settings.Current with { ShowTrayIcon = value });

@@ -212,6 +212,37 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public void Changing_the_language_saves_it()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "ar-SA");
+
+        Assert.True(_store.Saved is { Language: "ar-SA" });
+    }
+
+    [Fact]
+    public void Changing_the_language_flags_a_restart()
+    {
+        var viewModel = Create();
+
+        viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "ar-SA");
+
+        Assert.True(viewModel.HasLanguageChange);
+    }
+
+    [Fact]
+    public void Going_back_to_the_saved_language_needs_no_restart()
+    {
+        var viewModel = Create();
+        viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "ar-SA");
+
+        viewModel.SelectedLanguage = viewModel.LanguageOptions.Single(o => o.Value == "en-US");
+
+        Assert.False(viewModel.HasLanguageChange);
+    }
+
+    [Fact]
     public void Turning_on_run_at_startup_saves_and_applies_it()
     {
         var viewModel = Create();

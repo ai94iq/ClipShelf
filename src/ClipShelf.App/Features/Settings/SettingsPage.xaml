@@ -46,6 +46,18 @@
         </StackPanel>
       </Border>
 
+      <!-- A language change needs a fresh process; offer it right here. -->
+      <InfoBar Severity="Informational"
+               IsClosable="False"
+               IsOpen="{x:Bind ViewModel.HasLanguageChange, Mode=OneWay}"
+               Title="{l:Tr Key=Settings_LanguageRestart}"
+               Margin="0,8,0,0"
+               Visibility="{x:Bind ViewModel.ShowAppearanceGroup, Mode=OneWay, Converter={StaticResource BoolVisible}}">
+        <InfoBar.ActionButton>
+          <Button Content="{l:Tr Key=Settings_RestartNow}" Click="OnRestartClick" />
+        </InfoBar.ActionButton>
+      </InfoBar>
+
       <!-- Tray -->
       <TextBlock Text="{l:Tr Key=Settings_Tray}"
                  Style="{StaticResource BodyTextBlockStyle}"

@@ -48,6 +48,21 @@ public sealed class LocalizationTests
     }
 
     [Fact]
+    public void The_arabic_satellite_resolves_at_runtime()
+    {
+        var original = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = new CultureInfo("ar-SA");
+            Assert.Equal("السجل", Tr.Get("Nav_History"));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = original;
+        }
+    }
+
+    [Fact]
     public void Plural_follows_the_culture_rules()
     {
         var original = CultureInfo.CurrentUICulture;

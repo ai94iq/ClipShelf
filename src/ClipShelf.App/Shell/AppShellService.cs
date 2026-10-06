@@ -79,6 +79,10 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public event EventHandler? ExitRequested;
 
+    public event EventHandler? RestartRequested;
+
+    public void Restart() => RestartRequested?.Invoke(this, EventArgs.Empty);
+
     public void ShowHistory() => _mainWindow.Value.ShowHistory();
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();

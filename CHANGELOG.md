@@ -11,6 +11,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Undo a deleted clip: deleting hides the row at once and the delete only lands after a few seconds, with an Undo bar in both windows.
 - A shortcut that another app has taken now warns in Settings, names the shortcut that still works, and suggests alternatives.
 - The Arabic UI uses the bundled Noto Sans Arabic font.
+- Changing the language now offers a one-click restart, since it only takes effect on a fresh start.
 
 ### Fixed
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.

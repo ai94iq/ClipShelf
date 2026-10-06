@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Media;
 using Serilog;
@@ -60,6 +61,7 @@ public sealed partial class App : Application
             // the app alive in the notification area until the user exits from the tray menu.
             var shell = _host.Services.GetRequiredService<AppShellService>();
             shell.ExitRequested += (_, _) => ExitApplication();
+            shell.RestartRequested += (_, _) => RestartApplication();
 
             // First run: a small window explains the hotkey and the tray, then never again.
             var settingsService = _host.Services.GetRequiredService<SettingsService>();
@@ -95,6 +97,22 @@ public sealed partial class App : Application
     private void ExitApplication()
     {
         Shutdown();     // disposes the host, which disposes the tray icon and the clipboard watcher
+        Exit();
+    }
+
+    // A language change needs a fresh process: release everything (including the single-instance
+    // mutex) first, then start a new instance and let this one go.
+    private void RestartApplication()
+    {
+        Shutdown();
+        try
+        {
+            if (Environment.ProcessPath is { } executable) Process.Start(executable);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Restarting the app failed");
+        }
         Exit();
     }
 

@@ -30,6 +30,8 @@ public sealed partial class SettingsPage : UserControl
 
     private void OnExit(object sender, RoutedEventArgs e) => _shell.Value.Exit();
 
+    private void OnRestartClick(object sender, RoutedEventArgs e) => _shell.Value.Restart();
+
     private async void OnCheckUpdatesClick(object sender, RoutedEventArgs e) =>
         await ViewModel.CheckForUpdatesAsync();
 
