@@ -956,6 +956,23 @@ public sealed class ClipboardPanelViewModelTests
         Assert.Equal("recent", vm.LastVisibleItem?.Text);   // the visible bottom is Recent's last row
     }
 
+    [Fact]
+    public async Task Clearing_everything_still_commits_a_pending_delete_of_a_pinned_clip()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "kept", pinned: true) });
+        var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromSeconds(5);
+        await vm.RefreshAsync();
+        await vm.DeleteAsync(vm.Items[0]);
+        Assert.True(vm.HasPendingDelete);
+
+        await vm.ConfirmClearCommand.ExecuteAsync(null);
+
+        Assert.False(vm.HasPendingDelete);
+        await _repository.Received(1).DeleteAsync(1, Arg.Any<CancellationToken>());
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

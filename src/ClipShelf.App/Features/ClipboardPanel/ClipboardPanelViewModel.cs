@@ -640,7 +640,20 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     private async Task ConfirmClearAsync()
     {
         await _repository.ClearUnpinnedAsync(CancellationToken.None);
-        ClearPendingDeletes();                        // their rows are gone; undo must not resurrect them
+
+        // The clear only removes unpinned, uncategorized rows: a pending delete for anything else
+        // must still land, or the row would silently come back without its undo.
+        var survivors = _pendingDeletes
+            .Where(entry => entry.Item.IsPinned || entry.Item.CategoryId is not null)
+            .ToList();
+        foreach (var pending in survivors)
+        {
+            _pendingDeletes.Remove(pending);
+            pending.Cts.Cancel();
+            await _repository.DeleteAsync(pending.Id, CancellationToken.None);
+        }
+
+        ClearPendingDeletes();                        // the rest were just removed by the bulk clear
         IsConfirmingClear = false;
     }
 
