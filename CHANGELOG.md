@@ -21,6 +21,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Fixed
 - The Light theme's surfaces keep their layer relationships again (secondary a step darker, popups and the undo bar a clear step lighter than the canvas), so dialogs and the clear confirmation read apart instead of blending into the background.
+- The clear confirmation dims with the framework's dark smoke and sits on a white dialog surface, instead of a light veil that washed the whole window out.
 - Menu and dropdown options take the accent wash on hover; the keys are written onto the root resources at startup, where they beat the framework's theme dictionaries.
 - The flyout's foreground hook no longer does window work inside the Win32 callback (a re-entrancy hazard that matches the app's long-standing access-violation crashes); it hands the hide to the dispatcher.
 - The row category menu opens anchored to its row in the history window instead of floating mid-window.

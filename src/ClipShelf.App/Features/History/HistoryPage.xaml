@@ -205,8 +205,8 @@
     <Grid Grid.Row="0"
           Grid.RowSpan="4"
           Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.IsConfirmingClear), Mode=OneWay}">
-      <Border Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" Opacity="0.7" />
-      <Border Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}"
+      <Border Background="{ThemeResource SmokeFillColorDefaultBrush}" />
+      <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
               BorderThickness="1"
               CornerRadius="{StaticResource CardRadius}"
