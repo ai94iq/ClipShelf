@@ -857,6 +857,24 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task The_copy_notice_color_flag_follows_the_footer_text()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "hello") });
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        vm.Activate(vm.Items[0]);
+        Assert.True(vm.IsShowingCopyNotice);
+
+        vm.ToggleSelectionCommand.Execute(null);
+        Assert.False(vm.IsShowingCopyNotice);
+
+        vm.ToggleSelectionCommand.Execute(null);
+        Assert.True(vm.IsShowingCopyNotice);
+    }
+
+    [Fact]
     public async Task The_copy_notice_clears_after_its_window()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())

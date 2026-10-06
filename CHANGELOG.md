@@ -18,6 +18,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Settings section headers use the stronger Fluent subtitle style.
 
 ### Fixed
+- The history window confirms a copy in green instead of the same gray as the count.
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.
 - Clicking a clip in the history window now confirms with a brief "Copied" message instead of staying silent.
 - Removing the password now says that it unlocks every locked category before it happens.
