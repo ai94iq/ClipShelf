@@ -57,6 +57,7 @@ public sealed partial class ClipboardPanelWindow : Window
 
     public ClipboardPanelViewModel ViewModel { get; }
     internal IntPtr PreviousWindowHandle => _previousWindow;
+    internal bool IsShown => _shown;
 
     // Where a row's category menu should appear.
     internal FrameworkElement RowAnchor(ClipItemViewModel item) =>

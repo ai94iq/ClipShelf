@@ -26,6 +26,10 @@ public sealed partial class HistoryPage : UserControl
 
     public ClipboardPanelViewModel ViewModel { get; }
 
+    // True while the shell window shows this page; the shared view model's menu request must only
+    // be handled by the window the user actually clicked in.
+    public bool IsActive { get; set; }
+
     public Task LoadAsync() => Task.WhenAll(ViewModel.RefreshAsync(), ViewModel.RefreshCategoryFilterAsync());
 
     private void OnItemClick(object sender, ItemClickEventArgs e)
@@ -57,8 +61,13 @@ public sealed partial class HistoryPage : UserControl
         if (source.LoadMoreCommand.CanExecute(null)) source.LoadMoreCommand.Execute(null);
     }
 
-    private void OnCategoryMenuRequested(ClipItemViewModel item) =>
+    private void OnCategoryMenuRequested(ClipItemViewModel item)
+    {
+        // The view model is shared with the flyout; only this page's own clicks open its menu.
+        if (!IsActive) return;
+
         _ = CategoryMenu.ShowAsync(RowAnchor(item), item, ViewModel);
+    }
 
     // The grouped source defeats ContainerFromItem — it hands back the group container — and group
     // items hide the rows from a flat walk, so the menu anchors to the realized row found anywhere

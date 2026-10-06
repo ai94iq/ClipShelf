@@ -91,6 +91,12 @@ internal sealed class ClipboardPanelActions
         _shell.Value.ShowHistory();
     }
 
-    private void OnCategoryMenuRequested(ClipItemViewModel item) =>
+    private void OnCategoryMenuRequested(ClipItemViewModel item)
+    {
+        // The panel view model is shared with the history window; only the flyout's own clicks
+        // should open its menu, anchored to its own list.
+        if (!_window.IsShown) return;
+
         _ = CategoryMenu.ShowAsync(_window.RowAnchor(item), item, _viewModel);
+    }
 }
