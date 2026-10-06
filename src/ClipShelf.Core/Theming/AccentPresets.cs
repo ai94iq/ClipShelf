@@ -1,18 +1,17 @@
 namespace ClipShelf.Core.Theming;
 
-// Curated accents from the Windows 11 color grid, so the picker offers the same colors as
-// Windows itself. The display name comes from resx key "Accent_{Key}". Null accent means
-// "use the Windows accent".
+// Curated pastel accents: soft, modern tones. The display name comes from resx key
+// "Accent_{Key}". Null accent means "use the Windows accent".
 public static class AccentPresets
 {
     public static IReadOnlyList<AccentPreset> All { get; } =
     [
-        new("Blue", "#0078D4"),
-        new("Teal", "#00B7C3"),
-        new("Green", "#10893E"),
-        new("Purple", "#B146C2"),
-        new("Orange", "#FF8C00"),
-        new("Rose", "#E3008C"),
-        new("Graphite", "#767676"),
+        new("Blue", "#A8C7FA"),
+        new("Teal", "#9EE3DC"),
+        new("Green", "#A8DAB5"),
+        new("Purple", "#D4B8F0"),
+        new("Orange", "#FFD3A3"),
+        new("Rose", "#F7B9D2"),
+        new("Graphite", "#C9CCD1"),
     ];
 }
