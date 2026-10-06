@@ -102,6 +102,7 @@
   <data name="Password_Mismatch" xml:space="preserve"><value>The passwords don't match.</value></data>
   <data name="Password_New" xml:space="preserve"><value>New password</value></data>
   <data name="Password_RemoveTitle" xml:space="preserve"><value>Remove password</value></data>
+  <data name="Password_RemoveWarning" xml:space="preserve"><value>Removing the password unlocks every locked category; their clips become visible again.</value></data>
   <data name="Password_SetTitle" xml:space="preserve"><value>Set password</value></data>
   <data name="Password_TooShort" xml:space="preserve"><value>Use at least 4 characters.</value></data>
   <data name="Password_VerifyTitle" xml:space="preserve"><value>Password</value></data>

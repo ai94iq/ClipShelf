@@ -73,12 +73,17 @@ internal static class PasswordPrompt
         return created;
     }
 
-    // Removing: the current password is still required.
+    // Removing: the current password is still required; the warning spells out the consequence.
     public static async Task<bool> ConfirmRemoveAsync(XamlRoot root, Func<string, bool> verify)
     {
+        var warning = new TextBlock
+        {
+            Text = Tr.Get("Password_RemoveWarning"),
+            TextWrapping = TextWrapping.Wrap,
+        };
         var current = new PasswordBox { PlaceholderText = Tr.Get("Password_Current") };
         var error = ErrorText();
-        var dialog = Build(root, Tr.Get("Password_RemoveTitle"), Tr.Get("Common_Remove"), [current, error]);
+        var dialog = Build(root, Tr.Get("Password_RemoveTitle"), Tr.Get("Common_Remove"), [warning, current, error]);
         var removed = false;
         dialog.PrimaryButtonClick += (_, args) =>
         {

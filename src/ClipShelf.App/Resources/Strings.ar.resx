@@ -102,6 +102,7 @@
   <data name="Password_Mismatch" xml:space="preserve"><value>كلمتا المرور غير متطابقتين.</value></data>
   <data name="Password_New" xml:space="preserve"><value>كلمة المرور الجديدة</value></data>
   <data name="Password_RemoveTitle" xml:space="preserve"><value>إزالة كلمة المرور</value></data>
+  <data name="Password_RemoveWarning" xml:space="preserve"><value>ستؤدي إزالة كلمة المرور إلى فتح جميع التصنيفات المقفلة؛ وستصبح عناصرها ظاهرة مرة أخرى.</value></data>
   <data name="Password_SetTitle" xml:space="preserve"><value>تعيين كلمة المرور</value></data>
   <data name="Password_TooShort" xml:space="preserve"><value>استخدم 4 أحرف على الأقل.</value></data>
   <data name="Password_VerifyTitle" xml:space="preserve"><value>كلمة المرور</value></data>
