@@ -20,6 +20,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - RTL polish: start/end alignment and spacing follow the Arabic layout, and the empty-state hint text meets the contrast minimum.
 - Arabic dates follow the system calendar (Umm al-Qura for ar-SA) instead of always using Gregorian.
 - The first copy or flyout open after launch no longer stalls while the encrypted database key is derived; the connections are warmed at startup.
+- Windows that are hidden no longer refresh their lists on every clipboard change; this removed heavy background work (and backdrop churn) while the flyout is closed.
 
 ### Security
 - CSV exports neutralize text that begins with a spreadsheet formula character (`=`, `+`, `-`, `@`), so a copied snippet cannot run as a formula when the export is opened in Excel.

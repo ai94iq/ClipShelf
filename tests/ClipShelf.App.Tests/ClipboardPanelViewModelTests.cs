@@ -3,6 +3,7 @@ using ClipShelf.App.Localization;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Models;
+using CommunityToolkit.Mvvm.Messaging;
 using NSubstitute;
 
 namespace ClipShelf.App.Tests;
@@ -1024,6 +1025,38 @@ public sealed class ClipboardPanelViewModelTests
 
         Assert.Equal(60, vm.Items.Count);
         Assert.Equal("clip 1", vm.Items[0].Text);
+    }
+
+    [Fact]
+    public async Task A_hidden_view_skips_background_refreshes()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        vm.IsViewVisible = false;
+        _repository.ClearReceivedCalls();
+
+        WeakReferenceMessenger.Default.Send(new DataChanged("clip"));
+        await Task.Delay(200, TestContext.Current.CancellationToken);
+
+        await _repository.DidNotReceive().GetRecentAsync(null, 50, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task A_visible_view_refreshes_on_changes()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one") });
+        var vm = Create();
+        await vm.RefreshAsync();
+        _repository.ClearReceivedCalls();
+
+        WeakReferenceMessenger.Default.Send(new DataChanged("clip"));
+        await WaitUntilAsync(
+            () => _repository.ReceivedCalls().Any(), TestContext.Current.CancellationToken);
+
+        await _repository.Received().GetRecentAsync(null, 50, Arg.Any<CancellationToken>());
     }
 
     private ClipboardPanelViewModel Create() =>

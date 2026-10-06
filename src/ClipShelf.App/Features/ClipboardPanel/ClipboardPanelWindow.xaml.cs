@@ -54,6 +54,7 @@ public sealed partial class ClipboardPanelWindow : Window
         // Windows from re-creating the acrylic surface and flashing black on the next open.
         PanelFrame.MoveOffscreen(this);
         AppWindow.Show();
+        ViewModel.IsViewVisible = false;
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -77,6 +78,7 @@ public sealed partial class ClipboardPanelWindow : Window
     public Task ShowAsync()
     {
         ViewModel.ResetTransientState();
+        ViewModel.IsViewVisible = true;
         _previousWindow = NativeMethods.GetForegroundWindow();
         _shown = true;
         PanelFrame.PositionNearCursor(this);
@@ -95,6 +97,7 @@ public sealed partial class ClipboardPanelWindow : Window
         if (!_shown) return;
 
         _shown = false;
+        ViewModel.IsViewVisible = false;
         PanelFrame.RestoreForeground(this, _previousWindow);
         PanelFrame.MoveOffscreen(this);
     }

@@ -47,20 +47,26 @@ public abstract partial class PageViewModel : ObservableObject
     protected void LogQuietFailure(Exception ex) =>
         _log.LogError(ex, "{Page} background work failed", GetType().Name);
 
-    // Reload automatically when a repository reports a change in one of these areas.
+    // Reload automatically when a repository reports a change in one of these areas. Hidden views
+    // skip the refresh and load fresh data when they are shown again, so a closed flyout does no
+    // background work (and no backdrop recomposition) on every clipboard change.
     protected void ReloadOnChange(params string[] areas) =>
         WeakReferenceMessenger.Default.Register<PageViewModel, DataChanged>(this, (vm, message) =>
         {
-            if (areas.Contains(message.Area) && vm._loadedOnce && vm.ReloadCommand.CanExecute(null))
+            if (vm.IsViewVisible && areas.Contains(message.Area) &&
+                vm._loadedOnce && vm.ReloadCommand.CanExecute(null))
                 vm.ReloadCommand.Execute(null);
         });
 
     protected void ReloadQuietlyOnChange(params string[] areas) =>
         WeakReferenceMessenger.Default.Register<PageViewModel, DataChanged>(this, (vm, message) =>
         {
-            if (areas.Contains(message.Area) && vm._loadedOnce)
+            if (vm.IsViewVisible && areas.Contains(message.Area) && vm._loadedOnce)
                 _ = vm.ReloadQuietlyAsync();
         });
+
+    // The view keeps this in step with its visibility; hidden views refresh on show instead.
+    public bool IsViewVisible { get; set; } = true;
 
     protected virtual Task ReloadQuietlyAsync() => ReloadCommand.ExecuteAsync(null);
 

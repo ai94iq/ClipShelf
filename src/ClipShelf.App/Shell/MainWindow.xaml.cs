@@ -52,6 +52,7 @@ public sealed partial class MainWindow : Window
             if (_lifetime.IsExiting) return;
             args.Cancel = true;
             AppWindow.Hide();
+            if (_history.IsValueCreated) _history.Value.ViewModel.IsViewVisible = false;
         };
 
         Nav.SelectedItem = Nav.MenuItems[0];
@@ -62,6 +63,7 @@ public sealed partial class MainWindow : Window
         Nav.SelectedItem = Nav.MenuItems[0];
         AppWindow.Show();
         Activate();
+        _history.Value.ViewModel.IsViewVisible = true;
         _ = _history.Value.LoadAsync();
     }
 
@@ -83,12 +85,14 @@ public sealed partial class MainWindow : Window
         if (isSettings)
         {
             ContentFrame.Content = _settings.Value;
+            if (_history.IsValueCreated) _history.Value.ViewModel.IsViewVisible = false;
             _ = _settings.Value.LoadAsync();
             return;
         }
 
         var page = _history.Value;
         ContentFrame.Content = page;
+        page.ViewModel.IsViewVisible = true;
         _ = page.LoadAsync();
     }
 
