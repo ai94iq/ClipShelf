@@ -411,7 +411,15 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
 
         _pendingDeletes.Remove(pending);
         NotifyPendingDeleteChanged();
-        await _repository.DeleteAsync(id, CancellationToken.None);
+        try
+        {
+            await _repository.DeleteAsync(id, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            // The row is already hidden; the next refresh brings it back if the delete failed.
+            LogQuietFailure(ex);
+        }
     }
 
     [RelayCommand]
@@ -519,6 +527,15 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
             AppendItems(page);
             if (page.Count > 0) _cursor = page[^1].Cursor;
             HasMore = page.Count == PageSize;
+        }
+        catch (OperationCanceledException)
+        {
+            // cancelled; keep the page that is on screen
+        }
+        catch (Exception ex)
+        {
+            // Keep what is on screen; the next scroll retries.
+            LogQuietFailure(ex);
         }
         finally
         {

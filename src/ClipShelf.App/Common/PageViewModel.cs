@@ -43,6 +43,10 @@ public abstract partial class PageViewModel : ObservableObject
         State = LoadState.Error;
     }
 
+    // For background work outside a page load: log it and leave the UI as it is.
+    protected void LogQuietFailure(Exception ex) =>
+        _log.LogError(ex, "{Page} background work failed", GetType().Name);
+
     // Reload automatically when a repository reports a change in one of these areas.
     protected void ReloadOnChange(params string[] areas) =>
         WeakReferenceMessenger.Default.Register<PageViewModel, DataChanged>(this, (vm, message) =>

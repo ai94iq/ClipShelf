@@ -369,6 +369,24 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task A_failed_load_more_keeps_the_list_and_can_retry()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.GetRecentAsync(Arg.Is<PageCursor?>(c => c != null), 50, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<IReadOnlyList<ClipListItem>>(new IOException("database gone")));
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(60);
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        await vm.LoadMoreCommand.ExecuteAsync(null);
+
+        Assert.Equal(50, vm.Items.Count);
+        Assert.True(vm.HasMore);
+        Assert.Equal(LoadState.Loaded, vm.State);
+    }
+
+    [Fact]
     public async Task Searching_resets_pagination_to_the_first_page()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
