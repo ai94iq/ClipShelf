@@ -60,11 +60,13 @@ public sealed partial class HistoryPage : UserControl
     private void OnCategoryMenuRequested(ClipItemViewModel item) =>
         _ = CategoryMenu.ShowAsync(RowAnchor(item), item, ViewModel);
 
-    // The grouped source defeats ContainerFromItem, and group items hide the rows from a flat
-    // walk, so the menu anchors to the realized row found anywhere under the list.
+    // The grouped source defeats ContainerFromItem — it hands back the group container — and group
+    // items hide the rows from a flat walk, so the menu anchors to the realized row found anywhere
+    // under the list.
     private FrameworkElement RowAnchor(ClipItemViewModel item)
     {
-        if (ClipList.ContainerFromItem(item) is FrameworkElement container) return container;
+        if (ClipList.ContainerFromItem(item) is ListViewItem container && ReferenceEquals(container.Content, item))
+            return container;
 
         return FindContainer(ClipList, item) ?? ClipList;
     }
@@ -75,7 +77,8 @@ public sealed partial class HistoryPage : UserControl
         for (var i = 0; i < count; i++)
         {
             var child = VisualTreeHelper.GetChild(root, i);
-            if (child is ListViewItem { Content: ClipItemViewModel candidate } row && ReferenceEquals(candidate, item))
+            if (child is ListViewItem row &&
+                (ReferenceEquals(row.Content, item) || ReferenceEquals(row.DataContext, item)))
                 return row;
 
             if (FindContainer(child, item) is { } found) return found;
