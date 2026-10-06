@@ -105,7 +105,12 @@ public sealed partial class ClipboardPanelWindow : Window
     {
         var className = new StringBuilder(64);
         NativeMethods.GetClassName(window, className, className.Capacity);
-        if (PanelDismiss.ShouldHide(_handle, window, className.ToString(), _shown)) Hide();
+        if (!PanelDismiss.ShouldHide(_handle, window, className.ToString(), _shown)) return;
+
+        // Window work from inside a Win32 hook callback re-enters WinUI while it is mid-activation
+        // and can take the process down with an access violation; hand it to the next dispatcher
+        // pass instead.
+        DispatcherQueue.TryEnqueue(Hide);
     }
 
     private void OnItemClick(object sender, ItemClickEventArgs e) => _actions.OnItemClick(e);

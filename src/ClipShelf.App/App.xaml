@@ -7,14 +7,6 @@
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
         <ResourceDictionary Source="ms-appx:///Resources/Styles.xaml" />
       </ResourceDictionary.MergedDictionaries>
-
-      <!-- Options in menus and dropdowns take a soft accent wash on hover. -->
-      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
-      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
-      <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
-      <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
-      <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
-      <SolidColorBrush x:Key="ComboBoxItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>
