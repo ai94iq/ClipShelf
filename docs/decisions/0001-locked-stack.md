@@ -9,7 +9,7 @@ The project is built mostly by AI agents for a non-technical owner. Mixing libra
 
 ## Decision
 
-Use only: .NET 10, WinUI 3 (Windows App SDK 1.x, unpackaged), CommunityToolkit.Mvvm, Microsoft.Extensions.Hosting, SQLite via Microsoft.Data.Sqlite + Dapper with numbered SQL migrations, IMemoryCache, Serilog (File + Async), System.Text.Json, resx localization (Arabic neutral, English satellite), xUnit v3 + NSubstitute, WiX v6 MSI, Central Package Management, .slnx, and .bat scripts.
+Use only: .NET 10, WinUI 3 (Windows App SDK 1.x, unpackaged), CommunityToolkit.Mvvm, Microsoft.Extensions.Hosting, SQLite via Microsoft.Data.Sqlite + Dapper with numbered SQL migrations, IMemoryCache, Serilog (File + Async), System.Text.Json, resx localization (English neutral, Arabic satellite), xUnit v3 + NSubstitute, WiX v6 MSI, Central Package Management, .slnx, and .bat scripts.
 
 ## Consequences
 

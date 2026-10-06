@@ -4,8 +4,8 @@
 
 App → Core, Data. Data → Core. Core → nothing.
 
-- **ClipShelf.Core** (net10.0): models, interfaces, text helpers, layout logic. Never WPF or SQL.
-- **ClipShelf.Data** (net10.0): SQLite + Dapper repositories, migrations, backups. Never WPF.
+- **ClipShelf.Core** (net10.0): models, interfaces, text helpers, layout logic. Never UI or SQL.
+- **ClipShelf.Data** (net10.0): SQLite + Dapper repositories, migrations, backups. Never UI.
 - **ClipShelf.App** (net10.0-windows): views, view models, app services, startup, resources.
 
 ## Startup flow

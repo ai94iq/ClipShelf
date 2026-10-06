@@ -24,5 +24,5 @@ rebuilt MSI replaces the previous installation instead of adding another entry.
 - Windows Installer draws the wizard controls, so the finish-page checkbox keeps the stock
   light-grey control style; the artwork places it on a matching footer band instead of restyling it.
 - The shortcut is installed for everyone; there is no per-user choice.
-- `en-US` replaces the template's `ar-SA`, matching the app's English-only UI.
+- `en-US` replaces the template's `ar-SA`; the installer stays English even though the app now ships an Arabic UI.
 - Artwork is generated from `app.ico`; regenerating it needs the same 256 px frame extraction.
