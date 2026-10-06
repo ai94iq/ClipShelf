@@ -4,7 +4,7 @@ using ClipShelf.Core.Abstractions;
 namespace ClipShelf.App.Features.ClipboardPanel;
 
 // Drives the floating history list: load, search, copy, pin, delete and clear.
-public sealed partial class ClipboardPanelViewModel : PageViewModel
+public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementalSource
 {
     private const int PageSize = 50;
     private const int SearchDebounceMs = 300;
@@ -19,6 +19,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
     private CancellationTokenSource? _searchCts;
     private bool _quietRefreshInProgress;
     private bool _quietRefreshRequested;
+    private PageCursor? _cursor;
+    private int _loadGeneration;
 
     public ClipboardPanelViewModel(
         IClipRepository repository,
@@ -39,7 +41,6 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
         Items.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(HasItems));
-            OnPropertyChanged(nameof(CountText));
             OnPropertyChanged(nameof(CanSearch));
             OnPropertyChanged(nameof(FooterText));
         };
@@ -52,7 +53,18 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     public bool HasItems => Items.Count > 0;
 
-    public string CountText => Tr.Plural("History_Count", Items.Count);
+    // The total the current query can show, not just the loaded page, so the footer tells the truth.
+    public string CountText => Tr.Plural("History_Count", TotalCount);
+
+    [ObservableProperty]
+    public partial int TotalCount { get; set; }
+
+    // Paging: the view asks for the next page near the end of the scroll (IIncrementalSource).
+    [ObservableProperty]
+    public partial bool HasMore { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsLoadingMore { get; set; }
 
     // The full-history category filter: "All categories" plus one entry per category.
     public ObservableCollection<Option<long?>> CategoryFilterOptions { get; } = [];
@@ -229,7 +241,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
                 _quietRefreshRequested = false;
                 try
                 {
-                    ReplaceItems(await LoadItemsAsync(CancellationToken.None));
+                    var (items, total) = await LoadItemsAsync(CancellationToken.None);
+                    ApplyFirstPage(items, total);
                     MarkQuietLoadCompleted(Items.Count > 0);
                 }
                 catch (Exception ex)
@@ -286,18 +299,85 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel
 
     protected override async Task<bool> LoadCoreAsync(CancellationToken ct)
     {
-        ReplaceItems(await LoadItemsAsync(ct));
+        var (items, total) = await LoadItemsAsync(ct);
+        ApplyFirstPage(items, total);
         IsConfirmingClear = false;
         return Items.Count > 0;
     }
 
-    private async Task<IReadOnlyList<ClipListItem>> LoadItemsAsync(CancellationToken ct)
+    private async Task<(IReadOnlyList<ClipListItem> Items, int Total)> LoadItemsAsync(CancellationToken ct)
     {
         var categoryId = SelectedCategoryFilter?.Value;
         var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
-        return string.IsNullOrWhiteSpace(SearchText)
+        var query = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
+        var items = query is null
             ? await _repository.GetRecentAsync(null, PageSize, ct, categoryId, unlocked)
-            : await _repository.SearchAsync(SearchText, null, PageSize, ct, categoryId, unlocked);
+            : await _repository.SearchAsync(query, null, PageSize, ct, categoryId, unlocked);
+        var total = await _repository.CountAsync(query, categoryId, unlocked, ct);
+        return (items, total);
+    }
+
+    // First page of a fresh query: replaces the list and resets paging.
+    private void ApplyFirstPage(IReadOnlyList<ClipListItem> items, int total)
+    {
+        _loadGeneration++;
+        _cursor = items.Count > 0 ? items[^1].Cursor : null;
+        HasMore = items.Count == PageSize;
+        TotalCount = total;
+        ReplaceItems(items);
+    }
+
+    // Next page: appends only rows that are not already listed, then rebuilds the groups.
+    private void AppendItems(IReadOnlyList<ClipListItem> page)
+    {
+        if (page.Count == 0) return;
+
+        var known = Items.Select(item => item.Id).ToHashSet();
+        foreach (var model in page)
+            if (known.Add(model.Id)) Items.Add(new ClipItemViewModel(model, _dates, this));
+        RebuildGroups();
+    }
+
+    private bool CanLoadMore => HasMore && !IsLoadingMore && _cursor is not null;
+
+    // Called by the view near the end of the scroll (IIncrementalSource).
+    [RelayCommand(CanExecute = nameof(CanLoadMore))]
+    private async Task LoadMoreAsync(CancellationToken ct)
+    {
+        if (_cursor is null) return;
+
+        IsLoadingMore = true;
+        try
+        {
+            var generation = _loadGeneration;
+            var categoryId = SelectedCategoryFilter?.Value;
+            var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
+            var query = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
+            var page = query is null
+                ? await _repository.GetRecentAsync(_cursor, PageSize, ct, categoryId, unlocked)
+                : await _repository.SearchAsync(query, _cursor, PageSize, ct, categoryId, unlocked);
+
+            // A refresh or a new search replaced the list while this page was loading.
+            if (generation != _loadGeneration) return;
+
+            AppendItems(page);
+            if (page.Count > 0) _cursor = page[^1].Cursor;
+            HasMore = page.Count == PageSize;
+        }
+        finally
+        {
+            IsLoadingMore = false;
+        }
+    }
+
+    partial void OnHasMoreChanged(bool value) => LoadMoreCommand.NotifyCanExecuteChanged();
+
+    partial void OnIsLoadingMoreChanged(bool value) => LoadMoreCommand.NotifyCanExecuteChanged();
+
+    partial void OnTotalCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(CountText));
+        OnPropertyChanged(nameof(FooterText));
     }
 
     private void ReplaceItems(IEnumerable<ClipListItem> items)

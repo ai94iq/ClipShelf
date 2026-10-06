@@ -57,6 +57,7 @@
                   SelectionMode="None"
                   IsItemClickEnabled="True"
                   ItemClick="OnItemClick"
+                  ContainerContentChanging="OnClipListContainerChanging"
                   ItemTemplate="{StaticResource ClipItemTemplate}">
           <ListView.Resources>
             <!-- Rows are click-to-copy; a hovering fill reads like a selection in dark theme.

@@ -414,6 +414,44 @@ public sealed class ClipRepositoryTests
     }
 
     [Fact]
+    public async Task Count_matches_visible_clips_and_skips_locked_categories()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var categories = new CategoryRepository(db.Factory, Substitute.For<IDataChangeNotifier>());
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("plain", null, T0, ct);
+        await repo.AddOrBumpAsync("saved", null, T0.AddMinutes(1), ct);
+        await repo.AddOrBumpAsync("secret", null, T0.AddMinutes(2), ct);
+        var items = await repo.GetRecentAsync(null, 50, ct);
+        var work = await categories.GetOrAddAsync("Work", ct);
+        var secret = await categories.GetOrAddAsync("Secret", ct);
+        await repo.AssignCategoryAsync(items.Single(i => i.Text == "saved").Id, work.Id, ct);
+        await repo.AssignCategoryAsync(items.Single(i => i.Text == "secret").Id, secret.Id, ct);
+        await categories.SetLockedAsync(secret.Id, true, ct);
+
+        Assert.Equal(2, await repo.CountAsync(null, null, null, ct));
+        Assert.Equal(3, await repo.CountAsync(null, null, new long[] { secret.Id }, ct));
+        Assert.Equal(1, await repo.CountAsync(null, work.Id, null, ct));
+    }
+
+    [Fact]
+    public async Task Count_matches_search_results()
+    {
+        using var db = new TempDatabase();
+        var repo = New(db);
+        var ct = TestContext.Current.CancellationToken;
+
+        await repo.AddOrBumpAsync("apple one", null, T0, ct);
+        await repo.AddOrBumpAsync("apple two", null, T0.AddMinutes(1), ct);
+        await repo.AddOrBumpAsync("pear", null, T0.AddMinutes(2), ct);
+
+        Assert.Equal(2, await repo.CountAsync("apple", null, null, ct));
+        Assert.Equal(0, await repo.CountAsync("zzz", null, null, ct));
+    }
+
+    [Fact]
     public async Task An_image_clip_round_trips_with_its_thumbnail()
     {
         using var db = new TempDatabase();

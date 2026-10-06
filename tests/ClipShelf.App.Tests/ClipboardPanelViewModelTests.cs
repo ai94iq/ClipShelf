@@ -194,6 +194,7 @@ public sealed class ClipboardPanelViewModelTests
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "kept", pinned: true), Item(2, "plain") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(2);
         var vm = Create();
 
         await vm.RefreshAsync();
@@ -209,10 +210,94 @@ public sealed class ClipboardPanelViewModelTests
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "only") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(1);
         var vm = Create();
 
         await vm.RefreshAsync();
 
+        Assert.Equal("1 clip", vm.CountText);
+    }
+
+    [Fact]
+    public async Task A_full_page_offers_more_and_the_footer_shows_the_total()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(60);
+        var vm = Create();
+
+        await vm.RefreshAsync();
+
+        Assert.True(vm.HasMore);
+        Assert.Equal("60 clips", vm.CountText);
+    }
+
+    [Fact]
+    public async Task Loading_more_appends_the_next_page()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.GetRecentAsync(Arg.Is<PageCursor?>(c => c != null), 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(51, "older") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(51);
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        await vm.LoadMoreCommand.ExecuteAsync(null);
+
+        Assert.Equal(51, vm.Items.Count);
+        Assert.Equal("older", vm.Items[^1].Text);
+        Assert.False(vm.HasMore);
+    }
+
+    [Fact]
+    public async Task Loading_more_skips_ids_that_are_already_listed()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.GetRecentAsync(Arg.Is<PageCursor?>(c => c != null), 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(50, "clip 50"), Item(51, "older") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(51);
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        await vm.LoadMoreCommand.ExecuteAsync(null);
+
+        Assert.Equal(51, vm.Items.Count);
+        Assert.Single(vm.Items, item => item.Text == "clip 50");
+    }
+
+    [Fact]
+    public async Task An_exhausted_page_offers_no_more()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "only") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(1);
+        var vm = Create();
+        await vm.RefreshAsync();
+
+        Assert.False(vm.HasMore);
+        Assert.False(vm.LoadMoreCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task Searching_resets_pagination_to_the_first_page()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(60);
+        _repository.SearchAsync("mail", null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(7, "email") });
+        _repository.CountAsync("mail", null, null, Arg.Any<CancellationToken>()).Returns(1);
+        var vm = Create();
+        await vm.RefreshAsync();
+        Assert.True(vm.HasMore);
+
+        vm.SearchText = "mail";
+        await vm.RefreshAsync();
+
+        Assert.False(vm.HasMore);
+        Assert.Equal("email", Assert.Single(vm.Items).Text);
         Assert.Equal("1 clip", vm.CountText);
     }
 

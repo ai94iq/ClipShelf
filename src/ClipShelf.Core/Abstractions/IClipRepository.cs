@@ -22,6 +22,10 @@ public interface IClipRepository
         string query, PageCursor? after, int pageSize, CancellationToken ct, long? categoryId = null,
         IReadOnlyCollection<long>? unlockedCategories = null);
 
+    // Total rows the matching list query can show (same visibility rules), for the "N clips" footer.
+    Task<int> CountAsync(
+        string? query, long? categoryId, IReadOnlyCollection<long>? unlockedCategories, CancellationToken ct);
+
     Task SetPinnedAsync(long id, bool pinned, CancellationToken ct);
 
     // Moves a clip into a category, or out of every category when categoryId is null.

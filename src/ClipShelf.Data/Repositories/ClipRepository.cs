@@ -97,6 +97,29 @@ public sealed class ClipRepository(SqliteConnectionFactory factory, IDataChangeN
                 Paging(after, pageSize, categoryId, unlockedCategories, like: $"%{EscapeLike(query)}%"));
         }, ct);
 
+    public Task<int> CountAsync(
+        string? query, long? categoryId, IReadOnlyCollection<long>? unlockedCategories, CancellationToken ct) =>
+        Task.Run(() =>
+        {
+            using var connection = factory.Open();
+            return connection.ExecuteScalar<int>(
+                """
+                SELECT COUNT(*)
+                FROM Clip c
+                WHERE (@like IS NULL OR c.Text LIKE @like ESCAPE '\')
+                  AND (@categoryId IS NULL OR c.CategoryId = @categoryId)
+                  AND (c.CategoryId IS NULL
+                       OR c.CategoryId NOT IN (SELECT Id FROM Category WHERE IsLocked = 1)
+                       OR c.CategoryId IN (SELECT value FROM json_each(@unlocked)))
+                """,
+                new
+                {
+                    like = query is null ? null : $"%{EscapeLike(query)}%",
+                    categoryId,
+                    unlocked = JsonSerializer.Serialize(unlockedCategories ?? Array.Empty<long>()),
+                });
+        }, ct);
+
     public Task SetPinnedAsync(long id, bool pinned, CancellationToken ct) =>
         Task.Run(() =>
         {

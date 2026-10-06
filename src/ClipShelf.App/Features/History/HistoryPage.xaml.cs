@@ -32,6 +32,16 @@ public sealed partial class HistoryPage : UserControl
         if (e.ClickedItem is ClipItemViewModel item) ViewModel.Activate(item);
     }
 
+    // Loads the next page once the list realizes its last row (the user scrolled to the end).
+    private void OnClipListContainerChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+    {
+        if (args.Phase != 0 || args.InRecycleQueue) return;
+        if (args.Item is not ClipItemViewModel item) return;
+        if (!ReferenceEquals(item, ViewModel.Items.LastOrDefault())) return;
+
+        if (ViewModel.LoadMoreCommand.CanExecute(null)) ViewModel.LoadMoreCommand.Execute(null);
+    }
+
     private void OnCategoryMenuRequested(ClipItemViewModel item) =>
         _ = CategoryMenu.ShowAsync(ClipList.ContainerFromItem(item) as FrameworkElement ?? ClipList, item, ViewModel);
 
