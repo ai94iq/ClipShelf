@@ -11,8 +11,9 @@ internal static class ThemeSurfaces
 {
     private const string CardKey = "CardBackgroundFillColorDefaultBrush";
 
-    // Windows' own light surfaces: the page canvas is a light gray, content cards stay white.
-    public static readonly Windows.UI.Color LightCanvas = ColorHelper.FromArgb(255, 0xF3, 0xF3, 0xF3);
+    // The light canvas is a comfortable gray (Windows' classic light tone) with white content
+    // cards, so layers read apart without glare.
+    public static readonly Windows.UI.Color LightCanvas = ColorHelper.FromArgb(255, 0xE6, 0xE6, 0xE6);
     public static readonly Windows.UI.Color LightCard = ColorHelper.FromArgb(255, 0xFF, 0xFF, 0xFF);
 
     private static readonly string[] Keys =
