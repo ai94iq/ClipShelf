@@ -16,6 +16,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Clicking a clip in the history window now confirms with a brief "Copied" message instead of staying silent.
 - Removing the password now says that it unlocks every locked category before it happens.
 - RTL polish: start/end alignment and spacing follow the Arabic layout, and the empty-state hint text meets the contrast minimum.
+- Arabic dates follow the system calendar (Umm al-Qura for ar-SA) instead of always using Gregorian.
 
 ## [0.3.3] - 2026-10-03
 

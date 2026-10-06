@@ -39,27 +39,11 @@
   <data name="Common_Undo" xml:space="preserve"><value>تراجع</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>نعم</value></data>
   <data name="Date_Approx" xml:space="preserve"><value>نحو {0}</value></data>
-  <data name="Date_HijriApprox" xml:space="preserve"><value>نحو {0} هـ</value></data>
-  <data name="Date_HijriDay" xml:space="preserve"><value>{0} {1} {2} هـ</value></data>
-  <data name="Date_HijriMonth" xml:space="preserve"><value>{0} {1} هـ</value></data>
-  <data name="Date_HijriYear" xml:space="preserve"><value>{0} هـ</value></data>
   <data name="Error_LoadFailed" xml:space="preserve"><value>تعذّر تحميل البيانات.</value></data>
   <data name="Error_Startup" xml:space="preserve"><value>تعذّر تشغيل التطبيق. راجع ملفات السجل.</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>حدث خطأ غير متوقع.</value></data>
   <data name="Export_Csv" xml:space="preserve"><value>CSV</value></data>
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
-  <data name="HijriMonth_1" xml:space="preserve"><value>محرم</value></data>
-  <data name="HijriMonth_10" xml:space="preserve"><value>شوال</value></data>
-  <data name="HijriMonth_11" xml:space="preserve"><value>ذو القعدة</value></data>
-  <data name="HijriMonth_12" xml:space="preserve"><value>ذو الحجة</value></data>
-  <data name="HijriMonth_2" xml:space="preserve"><value>صفر</value></data>
-  <data name="HijriMonth_3" xml:space="preserve"><value>ربيع الأول</value></data>
-  <data name="HijriMonth_4" xml:space="preserve"><value>ربيع الآخر</value></data>
-  <data name="HijriMonth_5" xml:space="preserve"><value>جمادى الأولى</value></data>
-  <data name="HijriMonth_6" xml:space="preserve"><value>جمادى الآخرة</value></data>
-  <data name="HijriMonth_7" xml:space="preserve"><value>رجب</value></data>
-  <data name="HijriMonth_8" xml:space="preserve"><value>شعبان</value></data>
-  <data name="HijriMonth_9" xml:space="preserve"><value>رمضان</value></data>
   <data name="History_Copied" xml:space="preserve"><value>تم النسخ</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} عناصر</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} عنصرًا</value></data>

@@ -39,27 +39,11 @@
   <data name="Common_Undo" xml:space="preserve"><value>Undo</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Date_Approx" xml:space="preserve"><value>c. {0}</value></data>
-  <data name="Date_HijriApprox" xml:space="preserve"><value>c. {0} AH</value></data>
-  <data name="Date_HijriDay" xml:space="preserve"><value>{0} {1} {2} AH</value></data>
-  <data name="Date_HijriMonth" xml:space="preserve"><value>{0} {1} AH</value></data>
-  <data name="Date_HijriYear" xml:space="preserve"><value>{0} AH</value></data>
   <data name="Error_LoadFailed" xml:space="preserve"><value>Couldn't load the data.</value></data>
   <data name="Error_Startup" xml:space="preserve"><value>The app couldn't start. Check the log files.</value></data>
   <data name="Error_Unexpected" xml:space="preserve"><value>An unexpected error occurred.</value></data>
   <data name="Export_Csv" xml:space="preserve"><value>CSV</value></data>
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
-  <data name="HijriMonth_1" xml:space="preserve"><value>Muharram</value></data>
-  <data name="HijriMonth_10" xml:space="preserve"><value>Shawwal</value></data>
-  <data name="HijriMonth_11" xml:space="preserve"><value>Dhu al-Qadah</value></data>
-  <data name="HijriMonth_12" xml:space="preserve"><value>Dhu al-Hijjah</value></data>
-  <data name="HijriMonth_2" xml:space="preserve"><value>Safar</value></data>
-  <data name="HijriMonth_3" xml:space="preserve"><value>Rabi al-Awwal</value></data>
-  <data name="HijriMonth_4" xml:space="preserve"><value>Rabi al-Thani</value></data>
-  <data name="HijriMonth_5" xml:space="preserve"><value>Jumada al-Ula</value></data>
-  <data name="HijriMonth_6" xml:space="preserve"><value>Jumada al-Akhirah</value></data>
-  <data name="HijriMonth_7" xml:space="preserve"><value>Rajab</value></data>
-  <data name="HijriMonth_8" xml:space="preserve"><value>Shaban</value></data>
-  <data name="HijriMonth_9" xml:space="preserve"><value>Ramadan</value></data>
   <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>

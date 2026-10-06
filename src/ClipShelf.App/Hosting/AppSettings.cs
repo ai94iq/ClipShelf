@@ -12,8 +12,6 @@ public sealed record AppSettings
 
     public string Language { get; init; } = "en-US";
 
-    public bool UseHijri { get; init; }
-
     [JsonConverter(typeof(JsonStringEnumConverter<AppTheme>))]
     public AppTheme Theme { get; init; } = AppTheme.System;
 

@@ -8,10 +8,6 @@ public static class Culture
     {
         var culture = new CultureInfo(settings.Language == "en-US" ? "en-US" : "ar-SA");
 
-        // ar-SA defaults to Umm al-Qura. All formatting uses Gregorian; Hijri is IDateFormatter's job.
-        var gregorian = culture.OptionalCalendars.OfType<GregorianCalendar>().FirstOrDefault();
-        if (gregorian is not null) culture.DateTimeFormat.Calendar = gregorian;
-
         CultureInfo.DefaultThreadCurrentCulture = culture;
         CultureInfo.DefaultThreadCurrentUICulture = culture;
         CultureInfo.CurrentCulture = culture;
