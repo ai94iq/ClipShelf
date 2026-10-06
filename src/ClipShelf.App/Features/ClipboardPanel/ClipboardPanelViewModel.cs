@@ -60,7 +60,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     public bool HasItems => Items.Count > 0;
 
     // The total the current query can show, not just the loaded page, so the footer tells the truth.
-    public string CountText => Tr.Plural("History_Count", TotalCount);
+    // Rows waiting on undo are already hidden from the list, so they leave the count too.
+    public string CountText => Tr.Plural("History_Count", Math.Max(0, TotalCount - _pendingDeletes.Count));
 
     [ObservableProperty]
     public partial int TotalCount { get; set; }
@@ -449,6 +450,8 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     {
         OnPropertyChanged(nameof(HasPendingDelete));
         OnPropertyChanged(nameof(PendingDeleteText));
+        OnPropertyChanged(nameof(CountText));
+        OnPropertyChanged(nameof(FooterText));
     }
 
     private sealed record PendingDelete(

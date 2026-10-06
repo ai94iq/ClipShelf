@@ -992,6 +992,22 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public async Task A_pending_delete_drops_out_of_the_footer_count()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(2);
+        var vm = Create();
+        vm.DeleteUndoWindow = TimeSpan.FromSeconds(5);
+        await vm.RefreshAsync();
+        Assert.Equal("2 clips", vm.CountText);
+
+        await vm.DeleteAsync(vm.Items[0]);
+
+        Assert.Equal("1 clip", vm.CountText);
+    }
+
+    [Fact]
     public async Task A_quiet_refresh_keeps_the_pages_already_loaded()
     {
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
