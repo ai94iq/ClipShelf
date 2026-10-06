@@ -202,6 +202,24 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         SelectedItem = null;
     }
 
+    // Esc: leave select mode, then cancel the clear confirmation. False = nothing left to dismiss.
+    public bool DismissTransient()
+    {
+        if (IsSelecting)
+        {
+            ToggleSelectionCommand.Execute(null);
+            return true;
+        }
+
+        if (IsConfirmingClear)
+        {
+            CancelClearCommand.Execute(null);
+            return true;
+        }
+
+        return false;
+    }
+
     // Keyboard navigation: the flyout moves a selection with the arrow keys and pastes with Enter.
     [ObservableProperty]
     public partial ClipItemViewModel? SelectedItem { get; set; }

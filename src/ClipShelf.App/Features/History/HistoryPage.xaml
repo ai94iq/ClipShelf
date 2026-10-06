@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:l="using:ClipShelf.App.Localization"
              xmlns:common="using:ClipShelf.App.Common">
+  <UserControl.KeyboardAccelerators>
+    <KeyboardAccelerator Key="Escape" Invoked="OnEscapeInvoked" />
+  </UserControl.KeyboardAccelerators>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -54,9 +57,10 @@
               Visibility="{x:Bind common:BoolToVisibility.Visible(ViewModel.HasItems), Mode=OneWay}">
         <ListView x:Name="ClipList"
                   Padding="8,8,8,4"
-                  SelectionMode="None"
+                  SelectionMode="Single"
                   IsItemClickEnabled="True"
                   ItemClick="OnItemClick"
+                  KeyDown="OnClipListKeyDown"
                   ContainerContentChanging="OnClipListContainerChanging"
                   ItemTemplate="{StaticResource ClipItemTemplate}">
           <ListView.Resources>
@@ -74,8 +78,6 @@
               <Setter Property="Padding" Value="0,7" />
               <Setter Property="MinHeight" Value="0" />
               <Setter Property="CornerRadius" Value="4" />
-              <!-- Clicking a row copies it; keep the row from staying highlighted afterwards. -->
-              <Setter Property="AllowFocusOnInteraction" Value="False" />
             </Style>
           </ListView.ItemContainerStyle>
           <ListView.GroupStyle>

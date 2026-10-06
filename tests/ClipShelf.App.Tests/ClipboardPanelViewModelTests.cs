@@ -179,6 +179,38 @@ public sealed class ClipboardPanelViewModelTests
     }
 
     [Fact]
+    public void Escape_leaves_select_mode_first()
+    {
+        var vm = Create();
+        vm.ToggleSelectionCommand.Execute(null);
+
+        var handled = vm.DismissTransient();
+
+        Assert.True(handled);
+        Assert.False(vm.IsSelecting);
+    }
+
+    [Fact]
+    public void Escape_cancels_a_pending_clear_confirmation()
+    {
+        var vm = Create();
+        vm.RequestClearCommand.Execute(null);
+
+        var handled = vm.DismissTransient();
+
+        Assert.True(handled);
+        Assert.False(vm.IsConfirmingClear);
+    }
+
+    [Fact]
+    public void Escape_with_nothing_to_dismiss_reports_it()
+    {
+        var vm = Create();
+
+        Assert.False(vm.DismissTransient());
+    }
+
+    [Fact]
     public async Task Confirming_clear_removes_unpinned_clips()
     {
         var vm = Create();

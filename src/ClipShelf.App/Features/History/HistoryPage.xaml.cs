@@ -3,6 +3,8 @@ using ClipShelf.App.Features.Settings;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Windows.System;
 
 namespace ClipShelf.App.Features.History;
 
@@ -30,6 +32,19 @@ public sealed partial class HistoryPage : UserControl
     private void OnItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is ClipItemViewModel item) ViewModel.Activate(item);
+    }
+
+    // Esc leaves select mode or cancels the clear confirmation; the page itself stays open.
+    private void OnEscapeInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) =>
+        args.Handled = ViewModel.DismissTransient();
+
+    // Enter copies the focused row; arrows move the focus through the list.
+    private void OnClipListKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != VirtualKey.Enter) return;
+
+        if (ClipList.SelectedItem is ClipItemViewModel item) ViewModel.Activate(item);
+        e.Handled = true;
     }
 
     // Loads the next page once the list realizes its last row (the user scrolled to the end).
