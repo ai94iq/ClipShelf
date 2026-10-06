@@ -15,6 +15,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Changing the language or the accent now offers a one-click restart, since they only take effect on a fresh start.
 
 ### Changed
+- Selected rows wear the accent consistently now: the history window's current row and checked rows in Select mode get the same soft accent wash the flyout already used.
 - The Light theme uses a gray canvas with white content cards instead of pure white, so it's easier on the eyes and the layers read apart.
 - Settings section headers use the stronger Fluent subtitle style.
 

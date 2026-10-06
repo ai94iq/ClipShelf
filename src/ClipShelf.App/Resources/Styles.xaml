@@ -10,6 +10,9 @@
   <common:BytesToImageConverter x:Key="BytesToImage" />
   <common:AccentSwatchConverter x:Key="AccentSwatch" />
 
+  <!-- The soft accent wash that marks a selected row (keyboard row, Select mode). -->
+  <SolidColorBrush x:Key="AccentWash" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
+
   <!-- App font: the system Segoe stack, or the bundled Noto Sans Arabic in an Arabic UI.
        Control text uses the ContentControlThemeFontFamily key, set in App.OnLaunched. -->
   <Style TargetType="TextBlock">
@@ -65,6 +68,13 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+
+      <!-- Checked rows in Select mode wear the accent wash; the current row's wash comes from
+           the list itself. -->
+      <Border Grid.ColumnSpan="3"
+              Background="{StaticResource AccentWash}"
+              CornerRadius="4"
+              Visibility="{Binding IsSelected, Converter={StaticResource BoolVisible}}" />
 
       <!-- Select mode indicator: the row itself is the hit target, so the box only shows state. -->
       <CheckBox Grid.Column="0"
