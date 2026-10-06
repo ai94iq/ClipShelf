@@ -51,7 +51,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - One password (stored only as a salted hash) guards exporting and locked categories.
 
 **Appearance**
-- Themes: System, Light (pure white surfaces), Dark and Full black.
+- Themes: System, Light (soft light surfaces), Dark and Full black.
 - Backgrounds where supported: Mica, Mica Alt, Acrylic or solid.
 
 **Tray and behavior**

@@ -15,6 +15,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Changing the language or the accent now offers a one-click restart, since they only take effect on a fresh start.
 
 ### Changed
+- The Light theme uses Windows' soft light surfaces — a light gray canvas with white cards — instead of pure white, so it's easier on the eyes.
 - Settings section headers use the stronger Fluent subtitle style.
 
 ### Fixed

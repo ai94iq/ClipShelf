@@ -50,12 +50,19 @@ public sealed class ThemeService(SettingsService settings) : IThemeService
 
         if (window.Content is not Panel panel) return;
 
-        // Light and full black are opaque by definition; the backdrop setting applies otherwise.
-        if (current.Theme is AppTheme.Light or AppTheme.White or AppTheme.Black)
+        // Full black and the explicit light theme are opaque by definition; the backdrop setting
+        // applies otherwise. Light sits on the same soft canvas as the shared surface brushes.
+        if (current.Theme == AppTheme.Black)
         {
             window.SystemBackdrop = null;
-            panel.Background = new SolidColorBrush(
-                current.Theme == AppTheme.Black ? Colors.Black : Colors.White);
+            panel.Background = new SolidColorBrush(Colors.Black);
+            return;
+        }
+
+        if (current.Theme is AppTheme.Light or AppTheme.White)
+        {
+            window.SystemBackdrop = null;
+            panel.Background = new SolidColorBrush(ThemeSurfaces.LightCanvas);
             return;
         }
 
