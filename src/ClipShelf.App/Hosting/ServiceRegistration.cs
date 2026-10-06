@@ -54,7 +54,6 @@ public static class ServiceRegistration
         services.AddSingleton<IUpdateChecker, UpdateChecker>();
 
         // Shell: Singleton. Pages and their ViewModels: Transient.
-        // When adding navigation, register WPF-UI services exactly as the installed WPF-UI 4.x sample does.
         services.AddSingleton<MainWindow>();
         services.AddSingleton<WelcomeWindow>();
         return services;
