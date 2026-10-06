@@ -973,6 +973,25 @@ public sealed class ClipboardPanelViewModelTests
         await _repository.Received(1).DeleteAsync(1, Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task A_quiet_refresh_keeps_the_pages_already_loaded()
+    {
+        _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(1, 50).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.GetRecentAsync(Arg.Is<PageCursor?>(c => c != null), 50, Arg.Any<CancellationToken>())
+            .Returns(Enumerable.Range(51, 10).Select(i => Item(i, $"clip {i}")).ToList());
+        _repository.CountAsync(null, null, null, Arg.Any<CancellationToken>()).Returns(60);
+        var vm = Create();
+        await vm.RefreshAsync();
+        await vm.LoadMoreCommand.ExecuteAsync(null);
+        Assert.Equal(60, vm.Items.Count);
+
+        await vm.RefreshQuietAsync();
+
+        Assert.Equal(60, vm.Items.Count);
+        Assert.Equal("clip 1", vm.Items[0].Text);
+    }
+
     private ClipboardPanelViewModel Create() =>
         new(_repository, _categories, _locks, _passwords, _clipboard, _dates,
             NullLogger<ClipboardPanelViewModel>.Instance);

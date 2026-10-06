@@ -304,8 +304,22 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
                 _quietRefreshRequested = false;
                 try
                 {
-                    var (items, total) = await LoadItemsAsync(CancellationToken.None);
-                    ApplyFirstPage(items, total);
+                    // Re-read as deep as the user already scrolled, so a quiet refresh does not
+                    // collapse the list back to the first page.
+                    var loaded = Items.Count;
+                    var first = await FetchPageAsync(null, CancellationToken.None);
+                    var all = first.ToList();
+                    var cursor = first.Count > 0 ? first[^1].Cursor : null;
+                    var hasMore = first.Count == PageSize;
+                    while (hasMore && all.Count < loaded && cursor is not null)
+                    {
+                        var page = await FetchPageAsync(cursor, CancellationToken.None);
+                        all.AddRange(page);
+                        cursor = page.Count > 0 ? page[^1].Cursor : null;
+                        hasMore = page.Count == PageSize;
+                    }
+
+                    ApplyFirstPage(all, await CountAsync(CancellationToken.None), hasMore);
                     MarkQuietLoadCompleted(Items.Count > 0);
                 }
                 catch (Exception ex)
@@ -435,29 +449,39 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     protected override async Task<bool> LoadCoreAsync(CancellationToken ct)
     {
         var (items, total) = await LoadItemsAsync(ct);
-        ApplyFirstPage(items, total);
+        ApplyFirstPage(items, total, items.Count == PageSize);
         IsConfirmingClear = false;
         return Items.Count > 0;
     }
 
-    private async Task<(IReadOnlyList<ClipListItem> Items, int Total)> LoadItemsAsync(CancellationToken ct)
+    private async Task<(IReadOnlyList<ClipListItem> Items, int Total)> LoadItemsAsync(CancellationToken ct) =>
+        (await FetchPageAsync(null, ct), await CountAsync(ct));
+
+    // One page of the current query at the given cursor.
+    private async Task<IReadOnlyList<ClipListItem>> FetchPageAsync(PageCursor? cursor, CancellationToken ct)
+    {
+        var categoryId = SelectedCategoryFilter?.Value;
+        var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
+        return string.IsNullOrWhiteSpace(SearchText)
+            ? await _repository.GetRecentAsync(cursor, PageSize, ct, categoryId, unlocked)
+            : await _repository.SearchAsync(SearchText, cursor, PageSize, ct, categoryId, unlocked);
+    }
+
+    // The total for the current query, matching FetchPageAsync's filters.
+    private Task<int> CountAsync(CancellationToken ct)
     {
         var categoryId = SelectedCategoryFilter?.Value;
         var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
         var query = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
-        var items = query is null
-            ? await _repository.GetRecentAsync(null, PageSize, ct, categoryId, unlocked)
-            : await _repository.SearchAsync(query, null, PageSize, ct, categoryId, unlocked);
-        var total = await _repository.CountAsync(query, categoryId, unlocked, ct);
-        return (items, total);
+        return _repository.CountAsync(query, categoryId, unlocked, ct);
     }
 
     // First page of a fresh query: replaces the list and resets paging.
-    private void ApplyFirstPage(IReadOnlyList<ClipListItem> items, int total)
+    private void ApplyFirstPage(IReadOnlyList<ClipListItem> items, int total, bool hasMore)
     {
         _loadGeneration++;
         _cursor = items.Count > 0 ? items[^1].Cursor : null;
-        HasMore = items.Count == PageSize;
+        HasMore = hasMore;
         TotalCount = total;
         ReplaceItems(items);
     }
@@ -487,12 +511,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         try
         {
             var generation = _loadGeneration;
-            var categoryId = SelectedCategoryFilter?.Value;
-            var unlocked = _locks.UnlockedCategoryIds.Count == 0 ? null : _locks.UnlockedCategoryIds;
-            var query = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
-            var page = query is null
-                ? await _repository.GetRecentAsync(_cursor, PageSize, ct, categoryId, unlocked)
-                : await _repository.SearchAsync(query, _cursor, PageSize, ct, categoryId, unlocked);
+            var page = await FetchPageAsync(_cursor, ct);
 
             // A refresh or a new search replaced the list while this page was loading.
             if (generation != _loadGeneration) return;
