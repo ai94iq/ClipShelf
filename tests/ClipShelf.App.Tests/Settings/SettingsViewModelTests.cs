@@ -258,10 +258,11 @@ public sealed class SettingsViewModelTests
     public void Choosing_an_accent_saves_it_and_flags_a_restart()
     {
         var viewModel = Create();
+        var purple = AccentPresets.All.Single(p => p.Key == "Purple").Hex;
 
-        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == "#5C2E91");
+        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == purple);
 
-        Assert.True(_store.Saved is { Accent: "#5C2E91" });
+        Assert.Equal(purple, _store.Saved?.Accent);
         Assert.True(viewModel.HasAccentChange);
         Assert.True(viewModel.NeedsRestart);
         Assert.True(viewModel.SelectedAccent.IsSelected);
@@ -272,7 +273,8 @@ public sealed class SettingsViewModelTests
     public void Going_back_to_the_saved_accent_needs_no_restart()
     {
         var viewModel = Create();
-        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == "#5C2E91");
+        var purple = AccentPresets.All.Single(p => p.Key == "Purple").Hex;
+        viewModel.SelectedAccent = viewModel.AccentOptions.Single(o => o.Value == purple);
 
         viewModel.SelectedAccent = viewModel.AccentOptions[0];
 
@@ -283,11 +285,12 @@ public sealed class SettingsViewModelTests
     [Fact]
     public void A_saved_accent_is_preselected()
     {
-        _service.Update(_service.Current with { Accent = "#107C10" });
+        var green = AccentPresets.All.Single(p => p.Key == "Green").Hex;
+        _service.Update(_service.Current with { Accent = green });
 
         var viewModel = Create();
 
-        Assert.Equal("#107C10", viewModel.SelectedAccent.Value);
+        Assert.Equal(green, viewModel.SelectedAccent.Value);
         Assert.False(viewModel.HasAccentChange);
     }
 

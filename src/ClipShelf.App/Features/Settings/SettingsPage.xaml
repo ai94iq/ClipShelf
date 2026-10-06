@@ -13,6 +13,7 @@
       <Setter Property="MinWidth" Value="0" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="White" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="RadioButton">
@@ -36,7 +37,7 @@
               <common:AppIcon x:Name="Check"
                               Kind="Checkmark"
                               Width="12" Height="12"
-                              Foreground="White"
+                              Foreground="{TemplateBinding Foreground}"
                               Opacity="0" />
               <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
@@ -132,6 +133,7 @@
                   <RadioButton Style="{StaticResource AccentSwatchRadio}"
                                GroupName="Accent"
                                Background="{Binding Value, Converter={StaticResource AccentSwatch}}"
+                               Foreground="{Binding Value, Converter={StaticResource AccentSwatch}, ConverterParameter=Check}"
                                IsChecked="{Binding IsSelected, Mode=OneWay}"
                                Checked="OnAccentChecked"
                                ToolTipService.ToolTip="{Binding Label}"
