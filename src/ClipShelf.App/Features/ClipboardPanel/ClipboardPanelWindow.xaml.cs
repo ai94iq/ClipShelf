@@ -19,7 +19,6 @@ public sealed partial class ClipboardPanelWindow : Window
 
     public ClipboardPanelWindow(
         ClipboardPanelViewModel viewModel,
-        SettingsService settings,
         Lazy<AppShellService> shell)
     {
         ViewModel = viewModel;
@@ -34,7 +33,7 @@ public sealed partial class ClipboardPanelWindow : Window
         DestructiveHover.TintOnHover(ClearAllButton);
         DestructiveHover.TintOnHover(ConfirmClearButton);
 
-        _actions = new ClipboardPanelActions(this, viewModel, settings, shell);
+        _actions = new ClipboardPanelActions(this, viewModel, shell);
         _handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
         PanelFrame.Configure(this);
         WindowSurface.ApplyAcrylic(this, Root);

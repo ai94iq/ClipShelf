@@ -14,8 +14,6 @@ public sealed record AppSettings
 
     public bool UseHijri { get; init; }
 
-    public bool ArabicIndicDigits { get; init; }
-
     [JsonConverter(typeof(JsonStringEnumConverter<AppTheme>))]
     public AppTheme Theme { get; init; } = AppTheme.System;
 
@@ -37,9 +35,6 @@ public sealed record AppSettings
     // Global shortcut that opens the flyout; at least one modifier plus one key.
     [JsonConverter(typeof(HotkeyGestureJsonConverter))]
     public HotkeyGesture Hotkey { get; init; } = DefaultHotkey;
-
-    // When true, choosing an item also pastes it into the app that had focus.
-    public bool PasteOnSelect { get; init; } = true;
 
     // When true, double-clicking the tray icon opens the full history window.
     public bool OpenHistoryOnDoubleClick { get; init; } = true;

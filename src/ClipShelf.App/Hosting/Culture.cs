@@ -4,9 +4,6 @@ public static class Culture
 {
     public static bool IsRtl { get; private set; }
 
-    // WinUI has no render-time digit substitution, so Arabic-Indic digits are a WPF-only setting.
-    public static bool ArabicIndicDigits => false;
-
     public static void Configure(AppSettings settings)
     {
         var culture = new CultureInfo(settings.Language == "en-US" ? "en-US" : "ar-SA");

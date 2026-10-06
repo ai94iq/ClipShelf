@@ -14,18 +14,15 @@ internal sealed class ClipboardPanelActions
 {
     private readonly ClipboardPanelWindow _window;
     private readonly ClipboardPanelViewModel _viewModel;
-    private readonly SettingsService _settings;
     private readonly Lazy<AppShellService> _shell;
 
     public ClipboardPanelActions(
         ClipboardPanelWindow window,
         ClipboardPanelViewModel viewModel,
-        SettingsService settings,
         Lazy<AppShellService> shell)
     {
         _window = window;
         _viewModel = viewModel;
-        _settings = settings;
         _shell = shell;
 
         _viewModel.ItemActivated += OnItemActivated;
@@ -85,7 +82,7 @@ internal sealed class ClipboardPanelActions
     private void OnItemActivated(object? sender, EventArgs e)
     {
         _window.Hide();
-        if (_settings.Current.PasteOnSelect) _ = KeyboardPaste.IntoAsync(_window.PreviousWindowHandle);
+        _ = KeyboardPaste.IntoAsync(_window.PreviousWindowHandle);
     }
 
     private void OnOpenHistoryRequested(object? sender, EventArgs e)
