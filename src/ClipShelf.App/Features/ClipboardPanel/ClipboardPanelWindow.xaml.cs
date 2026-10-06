@@ -115,8 +115,9 @@ public sealed partial class ClipboardPanelWindow : Window
         if (args.Phase != 0 || args.InRecycleQueue) return;
         if (args.Item is not ClipItemViewModel item) return;
         if (!ReferenceEquals(item, ViewModel.LastVisibleItem)) return;
+        if (ViewModel is not IIncrementalSource { HasMore: true } source) return;
 
-        if (ViewModel.LoadMoreCommand.CanExecute(null)) ViewModel.LoadMoreCommand.Execute(null);
+        if (source.LoadMoreCommand.CanExecute(null)) source.LoadMoreCommand.Execute(null);
     }
 
     private void OnKeyDown(object sender, KeyRoutedEventArgs e) => _actions.OnKeyDown(e);
