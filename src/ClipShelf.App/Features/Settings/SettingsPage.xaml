@@ -324,7 +324,7 @@
                      Margin="16,0,16,12"
                      Visibility="{x:Bind ViewModel.HasUpdateStatus, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
           <HyperlinkButton Content="{l:Tr Key=Settings_Download}"
-                           Margin="8,0,0,8"
+                           Margin="8,0,8,8"
                            NavigateUri="https://github.com/ai94iq/ClipShelf/releases/latest"
                            Visibility="{x:Bind ViewModel.UpdateAvailable, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
         </StackPanel>

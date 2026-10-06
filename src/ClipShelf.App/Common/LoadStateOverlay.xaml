@@ -31,7 +31,7 @@
                  TextAlignment="Center"
                  TextWrapping="Wrap"
                  Style="{StaticResource CaptionTextBlockStyle}"
-                 Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                 Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
     </StackPanel>
 
     <StackPanel HorizontalAlignment="Center"

@@ -198,7 +198,7 @@
               VerticalAlignment="Center">
         <StackPanel Spacing="16">
           <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" TextWrapping="Wrap" />
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="{common:RtlAlign Desired=Right}">
             <Button x:Name="ConfirmClearButton"
                     Content="{l:Tr Key=Panel_ClearYes}"
                     MinWidth="0"

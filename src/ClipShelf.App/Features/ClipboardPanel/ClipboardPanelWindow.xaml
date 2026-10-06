@@ -14,7 +14,6 @@
     <Grid Grid.Row="0" Margin="12,10,12,4">
       <TextBox x:Name="SearchBox"
                Height="34"
-               Padding="0,0,8,0"
                IsEnabled="{x:Bind ViewModel.CanSearch, Mode=OneWay}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -114,7 +113,7 @@
                 Width="32"
                 Height="28"
                 Padding="0"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="{common:RtlAlign Desired=Left}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_OpenFullHistory}"
                 AutomationProperties.Name="{l:Tr Key=Panel_OpenFullHistory}"
                 Command="{x:Bind ViewModel.OpenHistoryCommand}">
@@ -191,7 +190,7 @@
               VerticalAlignment="Center">
         <StackPanel Spacing="16">
           <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" TextWrapping="Wrap" />
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="{common:RtlAlign Desired=Right}">
             <Button x:Name="ConfirmClearButton"
                     Content="{l:Tr Key=Panel_ClearYes}"
                     MinWidth="0"
