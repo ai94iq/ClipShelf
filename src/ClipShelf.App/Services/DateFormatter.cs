@@ -12,10 +12,12 @@ public sealed class DateFormatter : IDateFormatter
         {
             DatePrecision.Day => value.ToString("d MMMM yyyy", CultureInfo.CurrentCulture),
             DatePrecision.Month => value.ToString("MMMM yyyy", CultureInfo.CurrentCulture),
-            DatePrecision.ApproximateYear => Tr.Format("Date_Approx", value.Year),
-            _ => value.Year.ToString(CultureInfo.InvariantCulture),
+            DatePrecision.ApproximateYear => Tr.Format("Date_Approx", Year(value)),
+            _ => Year(value).ToString(CultureInfo.InvariantCulture),
         };
     }
+
+    private static int Year(DateTime value) => CultureInfo.CurrentCulture.Calendar.GetYear(value);
 
     public string FormatSince(DateTimeOffset valueUtc)
     {

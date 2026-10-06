@@ -67,4 +67,23 @@ public sealed class DateFormatterTests
             CultureInfo.DefaultThreadCurrentUICulture = defaultUiCulture;
         }
     }
+
+    [Fact]
+    public void Approximate_years_follow_the_culture_calendar_too()
+    {
+        var original = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = new CultureInfo("ar-SA");
+            var formatter = new DateFormatter();
+
+            var text = formatter.Format(new DateOnly(2026, 1, 2), DatePrecision.ApproximateYear);
+
+            Assert.DoesNotContain("2026", text);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = original;
+        }
+    }
 }
