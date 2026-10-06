@@ -212,6 +212,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsExportError { get; set; }
 
+    // The status line switches between the normal and the critical color; each state gets its own
+    // TextBlock so the color follows the window's theme.
+    public bool ShowExportStatus => HasExportStatus && !IsExportError;
+
+    public bool ShowExportError => HasExportStatus && IsExportError;
+
     public bool CanExport => !IsExporting;
 
     public bool HasExportStatus => !string.IsNullOrEmpty(ExportStatus);
@@ -264,6 +270,11 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public bool HasUpdateStatus => !string.IsNullOrEmpty(UpdateStatus);
 
+    // Same split as the export status: the color must follow the window's theme.
+    public bool ShowUpdateStatus => HasUpdateStatus && !IsUpdateError;
+
+    public bool ShowUpdateError => HasUpdateStatus && IsUpdateError;
+
     public async Task CheckForUpdatesOnceAsync()
     {
         if (_checkedForUpdates) return;
@@ -303,7 +314,18 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnIsCheckingUpdatesChanged(bool value) => OnPropertyChanged(nameof(CanCheckUpdates));
 
-    partial void OnUpdateStatusChanged(string? value) => OnPropertyChanged(nameof(HasUpdateStatus));
+    partial void OnUpdateStatusChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasUpdateStatus));
+        OnPropertyChanged(nameof(ShowUpdateStatus));
+        OnPropertyChanged(nameof(ShowUpdateError));
+    }
+
+    partial void OnIsUpdateErrorChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowUpdateStatus));
+        OnPropertyChanged(nameof(ShowUpdateError));
+    }
 
     // Category locks: each category can hide its clips behind its own password.
     public ObservableCollection<CategoryRow> CategoryRows { get; } = [];
@@ -607,7 +629,18 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnIsExportingChanged(bool value) => OnPropertyChanged(nameof(CanExport));
 
-    partial void OnExportStatusChanged(string? value) => OnPropertyChanged(nameof(HasExportStatus));
+    partial void OnExportStatusChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasExportStatus));
+        OnPropertyChanged(nameof(ShowExportStatus));
+        OnPropertyChanged(nameof(ShowExportError));
+    }
+
+    partial void OnIsExportErrorChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowExportStatus));
+        OnPropertyChanged(nameof(ShowExportError));
+    }
 
     // Runs after the page's save picker returned a file path.
     public async Task ExportAsync(string path)

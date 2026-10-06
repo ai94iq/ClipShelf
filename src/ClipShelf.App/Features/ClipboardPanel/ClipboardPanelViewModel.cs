@@ -184,6 +184,9 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     // by selection mode.
     public bool IsShowingCopyNotice => !IsSelecting && HasCopyNotice;
 
+    // The summary (count or selection text) hides while the notice takes the footer over.
+    public bool ShowFooterText => !IsShowingCopyNotice;
+
     // Tests shorten this; the UI keeps it long enough to read.
     public TimeSpan CopyNoticeDuration { get; set; } = TimeSpan.FromSeconds(2.5);
 
@@ -268,6 +271,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
     {
         OnPropertyChanged(nameof(HasCopyNotice));
         OnPropertyChanged(nameof(IsShowingCopyNotice));
+        OnPropertyChanged(nameof(ShowFooterText));
         OnPropertyChanged(nameof(FooterText));
     }
 
@@ -709,6 +713,7 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         foreach (var item in Items) item.NotifySelectionModeChanged();
         OnPropertyChanged(nameof(ShowSelectButton));
         OnPropertyChanged(nameof(IsShowingCopyNotice));
+        OnPropertyChanged(nameof(ShowFooterText));
         OnPropertyChanged(nameof(FooterText));
     }
 

@@ -866,12 +866,15 @@ public sealed class ClipboardPanelViewModelTests
 
         vm.Activate(vm.Items[0]);
         Assert.True(vm.IsShowingCopyNotice);
+        Assert.False(vm.ShowFooterText);
 
         vm.ToggleSelectionCommand.Execute(null);
         Assert.False(vm.IsShowingCopyNotice);
+        Assert.True(vm.ShowFooterText);
 
         vm.ToggleSelectionCommand.Execute(null);
         Assert.True(vm.IsShowingCopyNotice);
+        Assert.False(vm.ShowFooterText);
     }
 
     [Fact]

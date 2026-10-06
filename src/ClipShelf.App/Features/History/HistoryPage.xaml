@@ -138,7 +138,13 @@
         <TextBlock Grid.Column="0"
                    Text="{x:Bind ViewModel.FooterText, Mode=OneWay}"
                    VerticalAlignment="Center"
-                   Foreground="{x:Bind ViewModel.IsShowingCopyNotice, Mode=OneWay, Converter={StaticResource SuccessBrush}}" />
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                   Visibility="{x:Bind ViewModel.ShowFooterText, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
+        <TextBlock Grid.Column="0"
+                   Text="{x:Bind ViewModel.CopyNotice, Mode=OneWay}"
+                   VerticalAlignment="Center"
+                   Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                   Visibility="{x:Bind ViewModel.IsShowingCopyNotice, Mode=OneWay, Converter={StaticResource BoolVisible}}" />
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
           <Button Content="{l:Tr Key=Selection_Select}"

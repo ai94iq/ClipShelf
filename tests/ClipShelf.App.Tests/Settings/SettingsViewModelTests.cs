@@ -454,6 +454,8 @@ public sealed class SettingsViewModelTests
         await _export.Received(1).ExportAsync("out.json", ClipExportFormat.Json, Arg.Any<CancellationToken>());
         Assert.True(viewModel.HasExportStatus);
         Assert.False(viewModel.IsExportError);
+        Assert.True(viewModel.ShowExportStatus);
+        Assert.False(viewModel.ShowExportError);
         Assert.Equal(
             Tr.Format("Settings_ExportDone", Tr.Plural("History_Count", 3)),
             viewModel.ExportStatus);
@@ -483,6 +485,8 @@ public sealed class SettingsViewModelTests
 
         Assert.Equal(Tr.Get("Settings_ExportFailed"), viewModel.ExportStatus);
         Assert.True(viewModel.IsExportError);
+        Assert.True(viewModel.ShowExportError);
+        Assert.False(viewModel.ShowExportStatus);
     }
 
     [Fact]
@@ -746,6 +750,8 @@ public sealed class SettingsViewModelTests
         Assert.True(viewModel.UpdateAvailable);
         Assert.Equal(Tr.Format("Settings_UpdateAvailable", "0.3.0"), viewModel.UpdateStatus);
         Assert.False(viewModel.IsUpdateError);
+        Assert.True(viewModel.ShowUpdateStatus);
+        Assert.False(viewModel.ShowUpdateError);
     }
 
     [Fact]
