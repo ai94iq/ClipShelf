@@ -121,6 +121,10 @@
                 Command="{Binding TogglePinCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
+          <Button.Resources>
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
+          </Button.Resources>
           <common:AppIcon Kind="{Binding IsPinned, Converter={StaticResource PinIcon}}" Width="16" Height="16" />
         </Button>
         <Button Background="Transparent"
@@ -132,6 +136,10 @@
                 Command="{Binding CategoryCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Category}"
                 AutomationProperties.Name="{l:Tr Key=Panel_Category}">
+          <Button.Resources>
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
+          </Button.Resources>
           <common:AppIcon Kind="Folder" Width="16" Height="16" />
         </Button>
         <Button x:Name="DeleteButton"
@@ -150,6 +158,8 @@
                  system theme's color and wash out on the other one. -->
             <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource SystemFillColorCritical}" />
             <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource SystemFillColorCritical}" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.24" />
           </Button.Resources>
           <common:AppIcon Kind="Delete" Width="16" Height="16" Foreground="{Binding Foreground, ElementName=DeleteButton}" />
         </Button>

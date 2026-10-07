@@ -66,18 +66,13 @@ public sealed partial class HistoryPage : UserControl
         // The view model is shared with the flyout; only this page's own clicks open its menu.
         if (!IsActive) return;
 
-        _ = CategoryMenu.ShowAsync(RowAnchor(item), item, ViewModel);
-    }
+        // Anchoring to the row misbehaves with the grouped source, so the menu is placed at the
+        // row's own offset inside the list instead.
+        var position = new Windows.Foundation.Point(12, 12);
+        if (FindContainer(ClipList, item) is { } row)
+            position = row.TransformToVisual(ClipList).TransformPoint(new Windows.Foundation.Point(0, row.ActualHeight + 4));
 
-    // The grouped source defeats ContainerFromItem — it hands back the group container — and group
-    // items hide the rows from a flat walk, so the menu anchors to the realized row found anywhere
-    // under the list.
-    private FrameworkElement RowAnchor(ClipItemViewModel item)
-    {
-        if (ClipList.ContainerFromItem(item) is ListViewItem container && ReferenceEquals(container.Content, item))
-            return container;
-
-        return FindContainer(ClipList, item) ?? ClipList;
+        _ = CategoryMenu.ShowAsync(ClipList, item, ViewModel, position);
     }
 
     private static FrameworkElement? FindContainer(DependencyObject root, ClipItemViewModel item)

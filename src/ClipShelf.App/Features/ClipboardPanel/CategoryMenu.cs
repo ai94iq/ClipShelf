@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
@@ -7,7 +8,11 @@ namespace ClipShelf.App.Features.ClipboardPanel;
 // The per-row category menu: assign a category, take one away, or create one and assign it.
 internal static class CategoryMenu
 {
-    public static async Task ShowAsync(FrameworkElement anchor, ClipItemViewModel item, ClipboardPanelViewModel panel)
+    public static async Task ShowAsync(
+        FrameworkElement anchor,
+        ClipItemViewModel item,
+        ClipboardPanelViewModel panel,
+        Windows.Foundation.Point? position = null)
     {
         var categories = await panel.GetCategoriesAsync();
         var flyout = new MenuFlyout();
@@ -25,7 +30,11 @@ internal static class CategoryMenu
         flyout.Items.Add(create);
 
         foreach (var entry in flyout.Items) TintHover(entry);
-        flyout.ShowAt(anchor);
+
+        if (position is { } point)
+            flyout.ShowAt(anchor, new FlyoutShowOptions { Position = point });
+        else
+            flyout.ShowAt(anchor);
     }
 
     // Options take the soft accent wash on hover, like the lists' selected rows. Both the plain
