@@ -44,7 +44,6 @@ public sealed partial class App : Application
         {
             ThemeSurfaces.Apply(_settings.Theme);
             ThemeService.ApplyAccentResources(Application.Current.Resources, _settings.Accent);
-            AccentHover.Apply(Application.Current.Resources);
             // Control text follows the app font too (TextBlocks read the {l:AppFont} extension).
             Application.Current.Resources["ContentControlThemeFontFamily"] =
                 new FontFamily(AppFonts.Family(Culture.IsRtl));

@@ -35,6 +35,10 @@ public sealed partial class HistoryPage : UserControl
     private void OnItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is ClipItemViewModel item) ViewModel.Activate(item);
+
+        // Click-to-copy: the accent row wash belongs to the keyboard selection and Select mode,
+        // not to the last clicked row.
+        ClipList.SelectedItem = null;
     }
 
     // Esc leaves select mode or cancels the clear confirmation; the page itself stays open.

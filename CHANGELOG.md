@@ -15,17 +15,16 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Changing the language or the accent now offers a one-click restart, since they only take effect on a fresh start.
 
 ### Changed
-- Selected rows wear the accent consistently now: the history window's current row and checked rows in Select mode get the same soft accent wash the flyout already used.
+- Selected rows wear the accent consistently now: the keyboard selection and checked rows in Select mode get the same soft accent wash the flyout already uses (a click copies and lets the wash go).
 - The Light theme uses a gray canvas with white content cards instead of pure white, so it's easier on the eyes and the layers read apart.
 - Settings section headers use the stronger Fluent subtitle style.
 
 ### Fixed
 - The Light theme's surfaces keep their layer relationships again (secondary a step darker, popups and the undo bar a clear step lighter than the canvas), so dialogs and the clear confirmation read apart instead of blending into the background.
 - The clear confirmation dims with the framework's dark smoke and sits on a white dialog surface, instead of a light veil that washed the whole window out.
-- Menu and dropdown options take the accent wash on hover; the keys are written onto the root resources at startup, where they beat the framework's theme dictionaries.
+- Hover states follow the design rules again: controls keep their built-in neutral hover, and the accent stays on selection, focus, toggles and primary actions.
 - The flyout's foreground hook no longer does window work inside the Win32 callback (a re-entrancy hazard that matches the app's long-standing access-violation crashes); it hands the hide to the dispatcher.
 - The row category menu opens anchored to its row in the history window instead of floating mid-window.
-- The delete hover tint follows the window's theme now (it used the system theme's color, which washed out to near-white on the light window), and the row delete icons get the same tint as the footer ones.
 - The history footer count and the settings status lines were nearly invisible in the Light theme; their color now follows the window's theme instead of the system theme.
 - The history window confirms a copy in green instead of the same gray as the count.
 - History rows work from the keyboard: arrows move through the list, Enter copies the focused clip, and Esc cancels the clear confirmation as promised.
