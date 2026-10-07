@@ -7,6 +7,32 @@
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
         <ResourceDictionary Source="ms-appx:///Resources/Styles.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <!-- Hover states take the accent wash. The framework's values live in theme dictionaries, so
+           the overrides must sit in theme dictionaries too - plain entries lose the lookup. High
+           Contrast is left alone on purpose. -->
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ComboBoxItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+          <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+          <SolidColorBrush x:Key="ComboBoxItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
     </ResourceDictionary>
   </Application.Resources>
 </Application>
