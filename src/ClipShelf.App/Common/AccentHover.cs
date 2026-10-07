@@ -9,12 +9,12 @@ internal static class AccentHover
 {
     private static readonly (string Key, double Opacity)[] Entries =
     [
-        ("MenuFlyoutItemBackgroundPointerOver", 0.16),
-        ("MenuFlyoutItemBackgroundPressed", 0.24),
-        ("ToggleMenuFlyoutItemBackgroundPointerOver", 0.16),
-        ("ToggleMenuFlyoutItemBackgroundPressed", 0.24),
-        ("ComboBoxItemBackgroundPointerOver", 0.16),
-        ("ComboBoxItemBackgroundPressed", 0.24),
+        ("MenuFlyoutItemBackgroundPointerOver", 0.25),
+        ("MenuFlyoutItemBackgroundPressed", 0.35),
+        ("ToggleMenuFlyoutItemBackgroundPointerOver", 0.25),
+        ("ToggleMenuFlyoutItemBackgroundPressed", 0.35),
+        ("ComboBoxItemBackgroundPointerOver", 0.25),
+        ("ComboBoxItemBackgroundPressed", 0.35),
     ];
 
     public static void Apply(ResourceDictionary resources)
