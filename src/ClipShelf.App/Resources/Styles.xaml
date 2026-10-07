@@ -10,6 +10,70 @@
   <common:BytesToImageConverter x:Key="BytesToImage" />
   <common:AccentSwatchConverter x:Key="AccentSwatch" />
 
+  <!-- Hover washes: the accent at a readable strength. Styles.xaml is merged last, so these entries
+       are searched before the framework's theme dictionaries and win app-wide. -->
+  <SolidColorBrush x:Key="AccentHoverWash" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+  <SolidColorBrush x:Key="AccentHoverWashStrong" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+  <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+  <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+  <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+  <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+  <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+  <SolidColorBrush x:Key="ToggleMenuFlyoutItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+  <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
+  <SolidColorBrush x:Key="ComboBoxItemBackgroundPressed" Color="{ThemeResource SystemAccentColor}" Opacity="0.35" />
+
+  <!-- The row action buttons own their template, so the hover wash is read straight from this
+       dictionary and cannot lose a lookup. -->
+  <Style x:Key="RowActionButton" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Width" Value="30" />
+    <Setter Property="Height" Value="30" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Root" Background="Transparent" CornerRadius="4">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="PointerOver">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentHoverWash}" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentHoverWashStrong}" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- The soft accent wash that marks a selected row (keyboard row, Select mode). -->
   <SolidColorBrush x:Key="AccentWash" Color="{ThemeResource SystemAccentColor}" Opacity="0.16" />
 
@@ -112,33 +176,21 @@
       </StackPanel>
 
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
-        <Button Background="Transparent"
-                BorderThickness="0"
-                Width="30"
-                Height="30"
-                Padding="0"
+        <Button Style="{StaticResource RowActionButton}"
                 AllowFocusOnInteraction="False"
                 Command="{Binding TogglePinCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_PinToggle}"
                 AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
           <common:AppIcon Kind="{Binding IsPinned, Converter={StaticResource PinIcon}}" Width="16" Height="16" />
         </Button>
-        <Button Background="Transparent"
-                BorderThickness="0"
-                Width="30"
-                Height="30"
-                Padding="0"
+        <Button Style="{StaticResource RowActionButton}"
                 AllowFocusOnInteraction="False"
                 Command="{Binding CategoryCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Category}"
                 AutomationProperties.Name="{l:Tr Key=Panel_Category}">
           <common:AppIcon Kind="Folder" Width="16" Height="16" />
         </Button>
-        <Button Background="Transparent"
-                BorderThickness="0"
-                Width="30"
-                Height="30"
-                Padding="0"
+        <Button Style="{StaticResource RowActionButton}"
                 AllowFocusOnInteraction="False"
                 Command="{Binding DeleteCommand}"
                 ToolTipService.ToolTip="{l:Tr Key=Panel_Delete}"

@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 
 namespace ClipShelf.App.Features.ClipboardPanel;
 
@@ -28,11 +29,28 @@ internal static class CategoryMenu
         create.Click += (_, _) => _ = CreateAndAssignAsync(anchor, item, panel);
         flyout.Items.Add(create);
 
+        foreach (var entry in flyout.Items) TintHover(entry);
+
         if (position is { } point)
             flyout.ShowAt(anchor, new FlyoutShowOptions { Position = point });
         else
             flyout.ShowAt(anchor);
     }
+
+    // Element-scoped hover washes for the menu options, as a second net next to the app-level keys.
+    private static void TintHover(MenuFlyoutItemBase entry)
+    {
+        if (entry is MenuFlyoutSeparator) return;
+        if (Application.Current.Resources["SystemAccentColor"] is not Windows.UI.Color accent) return;
+
+        entry.Resources["MenuFlyoutItemBackgroundPointerOver"] = Wash(accent, 0.25);
+        entry.Resources["ToggleMenuFlyoutItemBackgroundPointerOver"] = Wash(accent, 0.25);
+        entry.Resources["MenuFlyoutItemBackgroundPressed"] = Wash(accent, 0.35);
+        entry.Resources["ToggleMenuFlyoutItemBackgroundPressed"] = Wash(accent, 0.35);
+    }
+
+    private static SolidColorBrush Wash(Windows.UI.Color accent, double opacity) =>
+        new(accent) { Opacity = opacity };
 
     private static ToggleMenuFlyoutItem Choice(string text, bool isChecked, Func<Task> assign)
     {
