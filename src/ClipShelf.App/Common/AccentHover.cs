@@ -9,6 +9,8 @@ internal static class AccentHover
 {
     private static readonly (string Key, double Opacity)[] Entries =
     [
+        ("ButtonBackgroundPointerOver", 0.25),
+        ("ButtonBackgroundPressed", 0.35),
         ("MenuFlyoutItemBackgroundPointerOver", 0.25),
         ("MenuFlyoutItemBackgroundPressed", 0.35),
         ("ToggleMenuFlyoutItemBackgroundPointerOver", 0.25),
