@@ -11,5 +11,6 @@
     <Project Path="tests/ClipShelf.Core.Tests/ClipShelf.Core.Tests.csproj" />
     <Project Path="tests/ClipShelf.Data.Tests/ClipShelf.Data.Tests.csproj" />
     <Project Path="tests/ClipShelf.Presentation.Tests/ClipShelf.Presentation.Tests.csproj" />
+    <Project Path="tests/ClipShelf.Desktop.Tests/ClipShelf.Desktop.Tests.csproj" />
   </Folder>
 </Solution>
