@@ -1,6 +1,6 @@
 using Serilog;
 
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 public static class AppLogging
 {

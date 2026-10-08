@@ -1,13 +1,13 @@
 using System.Resources;
 
-namespace ClipShelf.App.Localization;
+namespace ClipShelf.Presentation.Localization;
 
 // The only way to get user-visible text. Keys live in Resources/Strings.resx (English, neutral) and Strings.ar.resx.
 public static class Tr
 {
     // RootNamespace + folder + file name. There is deliberately no generated Designer.cs.
     private static readonly ResourceManager Strings =
-        new("ClipShelf.App.Resources.Strings", typeof(Tr).Assembly);
+        new("ClipShelf.Presentation.Resources.Strings", typeof(Tr).Assembly);
 
     public static string Get(string key) =>
         Strings.GetString(key, CultureInfo.CurrentUICulture) ?? $"[{key}]";

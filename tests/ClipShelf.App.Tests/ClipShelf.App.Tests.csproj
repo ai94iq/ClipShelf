@@ -15,6 +15,9 @@
     <Using Include="System.Xml.Linq" />
     <Using Include="Microsoft.Extensions.Logging.Abstractions" />
     <Using Include="ClipShelf.App.Common" />
+    <Using Include="ClipShelf.Presentation.Common" />
+    <Using Include="ClipShelf.Presentation.Hosting" />
+    <Using Include="ClipShelf.Presentation.Localization" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ClipShelf.App\ClipShelf.App.csproj" />

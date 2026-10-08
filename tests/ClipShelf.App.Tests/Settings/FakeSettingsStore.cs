@@ -1,4 +1,4 @@
-using ClipShelf.App.Hosting;
+using ClipShelf.Presentation.Hosting;
 
 namespace ClipShelf.App.Tests.Settings;
 

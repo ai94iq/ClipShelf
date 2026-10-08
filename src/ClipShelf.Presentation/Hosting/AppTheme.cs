@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 public enum AppTheme
 {

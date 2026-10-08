@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // Holds the current settings in memory and persists every change, so services can read live values
 // (maximum history size, paste behaviour) without reloading from disk.

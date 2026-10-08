@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClipShelf.Core\ClipShelf.Core.csproj" />
+    <ProjectReference Include="..\ClipShelf.Presentation\ClipShelf.Presentation.csproj" />
     <ProjectReference Include="..\ClipShelf.Data\ClipShelf.Data.csproj" />
   </ItemGroup>
 </Project>

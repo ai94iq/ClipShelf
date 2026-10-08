@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 
-namespace ClipShelf.App.Common;
+namespace ClipShelf.Presentation.Common;
 
 // Base for every page ViewModel: one implementation of loading, empty, error and retry.
 // Derived pages implement LoadCoreAsync and return false when there is nothing to show.

@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // Lets any service take Lazy<T> in its constructor; T is resolved on first .Value.
 public sealed class LazyService<T>(IServiceProvider services)

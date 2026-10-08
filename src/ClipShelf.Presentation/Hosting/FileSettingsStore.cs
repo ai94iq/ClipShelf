@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // settings.json under %LOCALAPPDATA%, written atomically.
 public sealed class FileSettingsStore : ISettingsStore

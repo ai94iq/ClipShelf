@@ -1,4 +1,4 @@
-using ClipShelf.App.Hosting;
+using ClipShelf.Presentation.Hosting;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;
 using NSubstitute;

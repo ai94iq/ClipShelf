@@ -1,5 +1,5 @@
 using ClipShelf.App.Features.Settings;
-using ClipShelf.App.Hosting;
+using ClipShelf.Presentation.Hosting;
 using ClipShelf.App.Localization;
 using ClipShelf.App.Services;
 using ClipShelf.Core.Abstractions;

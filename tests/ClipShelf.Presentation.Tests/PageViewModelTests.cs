@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class PageViewModelTests
 {

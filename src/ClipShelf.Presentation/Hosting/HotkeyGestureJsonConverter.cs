@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using ClipShelf.Core.Input;
 
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // settings.json keeps the shortcut readable: "Win+Shift+V".
 public sealed class HotkeyGestureJsonConverter : JsonConverter<HotkeyGesture>

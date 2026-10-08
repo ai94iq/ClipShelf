@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // All user data lives under %LOCALAPPDATA%\ClipShelf. Nothing is written next to the exe.
 public static class AppPaths

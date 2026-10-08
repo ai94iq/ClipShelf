@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using ClipShelf.App.Localization;
+using ClipShelf.Presentation.Localization;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 // Fails when the neutral (English) and Arabic resx files drift apart or code uses a missing key.
 public sealed class LocalizationTests
@@ -25,7 +25,7 @@ public sealed class LocalizationTests
     [Fact]
     public void Neutral_language_is_English()
     {
-        var attribute = typeof(ClipShelf.App.Hosting.Culture).Assembly
+        var attribute = typeof(ClipShelf.Presentation.Hosting.Culture).Assembly
             .GetCustomAttribute<NeutralResourcesLanguageAttribute>();
         Assert.NotNull(attribute);
         Assert.StartsWith("en", attribute!.CultureName, StringComparison.OrdinalIgnoreCase);
@@ -102,13 +102,13 @@ public sealed class LocalizationTests
     private static bool IsArabic(string value) => value.Any(c => c is >= '\u0600' and <= '\u06FF');
 
     private static HashSet<string> Keys(string fileName) =>
-        XDocument.Load(Path.Combine(TestPaths.AppProject, "Resources", fileName))
+        XDocument.Load(Path.Combine(TestPaths.PresentationProject, "Resources", fileName))
             .Root!.Elements("data")
             .Select(d => (string)d.Attribute("name")!)
             .ToHashSet(StringComparer.Ordinal);
 
     private static List<string> Values(string fileName) =>
-        XDocument.Load(Path.Combine(TestPaths.AppProject, "Resources", fileName))
+        XDocument.Load(Path.Combine(TestPaths.PresentationProject, "Resources", fileName))
             .Root!.Elements("data")
             .Select(d => (string?)d.Element("value") ?? string.Empty)
             .ToList();

@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Common;
+namespace ClipShelf.Presentation.Common;
 
 public enum LoadState
 {

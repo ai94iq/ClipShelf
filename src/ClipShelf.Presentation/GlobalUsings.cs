@@ -7,3 +7,6 @@ global using ClipShelf.Core.Abstractions;
 global using ClipShelf.Core.Models;
 global using ClipShelf.Core.Text;
 global using ClipShelf.Data;
+global using ClipShelf.Presentation.Common;
+global using ClipShelf.Presentation.Hosting;
+global using ClipShelf.Presentation.Localization;

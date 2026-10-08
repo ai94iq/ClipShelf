@@ -1,6 +1,6 @@
-using ClipShelf.App.Hosting;
+using ClipShelf.Presentation.Hosting;
 
-namespace ClipShelf.App.Tests.Settings;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class SettingsServiceTests
 {

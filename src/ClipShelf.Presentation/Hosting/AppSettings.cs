@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 
-namespace ClipShelf.App.Hosting;
+namespace ClipShelf.Presentation.Hosting;
 
 // Saved as settings.json. Changing Language takes effect after a restart.
 public sealed record AppSettings
