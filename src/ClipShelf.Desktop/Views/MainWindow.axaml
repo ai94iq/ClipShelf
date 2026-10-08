@@ -1,0 +1,10 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ClipShelf.Desktop.Views.MainWindow"
+        Title="ClipShelf"
+        Width="900"
+        Height="600">
+  <TextBlock Text="ClipShelf"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center" />
+</Window>

@@ -4,6 +4,7 @@
     <Project Path="src/ClipShelf.Core/ClipShelf.Core.csproj" />
     <Project Path="src/ClipShelf.Data/ClipShelf.Data.csproj" />
     <Project Path="src/ClipShelf.Presentation/ClipShelf.Presentation.csproj" />
+    <Project Path="src/ClipShelf.Desktop/ClipShelf.Desktop.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ClipShelf.App.Tests/ClipShelf.App.Tests.csproj" />
