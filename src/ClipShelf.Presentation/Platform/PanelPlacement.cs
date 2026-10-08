@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Platform;
+namespace ClipShelf.Presentation.Platform;
 
 // Pure math behind the flyout's placement, kept apart so it can be tested.
 public static class PanelPlacement

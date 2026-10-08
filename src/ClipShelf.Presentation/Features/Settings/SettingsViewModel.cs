@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 using CommunityToolkit.Mvvm.Messaging;
 
-namespace ClipShelf.App.Features.Settings;
+namespace ClipShelf.Presentation.Features.Settings;
 
 // Settings that apply immediately: each change is saved and takes effect without a restart.
 public sealed partial class SettingsViewModel : ObservableObject

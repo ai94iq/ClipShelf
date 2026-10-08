@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Features.Settings;
+namespace ClipShelf.Presentation.Features.Settings;
 
 // One row of the settings Categories list: name plus the lock actions that apply right now.
 public sealed class CategoryRow(long id, string name, bool isLocked, bool isUnlocked)

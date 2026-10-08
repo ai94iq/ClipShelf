@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using ClipShelf.Core.Abstractions;
 
-namespace ClipShelf.App.Features.ClipboardPanel;
+namespace ClipShelf.Presentation.Features.ClipboardPanel;
 
 // Drives the floating history list: load, search, copy, pin, delete and clear.
 public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementalSource

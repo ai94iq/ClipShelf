@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:l="using:ClipShelf.App.Localization"
              xmlns:common="using:ClipShelf.App.Common"
-             xmlns:settings="using:ClipShelf.App.Features.Settings">
+             xmlns:settings="using:ClipShelf.Presentation.Features.Settings">
   <UserControl.Resources>
     <!-- Accent swatches: plain colored circles, no radio glyph. The selected one carries a ring
          and a check; hover and keyboard focus draw their own rings. Radio semantics are kept. -->

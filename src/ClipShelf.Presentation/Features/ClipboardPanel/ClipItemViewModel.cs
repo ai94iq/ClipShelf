@@ -1,6 +1,6 @@
 using ClipShelf.Core.Models;
 
-namespace ClipShelf.App.Features.ClipboardPanel;
+namespace ClipShelf.Presentation.Features.ClipboardPanel;
 
 // One row in the history list. Its commands delegate to the panel so the window stays dumb.
 public sealed partial class ClipItemViewModel : ObservableObject

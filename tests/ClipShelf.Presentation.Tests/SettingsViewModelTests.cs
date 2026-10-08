@@ -1,7 +1,7 @@
-using ClipShelf.App.Features.Settings;
+using ClipShelf.Presentation.Features.Settings;
 using ClipShelf.Presentation.Hosting;
-using ClipShelf.App.Localization;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Localization;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
@@ -9,7 +9,7 @@ using ClipShelf.Core.Models;
 using ClipShelf.Core.Theming;
 using NSubstitute;
 
-namespace ClipShelf.App.Tests.Settings;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class SettingsViewModelTests
 {

@@ -1,6 +1,6 @@
-using ClipShelf.App.Platform;
+using ClipShelf.Presentation.Platform;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class PanelDismissTests
 {

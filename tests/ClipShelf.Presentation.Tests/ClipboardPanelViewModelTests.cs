@@ -1,12 +1,12 @@
-using ClipShelf.App.Features.ClipboardPanel;
-using ClipShelf.App.Localization;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Features.ClipboardPanel;
+using ClipShelf.Presentation.Localization;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using NSubstitute;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class ClipboardPanelViewModelTests
 {

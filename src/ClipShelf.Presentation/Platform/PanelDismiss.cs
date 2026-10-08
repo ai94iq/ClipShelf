@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Platform;
+namespace ClipShelf.Presentation.Platform;
 
 // Decides whether a foreground change should dismiss the flyout.
 public static class PanelDismiss

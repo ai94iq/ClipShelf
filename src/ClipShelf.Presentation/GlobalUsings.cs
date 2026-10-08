@@ -11,3 +11,5 @@ global using ClipShelf.Presentation.Common;
 global using ClipShelf.Presentation.Hosting;
 global using ClipShelf.Presentation.Localization;
 global using ClipShelf.Presentation.Services;
+global using ClipShelf.Presentation.Features.ClipboardPanel;
+global using ClipShelf.Presentation.Features.Settings;

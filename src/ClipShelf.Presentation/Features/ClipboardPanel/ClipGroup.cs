@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace ClipShelf.App.Features.ClipboardPanel;
+namespace ClipShelf.Presentation.Features.ClipboardPanel;
 
 // A titled group of clips (Pinned, Recent) for the history page.
 public sealed class ClipGroup(string title) : ObservableCollection<ClipItemViewModel>

@@ -8,7 +8,7 @@ namespace ClipShelf.App.Shell;
 // Shown once, on the first run: explains the hotkey and that the app lives in the tray.
 public sealed partial class WelcomeWindow : Window
 {
-    public WelcomeWindow(SettingsService settings, IThemeService theme)
+    public WelcomeWindow(SettingsService settings, ThemeService theme)
     {
         InitializeComponent();
         Title = Tr.Get("App_Name");

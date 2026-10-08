@@ -40,7 +40,8 @@ public static class ServiceRegistration
         services.AddSingleton<SettingsViewModel>();
 
         // App services
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
         services.AddSingleton<ICategoryLockService, CategoryLockService>();
         services.AddSingleton<ILockPasswordService, LockPasswordService>();
         services.AddSingleton<IClipExportService>(sp => new ClipExportService(

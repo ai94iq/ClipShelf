@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Features.Settings;
+namespace ClipShelf.Presentation.Features.Settings;
 
 // One accent swatch: a preset hex, or null for "Windows accent". IsSelected mirrors the current
 // choice so the radio swatches can bind to it; the view model keeps it in sync.

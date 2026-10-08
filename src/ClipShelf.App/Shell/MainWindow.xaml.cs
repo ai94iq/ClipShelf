@@ -17,7 +17,7 @@ public sealed partial class MainWindow : Window
     public MainWindow(
         Lazy<HistoryPage> history,
         Lazy<SettingsPage> settings,
-        IThemeService theme,
+        ThemeService theme,
         AppLifetime lifetime,
         SettingsService appSettings,
         ICategoryLockService locks)
