@@ -88,6 +88,8 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
+    public void TogglePanel() => _ = TogglePanelAsync();
+
     public void Exit()
     {
         if (_settings.Current.LockOnExit) _locks.Reset();

@@ -10,8 +10,8 @@ public sealed partial class App : Application
 {
     private readonly AppSettings _settings;
     private IHost? _host;
-    private Mutex? _singleInstance;
-    private bool _ownsMutex;
+    private SingleInstanceService? _singleInstance;
+    private string? _pendingCommand;
 
     public App()
     {
@@ -32,13 +32,30 @@ public sealed partial class App : Application
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        _singleInstance = new Mutex(initiallyOwned: true, @"Local\ClipShelf.SingleInstance", out _ownsMutex);
-        if (!_ownsMutex)
+        var command = StartupCommand.Parse(Environment.GetCommandLineArgs());
+        _singleInstance = new SingleInstanceService("ClipShelf.SingleInstance");
+        if (!_singleInstance.TryClaim())
         {
+            if (command is not null)
+                await SingleInstanceService.TrySendAsync("ClipShelf.SingleInstance", command);
             Log.Information("Second instance blocked");
             Exit();
             return;
         }
+
+        // Commands can arrive while startup is still running; they wait here until the shell exists.
+        _pendingCommand = command;
+        _singleInstance.CommandReceived += (_, received) =>
+        {
+            var dispatcher = _host?.Services.GetService<IUiDispatcher>();
+            if (dispatcher is null)
+            {
+                _pendingCommand = received;
+                return;
+            }
+
+            dispatcher.Post(() => ExecuteCommand(received));
+        };
 
         try
         {
@@ -71,6 +88,11 @@ public sealed partial class App : Application
             shell.ExitRequested += (_, _) => ExitApplication();
             shell.RestartRequested += (_, _) => RestartApplication();
 
+            // A command that arrived with this launch (or during startup) runs now that the shell
+            // exists.
+            ExecuteCommand(_pendingCommand);
+            _pendingCommand = null;
+
             // First run: a small window explains the hotkey and the tray, then never again.
             var settingsService = _host.Services.GetRequiredService<SettingsService>();
             if (!settingsService.Current.WelcomeShown)
@@ -102,6 +124,15 @@ public sealed partial class App : Application
         }
     }
 
+    private void ExecuteCommand(string? command)
+    {
+        if (command is null || _host is null) return;
+
+        var shell = _host.Services.GetRequiredService<AppShellService>();
+        if (command == StartupCommand.History) shell.ShowHistory();
+        else if (command == StartupCommand.Toggle) shell.TogglePanel();
+    }
+
     private void ExitApplication()
     {
         Shutdown();     // disposes the host, which disposes the tray icon and the clipboard watcher
@@ -128,7 +159,7 @@ public sealed partial class App : Application
     }
 
     // A language change needs a fresh process: release everything (including the single-instance
-    // mutex) first, then start a new instance and let this one go.
+    // pipe) first, then start a new instance and let this one go.
     private void RestartApplication()
     {
         Shutdown();
@@ -146,7 +177,6 @@ public sealed partial class App : Application
     private void Shutdown()
     {
         _host?.Dispose();                         // the app registers no hosted services
-        if (_ownsMutex) _singleInstance?.ReleaseMutex();
         _singleInstance?.Dispose();
         Log.CloseAndFlush();
     }
