@@ -5,7 +5,7 @@ namespace ClipShelf.App.Platform;
 
 // A hidden top-level window that only listens for the session-end notification, so the history
 // can be cleared on sign-out or shutdown before Windows tears the process down.
-internal sealed class SessionWatcher
+internal sealed class SessionWatcher : ISessionEnd
 {
     private const string ClassName = "ClipShelf.SessionWindow";
 

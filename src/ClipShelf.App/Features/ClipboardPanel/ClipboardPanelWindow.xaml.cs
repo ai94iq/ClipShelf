@@ -19,7 +19,8 @@ public sealed partial class ClipboardPanelWindow : Window
 
     public ClipboardPanelWindow(
         ClipboardPanelViewModel viewModel,
-        Lazy<AppShellService> shell)
+        Lazy<AppShellService> shell,
+        IPasteBack pasteBack)
     {
         ViewModel = viewModel;
 
@@ -31,7 +32,7 @@ public sealed partial class ClipboardPanelWindow : Window
         // The search box's clear button sits at the end edge; keep its inset on that side in RTL.
         SearchBox.Padding = Culture.IsRtl ? new Thickness(8, 0, 0, 0) : new Thickness(0, 0, 8, 0);
 
-        _actions = new ClipboardPanelActions(this, viewModel, shell);
+        _actions = new ClipboardPanelActions(this, viewModel, shell, pasteBack);
         _handle = WinRT.Interop.WindowNative.GetWindowHandle(this);
         PanelFrame.Configure(this);
         WindowSurface.ApplyAcrylic(this, Root);

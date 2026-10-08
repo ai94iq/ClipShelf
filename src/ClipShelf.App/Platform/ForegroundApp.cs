@@ -3,9 +3,9 @@ using System.Diagnostics;
 namespace ClipShelf.App.Platform;
 
 // The process name of the window that was in front when the copy happened.
-internal static class ForegroundApp
+internal sealed class ForegroundApp : IForegroundApp
 {
-    public static string? Name()
+    public string? Name()
     {
         var window = NativeMethods.GetForegroundWindow();
         if (window == IntPtr.Zero) return null;

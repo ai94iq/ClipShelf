@@ -50,7 +50,9 @@ public sealed partial class App : Application
 
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddSerilog();        // uses the static Log.Logger
-            builder.Services.AddAppServices(_settings);
+            builder.Services.AddPresentationServices(_settings);
+            builder.Services.AddPlatformServices();
+            builder.Services.AddUiServices();
             _host = builder.Build();
             await _host.StartAsync();
             _host.Services.GetRequiredService<IDataChangeNotifier>();          // must be created on the UI thread

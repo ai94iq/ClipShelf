@@ -5,9 +5,9 @@ namespace ClipShelf.App.Services;
 
 // The SQLCipher key for the history database, protected with Windows DPAPI for the current user.
 // Deleting the file makes the existing history unreadable, so it is backed up with the database.
-public static class DatabaseKey
+public sealed class DpapiKeyStore : IKeyStore
 {
-    public static string LoadOrCreate(string path)
+    public string LoadOrCreate(string path)
     {
         if (File.Exists(path))
         {

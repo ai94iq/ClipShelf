@@ -1,11 +1,11 @@
 namespace ClipShelf.App.Platform;
 
 // Sends Ctrl+V to the window the user was in before the flyout opened.
-internal static class KeyboardPaste
+internal sealed class KeyboardPaste : IPasteBack
 {
     private const int DelayMs = 60;
 
-    public static async Task IntoAsync(IntPtr targetWindow)
+    public async Task IntoAsync(IntPtr targetWindow)
     {
         if (targetWindow == IntPtr.Zero) return;
 

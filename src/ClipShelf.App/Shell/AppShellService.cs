@@ -16,9 +16,9 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     private readonly Lazy<Features.ClipboardPanel.ClipboardPanelWindow> _panel;
     private readonly GlobalHotkey _hotkey;
     private readonly SettingsService _settings;
+    private readonly ISystemTheme _systemTheme;
     private readonly ICategoryLockService _locks;
     private readonly TaskbarIcon _trayIcon = new();
-    private readonly SystemThemeWatcher _themeWatcher = new();
     private readonly DispatcherQueue _dispatcher = DispatcherQueue.GetForCurrentThread();
     private TrayIconKind? _appliedTrayIcon;
     private bool? _appliedShowTrayIcon;
@@ -31,6 +31,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         Lazy<Features.ClipboardPanel.ClipboardPanelWindow> panel,
         GlobalHotkey hotkey,
         SettingsService settings,
+        ISystemTheme systemTheme,
         ICategoryLockService locks,
         AppLifetime lifetime)
     {
@@ -38,6 +39,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         _panel = panel;
         _hotkey = hotkey;
         _settings = settings;
+        _systemTheme = systemTheme;
         _locks = locks;
         Lifetime = lifetime;
 
@@ -54,11 +56,10 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         ApplyTraySettings();
         _settings.Changed += (_, _) => OnSettingsChanged();
 
-        // The taskbar theme can change while the app is running; the registry watch reports the
-        // write the moment it happens, and the pump's WM_SETTINGCHANGE handling stays as the
-        // fallback. Either way the icon picks the matching variant without a restart.
-        _themeWatcher.Changed += OnSystemThemeChanged;
-        MessagePump.SystemThemeChanged += OnSystemThemeChanged;
+        // The taskbar theme can change while the app is running; the system theme service reports
+        // it from the registry watch and the pump's WM_SETTINGCHANGE fallback. Either way the icon
+        // picks the matching variant without a restart.
+        _systemTheme.Changed += OnSystemThemeChanged;
 
         _hotkey.Pressed += (_, _) => _ = TogglePanelAsync();
         ApplyHotkey();
@@ -95,9 +96,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public void Dispose()
     {
-        _themeWatcher.Changed -= OnSystemThemeChanged;
-        MessagePump.SystemThemeChanged -= OnSystemThemeChanged;
-        _themeWatcher.Dispose();
+        _systemTheme.Changed -= OnSystemThemeChanged;
         _trayIcon.Dispose();
         _hotkey.Dispose();
     }
@@ -121,7 +120,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     {
         _appliedHotkey = _settings.Current.Hotkey;
         _hotkeyState.Apply(
-            _appliedHotkey, gesture => _hotkey.Register((uint)gesture.Modifiers, gesture.VirtualKey));
+            _appliedHotkey, gesture => _hotkey.Register(gesture));
     }
 
     private void OpenHistoryOnDoubleClick()
@@ -146,7 +145,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     // resolve to the same variant never churn the shell icon.
     private void ApplyTrayIcon(TrayIconKind kind)
     {
-        var file = TrayIconFiles.FileName(kind, SystemTheme.TaskbarIsLight());
+        var file = TrayIconFiles.FileName(kind, _systemTheme.TaskbarIsLight);
         if (file == _appliedTrayIconFile) return;
 
         _appliedTrayIconFile = file;
@@ -156,7 +155,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     // The registry watch fires on a pool thread, so every signal is queued to the UI thread the
     // tray icon lives on; the file guard in ApplyTrayIcon squashes duplicates from both signals.
-    private void OnSystemThemeChanged() =>
+    private void OnSystemThemeChanged(object? sender, EventArgs e) =>
         _dispatcher.TryEnqueue(() => ApplyTrayIcon(_settings.Current.TrayIcon));
 
     private MenuFlyout BuildMenu()

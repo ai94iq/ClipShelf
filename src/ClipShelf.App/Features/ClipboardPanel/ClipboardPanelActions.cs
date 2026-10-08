@@ -15,15 +15,18 @@ internal sealed class ClipboardPanelActions
     private readonly ClipboardPanelWindow _window;
     private readonly ClipboardPanelViewModel _viewModel;
     private readonly Lazy<AppShellService> _shell;
+    private readonly IPasteBack _pasteBack;
 
     public ClipboardPanelActions(
         ClipboardPanelWindow window,
         ClipboardPanelViewModel viewModel,
-        Lazy<AppShellService> shell)
+        Lazy<AppShellService> shell,
+        IPasteBack pasteBack)
     {
         _window = window;
         _viewModel = viewModel;
         _shell = shell;
+        _pasteBack = pasteBack;
 
         _viewModel.ItemActivated += OnItemActivated;
         _viewModel.OpenHistoryRequested += OnOpenHistoryRequested;
@@ -82,7 +85,7 @@ internal sealed class ClipboardPanelActions
     private void OnItemActivated(object? sender, EventArgs e)
     {
         _window.Hide();
-        _ = KeyboardPaste.IntoAsync(_window.PreviousWindowHandle);
+        _ = _pasteBack.IntoAsync(_window.PreviousWindowHandle);
     }
 
     private void OnOpenHistoryRequested(object? sender, EventArgs e)

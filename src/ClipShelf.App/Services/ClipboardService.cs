@@ -7,11 +7,12 @@ namespace ClipShelf.App.Services;
 
 // Turns clipboard changes into history entries and writes items back. Writes made by this app are
 // counted so the resulting clipboard-changed message does not get captured as a new item.
-public sealed class ClipboardService : IClipboardWriter, IDisposable
+public sealed class ClipboardService : IClipboardMonitor, IDisposable
 {
     private readonly ClipCaptureService _capture;
     private readonly IClipRepository _repository;
     private readonly SettingsService _settings;
+    private readonly IForegroundApp _foregroundApp;
     private readonly ILogger<ClipboardService> _log;
     private readonly ClipboardWatcher _watcher = new();
     private int _selfWrites;
@@ -21,14 +22,22 @@ public sealed class ClipboardService : IClipboardWriter, IDisposable
         ClipCaptureService capture,
         IClipRepository repository,
         SettingsService settings,
+        IForegroundApp foregroundApp,
         ILogger<ClipboardService> log)
     {
         _capture = capture;
         _repository = repository;
         _settings = settings;
+        _foregroundApp = foregroundApp;
         _log = log;
         _watcher.Changed += OnClipboardChanged;
     }
+
+    public event EventHandler? Changed;
+
+    public string? ReadText() => Win32Clipboard.TryReadText();
+
+    public byte[]? ReadImage() => Win32Clipboard.TryReadImage();
 
     public void WriteText(string text)
     {
@@ -84,9 +93,11 @@ public sealed class ClipboardService : IClipboardWriter, IDisposable
             return;
         }
 
+        Changed?.Invoke(this, EventArgs.Empty);
+
         // The source app is read now, while the copy is fresh; the text read can sleep on retries,
         // so it runs off the UI thread.
-        var appName = ForegroundApp.Name();
+        var appName = _foregroundApp.Name();
         _ = CaptureAsync(appName);
     }
 

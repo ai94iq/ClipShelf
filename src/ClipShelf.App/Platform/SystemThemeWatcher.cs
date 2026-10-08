@@ -6,6 +6,9 @@ namespace ClipShelf.App.Platform;
 // queue. The watch runs on a pool thread and Changed fires there.
 internal sealed class SystemThemeWatcher : IDisposable
 {
+    internal const string PersonalizeKey =
+        @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+
     private readonly AutoResetEvent _changed = new(false);
     private readonly RegisteredWaitHandle? _wait;
     private readonly IntPtr _key;
@@ -14,7 +17,7 @@ internal sealed class SystemThemeWatcher : IDisposable
     public SystemThemeWatcher()
     {
         if (NativeMethods.RegOpenKeyEx(
-                NativeMethods.HkeyCurrentUser, SystemTheme.PersonalizeKey, 0,
+                NativeMethods.HkeyCurrentUser, PersonalizeKey, 0,
                 NativeMethods.KeyNotify, out _key) != 0)
         {
             return;     // the WM_SETTINGCHANGE fallback still reports theme changes
