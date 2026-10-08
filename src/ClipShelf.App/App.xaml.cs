@@ -33,11 +33,11 @@ public sealed partial class App : Application
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         var command = StartupCommand.Parse(Environment.GetCommandLineArgs());
-        _singleInstance = new SingleInstanceService("ClipShelf.SingleInstance");
+        _singleInstance = new SingleInstanceService(SingleInstanceService.DefaultName);
         if (!_singleInstance.TryClaim())
         {
             if (command is not null)
-                await SingleInstanceService.TrySendAsync("ClipShelf.SingleInstance", command);
+                await SingleInstanceService.TrySendAsync(SingleInstanceService.DefaultName, command);
             Log.Information("Second instance blocked");
             Exit();
             return;

@@ -79,4 +79,11 @@ public sealed class SingleInstanceServiceTests
         Assert.False(await SingleInstanceService.TrySendAsync(
             NewName(), "--toggle", TestContext.Current.CancellationToken));
     }
+
+    [Fact]
+    public void DefaultName_is_scoped_to_the_user()
+    {
+        Assert.StartsWith("ClipShelf.SingleInstance.", SingleInstanceService.DefaultName, StringComparison.Ordinal);
+        Assert.Contains(Environment.UserName, SingleInstanceService.DefaultName, StringComparison.Ordinal);
+    }
 }

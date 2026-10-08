@@ -14,6 +14,10 @@ public sealed class SingleInstanceService : IDisposable
 
     public SingleInstanceService(string name) => _name = name;
 
+    // Scoped per user: a machine-wide name would let one user's instance block another user's
+    // launch on the same machine (fast user switching, RDP).
+    public static string DefaultName { get; } = "ClipShelf.SingleInstance." + Environment.UserName;
+
     public event EventHandler<string>? CommandReceived;
 
     // False when another instance already owns the name.
@@ -24,7 +28,7 @@ public sealed class SingleInstanceService : IDisposable
             _server = new NamedPipeServerStream(
                 _name, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         }
-        catch (IOException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             return false;
         }
