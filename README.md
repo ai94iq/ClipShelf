@@ -93,11 +93,14 @@ Load-tested through the real encrypted storage pipeline — details and numbers 
 
 Pass `--no-pause` to skip the final key press (used by automation).
 
+A second launch never starts a second copy: `ClipShelf.exe --toggle` toggles the flyout in the running instance and `ClipShelf.exe --history` opens its history window.
+
 ## Project structure
 
 | Project | Responsibility |
 |---|---|
 | `src/ClipShelf.App` | WinUI 3 (Windows App SDK 1.x, unpackaged) UI, tray integration, clipboard flyout, and app startup |
+| `src/ClipShelf.Presentation` | View models, portable services and the platform interfaces (net10.0) |
 | `src/ClipShelf.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
 | `src/ClipShelf.Data` | SQLite + Dapper repositories and numbered SQL migrations |
 | `tests/*` | xUnit v3 tests per project |

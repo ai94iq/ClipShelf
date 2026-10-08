@@ -13,11 +13,13 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - A shortcut that another app has taken now warns in Settings, names the shortcut that still works, and suggests alternatives.
 - The Arabic UI uses the bundled Noto Sans Arabic font.
 - Changing the language or the accent now offers a one-click restart, since they only take effect on a fresh start.
+- A second launch can drive the running app: `ClipShelf.exe --toggle` toggles the flyout and `--history` opens the history window.
 
 ### Changed
 - Selected rows wear the accent consistently now: the keyboard selection and checked rows in Select mode get the same soft accent wash the flyout already uses (a click copies and lets the wash go).
 - The Light theme uses a gray canvas with white content cards instead of pure white, so it's easier on the eyes and the layers read apart.
 - Settings section headers use the stronger Fluent subtitle style.
+- View models and services moved into a shared `ClipShelf.Presentation` project (no behavior change), and the single-instance check now uses a named pipe that also carries the launch commands.
 
 ### Fixed
 - The Light theme's surfaces keep their layer relationships again (secondary a step darker, popups and the undo bar a clear step lighter than the canvas), so dialogs and the clear confirmation read apart instead of blending into the background.

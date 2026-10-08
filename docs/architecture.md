@@ -2,19 +2,20 @@
 
 ## Projects and dependencies
 
-App → Core, Data. Data → Core. Core → nothing.
+App depends on Presentation, Core and Data. Presentation depends on Core and Data. Data depends on Core. Core depends on nothing.
 
 - **ClipShelf.Core** (net10.0): models, interfaces, text helpers, layout logic. Never UI or SQL.
 - **ClipShelf.Data** (net10.0): SQLite + Dapper repositories, migrations, backups. Never UI.
-- **ClipShelf.App** (net10.0-windows): views, view models, app services, startup, resources.
+- **ClipShelf.Presentation** (net10.0): view models, portable services, settings, localization and the platform interfaces. No UI framework types.
+- **ClipShelf.App** (net10.0-windows): WinUI views, the Windows implementations of the platform interfaces, startup and resources.
 
 ## Startup flow
 
-Settings → culture → logging → single instance → host → backup and migrate → startup registration and saved shortcut applied → tray icon + clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
+Settings, culture, logging, single instance (named pipe; a second launch sends `--toggle` or `--history` and exits), host, backup and migrate, startup registration and saved shortcut applied, tray icon and clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
 
 ## Data flow
 
-ViewModel → repository (Task.Run + Dapper) → SQLite (SQLCipher-encrypted; the key is protected with Windows DPAPI). Writes send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
+ViewModel, repository (Task.Run + Dapper), SQLite (SQLCipher-encrypted; the key is protected with Windows DPAPI). Writes send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
 
 ## Loading states
 
