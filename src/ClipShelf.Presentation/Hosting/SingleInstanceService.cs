@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
 
@@ -14,9 +15,13 @@ public sealed class SingleInstanceService : IDisposable
 
     public SingleInstanceService(string name) => _name = name;
 
-    // Scoped per user: a machine-wide name would let one user's instance block another user's
-    // launch on the same machine (fast user switching, RDP).
-    public static string DefaultName { get; } = "ClipShelf.SingleInstance." + Environment.UserName;
+    // Scoped per user and per session: a machine-wide name would let one user's instance block
+    // another user's launch, and a per-user-only name would merge two sessions of the same user
+    // (RDP), where the old mutex kept them apart. The session id is 0 off Windows, where it is
+    // stable for every process of a user.
+    public static string DefaultName { get; } =
+        "ClipShelf.SingleInstance." + Environment.UserName + "." +
+        Process.GetCurrentProcess().SessionId.ToString(CultureInfo.InvariantCulture);
 
     public event EventHandler<string>? CommandReceived;
 

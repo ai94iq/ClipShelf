@@ -1,3 +1,4 @@
+using System.Globalization;
 using ClipShelf.Presentation.Hosting;
 
 namespace ClipShelf.Presentation.Tests;
@@ -85,5 +86,15 @@ public sealed class SingleInstanceServiceTests
     {
         Assert.StartsWith("ClipShelf.SingleInstance.", SingleInstanceService.DefaultName, StringComparison.Ordinal);
         Assert.Contains(Environment.UserName, SingleInstanceService.DefaultName, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DefaultName_is_scoped_to_the_session()
+    {
+        var session = System.Diagnostics.Process.GetCurrentProcess().SessionId;
+        Assert.EndsWith(
+            "." + session.ToString(CultureInfo.InvariantCulture),
+            SingleInstanceService.DefaultName,
+            StringComparison.Ordinal);
     }
 }

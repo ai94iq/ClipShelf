@@ -1,4 +1,3 @@
-using ClipShelf.App.Platform;
 using ClipShelf.App.Shell;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;

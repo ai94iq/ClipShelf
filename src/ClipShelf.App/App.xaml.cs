@@ -11,7 +11,7 @@ public sealed partial class App : Application
     private readonly AppSettings _settings;
     private IHost? _host;
     private SingleInstanceService? _singleInstance;
-    private string? _pendingCommand;
+    private volatile string? _pendingCommand;
 
     public App()
     {
