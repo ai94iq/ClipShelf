@@ -1,6 +1,6 @@
 using ClipShelf.Core.Input;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // What happened to the last hotkey registration attempt: the settings page warns when the
 // chosen shortcut could not be registered and names the one that is still active.

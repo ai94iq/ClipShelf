@@ -1,6 +1,6 @@
 using ClipShelf.Core.Abstractions;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Remembers which locked categories are unlocked and writes the list to settings, so it can
 // survive a restart unless a lock-on event clears it.

@@ -11,6 +11,7 @@ global using ClipShelf.App.Services;
 global using ClipShelf.Presentation.Common;
 global using ClipShelf.Presentation.Hosting;
 global using ClipShelf.Presentation.Localization;
+global using ClipShelf.Presentation.Services;
 global using ClipShelf.Core.Abstractions;
 global using ClipShelf.Core.Models;
 global using ClipShelf.Core.Text;

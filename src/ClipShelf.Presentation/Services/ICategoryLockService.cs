@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Remembers which locked categories were unlocked in this run of the app; nothing is written to disk.
 public interface ICategoryLockService

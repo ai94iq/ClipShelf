@@ -1,6 +1,6 @@
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Services;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class UpdateCheckerTests
 {

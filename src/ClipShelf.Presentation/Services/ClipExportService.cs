@@ -3,7 +3,7 @@ using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Models;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Reads the history in cursor pages and writes it out as one JSON or CSV file.
 public sealed class ClipExportService(IClipRepository repository, ICategoryLockService locks, int pageSize = 200)

@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // The only place user-facing dates are formatted. Never use StringFormat for dates in XAML.
 // The culture's calendar decides the display: ar-SA shows Umm al-Qura dates, other cultures Gregorian.

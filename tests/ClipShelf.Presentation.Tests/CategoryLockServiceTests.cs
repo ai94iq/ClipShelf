@@ -1,9 +1,9 @@
 using ClipShelf.Presentation.Hosting;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Abstractions;
 using NSubstitute;
 
-namespace ClipShelf.App.Tests.Settings;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class CategoryLockServiceTests
 {

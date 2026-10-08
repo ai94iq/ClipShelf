@@ -1,6 +1,6 @@
 using ClipShelf.Core.Input;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // The decision half of global-hotkey registration: what to try, and what stays registered when
 // the chosen shortcut is taken. The P/Invoke stays in GlobalHotkey, so this part is testable.

@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Asks GitHub whether a newer ClipShelf has been released.
 public interface IUpdateChecker

@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Writing clipboard content back. An interface so view models can be tested without Win32.
 public interface IClipboardWriter

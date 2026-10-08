@@ -1,4 +1,4 @@
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // The one password that guards exports and locked categories.
 public interface ILockPasswordService

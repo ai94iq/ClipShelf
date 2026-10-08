@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Text.Json;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Reads the newest release tag from the public GitHub releases API.
 public sealed class UpdateChecker : IUpdateChecker

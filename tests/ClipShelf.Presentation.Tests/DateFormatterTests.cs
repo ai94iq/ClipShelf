@@ -1,9 +1,9 @@
 using System.Globalization;
-using ClipShelf.App.Hosting;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Hosting;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Models;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 // The date display follows the current culture's calendar; nothing in app code forces or converts it.
 public sealed class DateFormatterTests

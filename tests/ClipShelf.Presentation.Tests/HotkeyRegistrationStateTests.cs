@@ -1,7 +1,7 @@
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Input;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 // The decision half of hotkey registration; GlobalHotkey owns the P/Invoke.
 public sealed class HotkeyRegistrationStateTests

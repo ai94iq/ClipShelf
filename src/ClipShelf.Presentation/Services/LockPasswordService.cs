@@ -1,6 +1,6 @@
 using ClipShelf.Core.Security;
 
-namespace ClipShelf.App.Services;
+namespace ClipShelf.Presentation.Services;
 
 // Keeps the password in settings.json as a salted PBKDF2 hash; never the plain text.
 public sealed class LockPasswordService(SettingsService settings) : ILockPasswordService

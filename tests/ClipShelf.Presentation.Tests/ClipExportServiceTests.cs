@@ -1,11 +1,11 @@
 using System.Text.Json;
-using ClipShelf.App.Services;
+using ClipShelf.Presentation.Services;
 using ClipShelf.Core.Abstractions;
 using ClipShelf.Core.Export;
 using ClipShelf.Core.Models;
 using NSubstitute;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Presentation.Tests;
 
 public sealed class ClipExportServiceTests : IDisposable
 {
