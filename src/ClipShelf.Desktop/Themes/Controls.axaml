@@ -1,0 +1,45 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- The world's controls: one grid weight, one radius, tabular figures, and the single accent
+       plane. Everything else stays the platform's standard control. -->
+
+  <Style Selector="TextBlock.grid-display">
+    <Setter Property="FontSize" Value="{DynamicResource GridDisplaySize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="-1.2" />
+    <Setter Property="Foreground" Value="{DynamicResource GridInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.grid-title">
+    <Setter Property="FontSize" Value="{DynamicResource GridTitleSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="-0.4" />
+    <Setter Property="Foreground" Value="{DynamicResource GridInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.grid-body">
+    <Setter Property="FontSize" Value="{DynamicResource GridBodySize}" />
+    <Setter Property="Foreground" Value="{DynamicResource GridInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.grid-label">
+    <Setter Property="FontSize" Value="{DynamicResource GridLabelSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="LetterSpacing" Value="0.8" />
+    <Setter Property="Foreground" Value="{DynamicResource GridMutedBrush}" />
+  </Style>
+
+  <Style Selector="Border.grid-cell">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="10,8" />
+  </Style>
+
+  <Style Selector="Border.grid-cell.focused">
+    <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GridAccentPlaneBrush}" />
+  </Style>
+</Styles>

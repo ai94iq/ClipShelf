@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClipShelf.Desktop.Controls"
+        x:Class="ClipShelf.Desktop.Views.TokensPreviewWindow"
+        Title="Tokens"
+        Width="760"
+        Height="480"
+        Background="{DynamicResource GridPaperBrush}">
+  <Grid>
+    <controls:GridBackdrop Pitch="{DynamicResource GridPitch}" />
+    <StackPanel Margin="32" Spacing="20">
+      <TextBlock Classes="grid-display" Text="128 CLIPS" />
+      <TextBlock Classes="grid-title" Text="History" />
+      <TextBlock Classes="grid-label" Text="RECENT / PINNED / LOCKED" />
+
+      <Border Classes="grid-cell focused" Width="420" HorizontalAlignment="Left">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="grid-body"
+                     Text="https://example.com/some/long/copied/link/that/keeps/going"
+                     TextTrimming="CharacterEllipsis" />
+          <TextBlock Classes="grid-label" Text="CHROME / 3H" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="grid-cell" Width="420" HorizontalAlignment="Left">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="grid-body" Text="SELECT * FROM clips ORDER BY copied_at DESC;" />
+          <TextBlock Classes="grid-label" Text="CODE / 12M" />
+        </StackPanel>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="Primary" Background="{DynamicResource GridAccentBrush}"
+                Foreground="{DynamicResource GridAccentInkBrush}" />
+        <Button Content="Secondary" />
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>
