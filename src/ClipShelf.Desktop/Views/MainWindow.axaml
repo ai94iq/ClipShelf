@@ -1,10 +1,25 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClipShelf.Desktop.Controls"
         x:Class="ClipShelf.Desktop.Views.MainWindow"
         Title="ClipShelf"
-        Width="900"
-        Height="600">
-  <TextBlock Text="ClipShelf"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+        Width="980"
+        Height="640"
+        Background="{DynamicResource GridPaperBrush}">
+  <Grid ColumnDefinitions="64,*">
+    <Border Grid.Column="0" Background="{DynamicResource GridRailBrush}">
+      <StackPanel Margin="0,14" Spacing="10">
+        <TextBlock Text="CS"
+                   Classes="grid-title"
+                   Foreground="{DynamicResource GridRailInkBrush}"
+                   HorizontalAlignment="Center" />
+        <Button x:Name="HistoryButton" Content="History" Click="OnHistoryClick" HorizontalAlignment="Center" />
+        <Button x:Name="SettingsButton" Content="Settings" Click="OnSettingsClick" HorizontalAlignment="Center" />
+      </StackPanel>
+    </Border>
+    <Grid Grid.Column="1">
+      <controls:GridBackdrop />
+      <ContentControl x:Name="ContentArea" />
+    </Grid>
+  </Grid>
 </Window>

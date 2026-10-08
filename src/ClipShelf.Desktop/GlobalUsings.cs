@@ -1,0 +1,14 @@
+global using System.Globalization;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using ClipShelf.Presentation.Common;
+global using ClipShelf.Presentation.Hosting;
+global using ClipShelf.Presentation.Localization;
+global using ClipShelf.Presentation.Platform;
+global using ClipShelf.Presentation.Services;
+global using ClipShelf.Core.Abstractions;
+global using ClipShelf.Core.Models;
+global using ClipShelf.Core.Text;
+global using ClipShelf.Data;
