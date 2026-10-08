@@ -1,7 +1,10 @@
-using ClipShelf.Desktop.Hosting;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using ClipShelf.Desktop.Hosting;
+using ClipShelf.Desktop.Platform.Windows;
+using ClipShelf.Desktop.Shell;
 using ClipShelf.Desktop.Views;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -51,8 +54,17 @@ public partial class App : Application
 
         _ = WarmUpAsync(_host.Services);
 
-        var shell = _host.Services.GetRequiredService<MainWindow>();
-        desktop.MainWindow = shell;
+        // Tray-first: nothing opens at startup. The tray icon, the hotkey and the clipboard
+        // watcher keep the app alive; the window opens from the tray, the hotkey or a launch
+        // command, and exiting goes through the tray menu.
+        desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        _host.Services.GetRequiredService<TrayController>();
+        _host.Services.GetRequiredService<ClipboardService>();
+        _host.Services.GetRequiredService<SessionCleanup>();
+        _host.Services.GetRequiredService<IStartupRegistration>().Apply(settings.RunAtStartup);
+
+        if (settings.RetentionDays > 0)
+            _ = PruneAsync(_host.Services, settings.RetentionDays);
 
         ExecuteCommand(_command);
         _command = null;
@@ -76,12 +88,12 @@ public partial class App : Application
     {
         if (command is null || _host is null) return;
 
-        var shell = _host.Services.GetRequiredService<MainWindow>();
-        if (command == StartupCommand.History) shell.ShowHistory();
+        var tray = _host.Services.GetRequiredService<TrayController>();
+        if (command == StartupCommand.History) tray.ShowHistory();
         // --toggle lands with the flyout in Task 6; the command is accepted and stashed until then.
     }
 
-    // Fire-and-forget: the window appears immediately; the warm-up finishes within a second.
+    // Fire-and-forget: the tray appears immediately; the warm-up finishes within a second.
     private static async Task WarmUpAsync(IServiceProvider services)
     {
         try
@@ -96,6 +108,21 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Error(ex, "Database warm-up failed");
+        }
+    }
+
+    // Age-based cleanup runs once per launch.
+    private static async Task PruneAsync(IServiceProvider services, int days)
+    {
+        try
+        {
+            var repository = services.GetRequiredService<IClipRepository>();
+            await repository.PruneOlderThanAsync(
+                DateTimeOffset.UtcNow.AddDays(-days), CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Age-based cleanup failed");
         }
     }
 }
