@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ClipShelf.Desktop.Views.RenameDialog"
+        Width="320"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource GridPaperBrush}">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBox x:Name="NameBox" />
+    <TextBlock x:Name="ErrorText"
+               TextWrapping="Wrap"
+               Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+               IsVisible="False" />
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button x:Name="PrimaryButton" Click="OnPrimaryClick" />
+      <Button x:Name="CancelButton" Click="OnCancelClick" />
+    </StackPanel>
+  </StackPanel>
+</Window>
