@@ -27,6 +27,14 @@ public sealed class AvaloniaThemeService : IThemeService
             app.Resources["GridCellBrush"] = new SolidColorBrush(Color.Parse("#0B0B0C"));
             app.Resources["GridLineBrush"] = new SolidColorBrush(Color.Parse("#1A1B1E"));
         }
+        else
+        {
+            // Root entries shadow the theme dictionaries, so visiting Black must not stain the
+            // other themes afterwards.
+            app.Resources.Remove("GridPaperBrush");
+            app.Resources.Remove("GridCellBrush");
+            app.Resources.Remove("GridLineBrush");
+        }
 
         ApplyAccent(app, settings.Accent);
     }
