@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClipShelf.Desktop.Controls">
 
   <!-- The world's controls: one grid weight, one radius, tabular figures, and the single accent
        plane. Everything else stays the platform's standard control. -->
@@ -112,5 +113,96 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <!-- Icons take the muted tone on every theme (destructive buttons tint them on hover). -->
+  <Style Selector="controls|AppIcon">
+    <Setter Property="Foreground" Value="{DynamicResource GridMutedBrush}" />
+  </Style>
+
+  <!-- One row inside a settings group: title (and optional description) left, control right.
+       Grid hairline separators come from the page, which stacks divider borders between cards. -->
+  <Style Selector="controls|SettingsCard">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="controls:SettingsCard">
+          <Grid ColumnDefinitions="*,Auto"
+                ColumnSpacing="16"
+                MinHeight="64"
+                Margin="16">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{TemplateBinding Header}" FontSize="15" />
+              <TextBlock Name="PART_Description"
+                         Text="{TemplateBinding Description}"
+                         Classes="grid-label"
+                         TextWrapping="Wrap" />
+            </StackPanel>
+            <ContentPresenter Grid.Column="1"
+                              Content="{TemplateBinding Content}"
+                              VerticalAlignment="Center" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style Selector="controls|SettingsCard:not(:has-description) /template/ TextBlock#PART_Description">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <!-- Accent swatches: plain colored circles, no radio glyph. The selected one carries a ring
+       and a check; hover and keyboard focus draw their own rings. Radio semantics are kept. -->
+  <Style Selector="RadioButton.accent-swatch">
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RadioButton">
+          <Grid Width="40" Height="40" Background="Transparent">
+            <Ellipse Name="PART_FocusRing"
+                     Width="40" Height="40"
+                     Stroke="{DynamicResource GridAccentBrush}"
+                     StrokeThickness="2"
+                     Opacity="0" />
+            <Ellipse Name="PART_HoverRing"
+                     Width="34" Height="34"
+                     Stroke="{DynamicResource GridLineBrush}"
+                     StrokeThickness="2"
+                     Opacity="0" />
+            <Ellipse Name="PART_SelectionRing"
+                     Width="28" Height="28"
+                     Stroke="{DynamicResource GridInkBrush}"
+                     StrokeThickness="2"
+                     Opacity="0" />
+            <Ellipse Width="20" Height="20" Fill="{TemplateBinding Background}" />
+            <controls:AppIcon Name="PART_Check"
+                              Kind="Checkmark"
+                              Width="12" Height="12"
+                              Foreground="{TemplateBinding Foreground}"
+                              Opacity="0" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style Selector="RadioButton.accent-swatch:pointerover /template/ Ellipse#PART_HoverRing">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="RadioButton.accent-swatch:checked /template/ Ellipse#PART_SelectionRing">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="RadioButton.accent-swatch:checked /template/ controls|AppIcon#PART_Check">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="RadioButton.accent-swatch:focus-visible /template/ Ellipse#PART_FocusRing">
+    <Setter Property="Opacity" Value="1" />
   </Style>
 </Styles>

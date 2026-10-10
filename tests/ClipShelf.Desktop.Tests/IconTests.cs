@@ -1,6 +1,7 @@
-using ClipShelf.App.Resources;
+using System.Text.RegularExpressions;
+using ClipShelf.Desktop.Resources;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Desktop.Tests;
 
 // A misspelled Kind="..." only fails when the screen opens, so check every usage here.
 public sealed class IconTests
@@ -11,7 +12,7 @@ public sealed class IconTests
     [Fact]
     public void Every_icon_used_in_xaml_exists()
     {
-        var unknown = TestPaths.SourceFiles(".xaml")
+        var unknown = TestPaths.SourceFiles(".xaml", ".axaml")
             .SelectMany(f => KindUsage.Matches(File.ReadAllText(f)).Select(m => m.Groups["k"].Value))
             .Where(k => !Enum.TryParse<IconKind>(k, out _))
             .Distinct();

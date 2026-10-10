@@ -1,7 +1,7 @@
-using ClipShelf.App.Common;
-using Microsoft.UI.Xaml;
+using Avalonia.Layout;
+using ClipShelf.Desktop.Common;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Desktop.Tests;
 
 public sealed class RtlAlignTests
 {

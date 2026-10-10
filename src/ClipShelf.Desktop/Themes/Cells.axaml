@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel">
+
+  <!-- One history row, used by the flyout and the full history window. -->
+  <DataTemplate x:Key="ClipCellTemplate" DataType="vm:ClipItemViewModel">
+    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+      <Image Grid.Row="0"
+             Grid.Column="0"
+             MaxHeight="80"
+             Stretch="Uniform"
+             HorizontalAlignment="Left"
+             Source="{Binding ThumbnailBytes, Converter={StaticResource BytesToImage}}"
+             IsVisible="{Binding HasImage}" />
+      <TextBlock Grid.Row="0"
+                 Grid.Column="0"
+                 Classes="grid-body"
+                 Text="{Binding Preview}"
+                 TextWrapping="Wrap"
+                 MaxLines="2"
+                 TextTrimming="CharacterEllipsis"
+                 IsVisible="{Binding ShowPreview}" />
+      <TextBlock Grid.Row="1"
+                 Grid.Column="0"
+                 Classes="grid-label"
+                 Margin="0,4,0,0"
+                 Text="{Binding SourceText}" />
+      <Border Grid.Row="0"
+              Grid.Column="1"
+              Width="6"
+              Height="6"
+              Margin="8,4,0,0"
+              VerticalAlignment="Top"
+              Background="{DynamicResource GridAccentBrush}"
+              IsVisible="{Binding IsPinned}" />
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

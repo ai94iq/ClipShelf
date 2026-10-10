@@ -1,7 +1,7 @@
-using ClipShelf.App.Platform;
 using ClipShelf.Core.Theming;
+using ClipShelf.Desktop.Platform.Windows;
 
-namespace ClipShelf.App.Tests;
+namespace ClipShelf.Desktop.Tests;
 
 public sealed class TrayIconFileTests
 {
@@ -17,7 +17,7 @@ public sealed class TrayIconFileTests
     [Fact]
     public void Every_resolved_file_exists_in_the_assets()
     {
-        var assets = Path.Combine(TestPaths.AppProject, "Assets");
+        var assets = Path.Combine(TestPaths.DesktopProject, "Assets");
 
         foreach (var kind in Enum.GetValues<TrayIconKind>())
         foreach (var taskbarIsLight in new[] { true, false })
