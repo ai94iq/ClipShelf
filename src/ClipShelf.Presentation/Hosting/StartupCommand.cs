@@ -7,6 +7,8 @@ public static class StartupCommand
 
     public const string History = "--history";
 
+    public const string Quit = "--quit";
+
     // The first known command in the arguments, or null.
     public static string? Parse(string[] args)
     {
@@ -14,6 +16,7 @@ public static class StartupCommand
         {
             if (arg == Toggle) return Toggle;
             if (arg == History) return History;
+            if (arg == Quit) return Quit;
         }
 
         return null;
