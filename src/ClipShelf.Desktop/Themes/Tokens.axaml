@@ -12,7 +12,7 @@
       <SolidColorBrush x:Key="GridCellBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="GridInkBrush" Color="#111111" />
       <SolidColorBrush x:Key="GridLineBrush" Color="#E4E7EC" />
-      <SolidColorBrush x:Key="GridMutedBrush" Color="#5A5F66" />
+      <SolidColorBrush x:Key="GridMutedBrush" Color="#43474D" />
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
       <SolidColorBrush x:Key="GridPaperBrush" Color="#0E0F11" />

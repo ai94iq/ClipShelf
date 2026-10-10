@@ -75,9 +75,42 @@
     <Setter Property="CornerRadius" Value="0" />
     <Setter Property="Padding" Value="2,6" />
     <Setter Property="FontSize" Value="{DynamicResource GridBodySize}" />
+    <Setter Property="Foreground" Value="{DynamicResource GridInkBrush}" />
+    <Setter Property="PlaceholderForeground" Value="{DynamicResource GridMutedBrush}" />
   </Style>
 
-  <Style Selector="TextBox.flyout-search:focus">
+  <!-- The theme draws its own box on the template border in every state; these template-level
+       overrides keep the flat bottom hairline everywhere. -->
+  <Style Selector="TextBox.flyout-search /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <Style Selector="TextBox.flyout-search:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <Style Selector="TextBox.flyout-search:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,2" />
+  </Style>
+
+  <!-- Disabled (empty history) stays on paper: no gray fill, text just dims to the muted tone. -->
+  <Style Selector="TextBox.flyout-search:disabled">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Foreground" Value="{DynamicResource GridMutedBrush}" />
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="TextBox.flyout-search:disabled /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
   </Style>
 </Styles>
