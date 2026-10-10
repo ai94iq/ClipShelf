@@ -47,6 +47,23 @@ public abstract partial class PageViewModel : ObservableObject
     protected void LogQuietFailure(Exception ex) =>
         _log.LogError(ex, "{Page} background work failed", GetType().Name);
 
+    // Reports a quiet load that drags past the threshold; the load itself is never hurried or
+    // cancelled, so this is purely diagnostic.
+    protected async Task WarnIfSlowAsync(TimeSpan threshold, CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(threshold, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        _log.LogWarning(
+            "A background load exceeded {Seconds}s and is still waiting", threshold.TotalSeconds);
+    }
+
     // Reload automatically when a repository reports a change in one of these areas. Hidden views
     // skip the refresh and load fresh data when they are shown again, so a closed flyout does no
     // background work (and no backdrop recomposition) on every clipboard change.

@@ -307,6 +307,11 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         if (_quietRefreshInProgress) return;
 
         _quietRefreshInProgress = true;
+
+        // A load that never returns would otherwise spin the indicator silently; the watchdog
+        // only reports and never touches the load itself.
+        using var slowCts = new CancellationTokenSource();
+        _ = WarnIfSlowAsync(SlowLoadThreshold, slowCts.Token);
         try
         {
             while (_quietRefreshRequested)
@@ -342,11 +347,15 @@ public sealed partial class ClipboardPanelViewModel : PageViewModel, IIncrementa
         finally
         {
             _quietRefreshInProgress = false;
+            slowCts.Cancel();
         }
 
         // A lock change also moves categories between locked and unlocked, which the filter shows.
         await RefreshCategoryFilterAsync();
     }
+
+    // Shortened by tests; the UI keeps it long enough to be meaningful.
+    public TimeSpan SlowLoadThreshold { get; set; } = TimeSpan.FromSeconds(10);
 
     protected override Task ReloadQuietlyAsync() => RefreshQuietAsync();
 
