@@ -75,5 +75,51 @@
                  Classes="grid-label"
                  Text="{Binding FooterText}" />
     </Border>
+
+    <!-- Load states sit over the list: the quiet refresh never flashes them over content,
+         because Error only sticks before the first load and Empty means zero rows. -->
+    <StackPanel Grid.Row="1"
+                Spacing="8"
+                Margin="32,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding State, Converter={StaticResource StateEquals}, ConverterParameter='Idle,Loading'}">
+      <ProgressBar Width="120"
+                   IsIndeterminate="True"
+                   HorizontalAlignment="Center" />
+    </StackPanel>
+
+    <StackPanel Grid.Row="1"
+                Spacing="6"
+                Margin="32,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding State, Converter={StaticResource StateEquals}, ConverterParameter='Empty'}">
+      <TextBlock Classes="grid-title"
+                 Text="{Binding EmptyTitle}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center" />
+      <TextBlock Classes="grid-body"
+                 Text="{Binding EmptyHint}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap" />
+    </StackPanel>
+
+    <StackPanel Grid.Row="1"
+                Spacing="8"
+                Margin="32,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding State, Converter={StaticResource StateEquals}, ConverterParameter='Error'}">
+      <TextBlock Classes="grid-body"
+                 Text="{Binding ErrorMessage}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap" />
+      <Button Content="{l:Tr Key=Common_Retry}"
+              Command="{Binding ReloadCommand}"
+              HorizontalAlignment="Center" />
+    </StackPanel>
   </Grid>
 </Window>

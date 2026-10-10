@@ -9,6 +9,7 @@
         <ResourceInclude Source="avares://ClipShelf/Themes/Tokens.axaml" />
       </ResourceDictionary.MergedDictionaries>
       <common:BytesToImageConverter x:Key="BytesToImage" />
+      <common:StateEqualsConverter x:Key="StateEquals" />
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
