@@ -21,6 +21,7 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
     private readonly ICategoryLockService _locks;
     private readonly ILogger<TrayController> _log;
     private readonly TrayIcon _trayIcon = new();
+    private bool _attached;
     private TrayIconKind? _appliedTrayIcon;
     private bool? _appliedShowTrayIcon;
     private string? _appliedTrayIconFile;
@@ -54,6 +55,30 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         ApplyHotkey();
     }
 
+    // Attaches the icon to the application. Deferred until the lifetime's Startup event: the
+    // platform tray backend is not ready during window initialization, and attaching early
+    // silently never registers the icon.
+    public void Attach()
+    {
+        if (_attached) return;
+        _attached = true;
+
+        // Only icons attached through Application.TrayIcons are shown; a standalone TrayIcon
+        // never creates its platform icon. The item must be ADDED after the collection is set:
+        // populating the list first raises no change event, so Attach never runs.
+        if (Application.Current is { } app)
+        {
+            var icons = new TrayIcons();
+            TrayIcon.SetIcons(app, icons);
+            icons.Add(_trayIcon);
+            _log.LogInformation("Tray attached through Application.TrayIcons");
+        }
+        else
+        {
+            _log.LogError("Application.Current was null; the tray icon was not attached");
+        }
+    }
+
     public bool IsCurrentHotkeyRegistered => _hotkeyState.Registered == _settings.Current.Hotkey;
 
     public HotkeyGesture? RegisteredHotkey => _hotkeyState.Registered;
@@ -77,6 +102,8 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         _settings.Changed -= OnSettingsChanged;
         _systemTheme.Changed -= OnSystemThemeChanged;
         _hotkey.Pressed -= OnHotkeyPressed;
+        if (Application.Current is { } app)
+            TrayIcon.GetIcons(app)?.Remove(_trayIcon);
         _trayIcon.Dispose();
         _hotkey.Dispose();
     }
@@ -103,13 +130,14 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
     }
 
     // Picks the tray variant from the icon style and the taskbar theme, and honours show/hide.
+    // The image goes first: making a imageless icon visible never registers it with the shell.
     private void ApplyTraySettings()
     {
         var current = _settings.Current;
         _appliedTrayIcon = current.TrayIcon;
         _appliedShowTrayIcon = current.ShowTrayIcon;
-        _trayIcon.IsVisible = current.ShowTrayIcon;
         ApplyTrayIcon(current.TrayIcon);
+        _trayIcon.IsVisible = current.ShowTrayIcon;
         _log.LogInformation("Tray applied: visible {Visible}, file {File}", _trayIcon.IsVisible, _appliedTrayIconFile);
     }
 

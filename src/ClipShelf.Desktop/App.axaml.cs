@@ -68,6 +68,11 @@ public partial class App : Application
             _host.Services.GetRequiredService<TrayController>();
             _host.Services.GetRequiredService<FlyoutWindow>();   // created now so the first open is instant
             _host.Services.GetRequiredService<ClipboardService>();
+            desktop.Startup += (_, _) =>
+            {
+                if (OperatingSystem.IsWindows())
+                    _host.Services.GetRequiredService<TrayController>().Attach();
+            };
         }
 
         _host.Services.GetRequiredService<SessionCleanup>();
