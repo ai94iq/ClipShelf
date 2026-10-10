@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="using:ClipShelf.Desktop.Controls"
+        xmlns:l="using:ClipShelf.Desktop.Common"
         x:Class="ClipShelf.Desktop.Views.MainWindow"
         Title="ClipShelf"
         Width="980"
@@ -8,13 +9,32 @@
         Background="{DynamicResource GridPaperBrush}">
   <Grid ColumnDefinitions="64,*">
     <Border Grid.Column="0" Background="{DynamicResource GridRailBrush}">
-      <StackPanel Margin="0,14" Spacing="10">
+      <StackPanel Margin="0,14" Spacing="6">
         <TextBlock Text="CS"
                    Classes="grid-title"
                    Foreground="{DynamicResource GridRailInkBrush}"
-                   HorizontalAlignment="Center" />
-        <Button x:Name="HistoryButton" Content="History" Click="OnHistoryClick" HorizontalAlignment="Center" />
-        <Button x:Name="SettingsButton" Content="Settings" Click="OnSettingsClick" HorizontalAlignment="Center" />
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,8" />
+        <Button x:Name="HistoryButton"
+                Click="OnHistoryClick"
+                HorizontalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="10,8"
+                ToolTip.Tip="{l:Tr Key=History_Title}"
+                AutomationProperties.Name="{l:Tr Key=History_Title}">
+          <controls:AppIcon Kind="Clipboard" Width="20" Height="20" Foreground="{DynamicResource GridRailInkBrush}" />
+        </Button>
+        <Button x:Name="SettingsButton"
+                Click="OnSettingsClick"
+                HorizontalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="10,8"
+                ToolTip.Tip="{l:Tr Key=Nav_Settings}"
+                AutomationProperties.Name="{l:Tr Key=Nav_Settings}">
+          <controls:AppIcon Kind="Settings" Width="20" Height="20" Foreground="{DynamicResource GridRailInkBrush}" />
+        </Button>
       </StackPanel>
     </Border>
     <Grid Grid.Column="1">

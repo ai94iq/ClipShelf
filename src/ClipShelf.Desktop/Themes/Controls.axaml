@@ -69,6 +69,32 @@
     <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
   </Style>
 
+  <!-- History rows: the same cell frame as the flyout, without a list selection behind them.
+       Hover stays quiet; keyboard focus wears the accent plane and frame. -->
+  <Style Selector="Button.clip-row">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="Margin" Value="0,3" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="Button.clip-row:pointerover">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+  </Style>
+
+  <Style Selector="Button.clip-row:pressed">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+  </Style>
+
+  <Style Selector="Button.clip-row:focus">
+    <Setter Property="Background" Value="{DynamicResource GridAccentPlaneBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
+  </Style>
+
   <Style Selector="TextBox.flyout-search">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
