@@ -19,6 +19,7 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
     private readonly SettingsService _settings;
     private readonly ISystemTheme _systemTheme;
     private readonly ICategoryLockService _locks;
+    private readonly ILogger<TrayController> _log;
     private readonly TrayIcon _trayIcon = new();
     private TrayIconKind? _appliedTrayIcon;
     private bool? _appliedShowTrayIcon;
@@ -32,7 +33,8 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         GlobalHotkey hotkey,
         SettingsService settings,
         ISystemTheme systemTheme,
-        ICategoryLockService locks)
+        ICategoryLockService locks,
+        ILogger<TrayController> log)
     {
         _mainWindow = mainWindow;
         _flyout = flyout;
@@ -40,6 +42,7 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         _settings = settings;
         _systemTheme = systemTheme;
         _locks = locks;
+        _log = log;
 
         _trayIcon.ToolTipText = Tr.Get("App_Name");
         _trayIcon.Clicked += OnTrayClicked;
@@ -107,6 +110,7 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         _appliedShowTrayIcon = current.ShowTrayIcon;
         _trayIcon.IsVisible = current.ShowTrayIcon;
         ApplyTrayIcon(current.TrayIcon);
+        _log.LogInformation("Tray applied: visible {Visible}, file {File}", _trayIcon.IsVisible, _appliedTrayIconFile);
     }
 
     // Re-checks the resolved file first, so repeated theme notifications and settings saves that

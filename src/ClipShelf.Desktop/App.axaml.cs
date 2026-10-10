@@ -58,6 +58,11 @@ public partial class App : Application
         // watcher keep the app alive; the window opens from the tray, the hotkey or a launch
         // command, and exiting goes through the tray menu.
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        desktop.ShutdownRequested += (_, _) =>
+        {
+            _host?.Dispose();
+            Log.CloseAndFlush();
+        };
         if (OperatingSystem.IsWindows())
         {
             _host.Services.GetRequiredService<TrayController>();
@@ -96,6 +101,7 @@ public partial class App : Application
         var tray = _host.Services.GetRequiredService<TrayController>();
         if (command == StartupCommand.History) tray.ShowHistory();
         else if (command == StartupCommand.Toggle) tray.TogglePanel();
+        else if (command == StartupCommand.Quit) tray.Exit();
     }
 
     // Fire-and-forget: the tray appears immediately; the warm-up finishes within a second.
