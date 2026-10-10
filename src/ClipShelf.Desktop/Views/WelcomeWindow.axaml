@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Common"
+        x:Class="ClipShelf.Desktop.Views.WelcomeWindow"
+        Title="ClipShelf"
+        Width="460"
+        Height="360"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Background="{DynamicResource GridPaperBrush}">
+  <StackPanel Margin="24" Spacing="14" VerticalAlignment="Center">
+    <TextBlock Text="{l:Tr Key=App_Welcome}" Classes="grid-title" />
+    <TextBlock x:Name="HotkeyLine" TextWrapping="Wrap" />
+    <TextBlock Text="{l:Tr Key=Welcome_Tray}"
+               TextWrapping="Wrap"
+               Foreground="{DynamicResource GridMutedBrush}" />
+    <Button Content="{l:Tr Key=Welcome_Ok}"
+            Classes="accent"
+            Click="OnOk"
+            Margin="0,8,0,0"
+            HorizontalAlignment="{l:RtlAlign Desired=Right}" />
+  </StackPanel>
+</Window>

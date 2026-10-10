@@ -84,7 +84,19 @@ public partial class App : Application
         ExecuteCommand(_command);
         _command = null;
 
+        ShowWelcomeIfFirstRun();
+
         base.OnFrameworkInitializationCompleted();
+    }
+
+    // First run: a small window explains the hotkey and the tray, then never again.
+    private void ShowWelcomeIfFirstRun()
+    {
+        if (_host is null) return;
+        var settings = _host.Services.GetRequiredService<SettingsService>();
+        if (settings.Current.WelcomeShown) return;
+        _host.Services.GetRequiredService<WelcomeWindow>().Show();
+        settings.Update(settings.Current with { WelcomeShown = true });
     }
 
     private void OnCommandReceived(object? sender, string received)

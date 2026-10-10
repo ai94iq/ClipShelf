@@ -37,6 +37,7 @@ public static class DesktopServiceRegistration
     public static IServiceCollection AddUiServices(this IServiceCollection services)
     {
         services.AddSingleton<MainWindow>();
+        services.AddTransient<WelcomeWindow>();
 
         if (OperatingSystem.IsWindows())
         {
