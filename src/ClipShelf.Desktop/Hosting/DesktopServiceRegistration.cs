@@ -40,8 +40,13 @@ public static class DesktopServiceRegistration
 
         if (OperatingSystem.IsWindows())
         {
+            services.AddTransient<ClipboardPanelViewModel>();
+            services.AddSingleton<FlyoutWindow>();
             services.AddSingleton<TrayController>();
+            // The lambda defers execution; the analyzer cannot see that this branch is Windows-only.
+#pragma warning disable CA1416
             services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<TrayController>());
+#pragma warning restore CA1416
         }
 
         return services;

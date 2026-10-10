@@ -42,4 +42,42 @@
     <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
     <Setter Property="Background" Value="{DynamicResource GridAccentPlaneBrush}" />
   </Style>
+  <!-- The flyout's cells: the world's grid unit. Hover stays quiet; focus wears the accent plane
+       and the cell frame. -->
+  <Style Selector="ListBox.clip-grid">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0,2" />
+  </Style>
+
+  <Style Selector="ListBox.clip-grid ListBoxItem">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="Margin" Value="12,3" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="ListBox.clip-grid ListBoxItem:pointerover">
+    <Setter Property="Background" Value="{DynamicResource GridCellBrush}" />
+  </Style>
+
+  <Style Selector="ListBox.clip-grid ListBoxItem:selected">
+    <Setter Property="Background" Value="{DynamicResource GridAccentPlaneBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
+  </Style>
+
+  <Style Selector="TextBox.flyout-search">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GridLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="Padding" Value="2,6" />
+    <Setter Property="FontSize" Value="{DynamicResource GridBodySize}" />
+  </Style>
+
+  <Style Selector="TextBox.flyout-search:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource GridAccentBrush}" />
+  </Style>
 </Styles>

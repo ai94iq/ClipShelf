@@ -58,8 +58,13 @@ public partial class App : Application
         // watcher keep the app alive; the window opens from the tray, the hotkey or a launch
         // command, and exiting goes through the tray menu.
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        _host.Services.GetRequiredService<TrayController>();
-        _host.Services.GetRequiredService<ClipboardService>();
+        if (OperatingSystem.IsWindows())
+        {
+            _host.Services.GetRequiredService<TrayController>();
+            _host.Services.GetRequiredService<FlyoutWindow>();   // created now so the first open is instant
+            _host.Services.GetRequiredService<ClipboardService>();
+        }
+
         _host.Services.GetRequiredService<SessionCleanup>();
         _host.Services.GetRequiredService<IStartupRegistration>().Apply(settings.RunAtStartup);
 
@@ -86,11 +91,11 @@ public partial class App : Application
 
     private void ExecuteCommand(string? command)
     {
-        if (command is null || _host is null) return;
+        if (command is null || _host is null || !OperatingSystem.IsWindows()) return;
 
         var tray = _host.Services.GetRequiredService<TrayController>();
         if (command == StartupCommand.History) tray.ShowHistory();
-        // --toggle lands with the flyout in Task 6; the command is accepted and stashed until then.
+        else if (command == StartupCommand.Toggle) tray.TogglePanel();
     }
 
     // Fire-and-forget: the tray appears immediately; the warm-up finishes within a second.

@@ -1,0 +1,79 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Common"
+        xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel"
+        x:Class="ClipShelf.Desktop.Views.FlyoutWindow"
+        x:DataType="vm:ClipboardPanelViewModel"
+        Title="ClipShelf"
+        Width="360"
+        Height="480"
+        SystemDecorations="None"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        CanResize="False"
+        Background="{DynamicResource GridPaperBrush}">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <TextBox x:Name="SearchBox"
+             Grid.Row="0"
+             Classes="flyout-search"
+             Margin="12,10,12,6"
+             Padding="10,0"
+             Height="32"
+             IsEnabled="{Binding CanSearch}"
+             PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
+             Text="{Binding SearchText, Mode=TwoWay}" />
+
+    <ListBox x:Name="ClipList"
+             Grid.Row="1"
+             Classes="clip-grid"
+             ItemsSource="{Binding Items}"
+             SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+             SelectionMode="Single"
+             PointerReleased="OnClipListPointerReleased"
+             PointerPressed="OnClipListPointerPressed">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="vm:ClipItemViewModel">
+          <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+            <Image Grid.Row="0"
+                   Grid.Column="0"
+                   MaxHeight="80"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Left"
+                   Source="{Binding ThumbnailBytes, Converter={StaticResource BytesToImage}}"
+                   IsVisible="{Binding HasImage}" />
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Classes="grid-body"
+                       Text="{Binding Preview}"
+                       TextWrapping="Wrap"
+                       MaxLines="2"
+                       TextTrimming="CharacterEllipsis"
+                       IsVisible="{Binding ShowPreview}" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Classes="grid-label"
+                       Margin="0,4,0,0"
+                       Text="{Binding SourceText}" />
+            <Border Grid.Row="0"
+                    Grid.Column="1"
+                    Width="6"
+                    Height="6"
+                    Margin="8,4,0,0"
+                    VerticalAlignment="Top"
+                    Background="{DynamicResource GridAccentBrush}"
+                    IsVisible="{Binding IsPinned}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <Border Grid.Row="2"
+            BorderBrush="{DynamicResource GridLineBrush}"
+            BorderThickness="0,1,0,0">
+      <TextBlock Margin="12,6"
+                 Classes="grid-label"
+                 Text="{Binding FooterText}" />
+    </Border>
+  </Grid>
+</Window>

@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Common"
+        x:Class="ClipShelf.Desktop.Views.NewCategoryDialog"
+        Title="{l:Tr Key=Category_NewTitle}"
+        Width="320"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource GridPaperBrush}">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBox x:Name="NameBox" PlaceholderText="{l:Tr Key=Category_NewPlaceholder}" />
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Content="{l:Tr Key=Category_Create}" Click="OnCreateClick" />
+      <Button Content="{l:Tr Key=Common_Cancel}" Click="OnCancelClick" />
+    </StackPanel>
+  </StackPanel>
+</Window>

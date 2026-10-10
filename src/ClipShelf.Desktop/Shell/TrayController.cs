@@ -9,11 +9,12 @@ using ClipShelf.Desktop.Views;
 namespace ClipShelf.Desktop.Shell;
 
 // Owns the tray icon, the global hotkey and the app lifetime, mirroring the WinUI AppShellService
-// minus the window specifics: the flyout and its toggle arrive in Task 6, so the tray and the
-// hotkey open the shell window until then.
+// minus the window specifics.
+[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 public sealed class TrayController : IHotkeyRegistration, IDisposable
 {
     private readonly Lazy<MainWindow> _mainWindow;
+    private readonly Lazy<FlyoutWindow> _flyout;
     private readonly GlobalHotkey _hotkey;
     private readonly SettingsService _settings;
     private readonly ISystemTheme _systemTheme;
@@ -27,12 +28,14 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
 
     public TrayController(
         Lazy<MainWindow> mainWindow,
+        Lazy<FlyoutWindow> flyout,
         GlobalHotkey hotkey,
         SettingsService settings,
         ISystemTheme systemTheme,
         ICategoryLockService locks)
     {
         _mainWindow = mainWindow;
+        _flyout = flyout;
         _hotkey = hotkey;
         _settings = settings;
         _systemTheme = systemTheme;
@@ -56,7 +59,7 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
-    public void TogglePanel() => _mainWindow.Value.ShowHistory();
+    public void TogglePanel() => _flyout.Value.Toggle();
 
     public void Exit()
     {
