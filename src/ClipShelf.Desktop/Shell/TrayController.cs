@@ -5,6 +5,7 @@ using ClipShelf.Core.Input;
 using ClipShelf.Core.Theming;
 using ClipShelf.Desktop.Platform.Windows;
 using ClipShelf.Desktop.Views;
+using System.Diagnostics;
 
 namespace ClipShelf.Desktop.Shell;
 
@@ -95,6 +96,23 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         if (Application.Current?.ApplicationLifetime is
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
             desktop.Shutdown();
+    }
+
+    // A language or accent change needs a fresh process: start the new instance first, then let
+    // this one go through the normal exit path (which releases the single-instance pipe).
+    public void Restart()
+    {
+        try
+        {
+            if (Environment.ProcessPath is { } executable)
+                Process.Start(executable);
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "Restarting the app failed");
+        }
+
+        Exit();
     }
 
     public void Dispose()
