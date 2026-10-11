@@ -75,6 +75,13 @@ public partial class App : Application
             };
         }
 
+        if (OperatingSystem.IsLinux())
+        {
+            // No tray yet (Phase 3 task), so boot straight into history instead
+            // of waiting tray-first like on Windows.
+            _host.Services.GetRequiredService<MainWindow>().ShowHistory();
+        }
+
         _host.Services.GetRequiredService<SessionCleanup>();
         _host.Services.GetRequiredService<IStartupRegistration>().Apply(settings.RunAtStartup);
 

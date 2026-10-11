@@ -6,8 +6,8 @@ namespace ClipShelf.Desktop.Hosting;
 
 public static class DesktopServiceRegistration
 {
-    // The Windows implementations of the presentation's platform interfaces. The Linux and macOS
-    // implementations arrive with their phases; everything Windows-only sits behind the guard.
+    // The Windows implementations of the presentation's platform interfaces. Linux
+    // registers its own set below; everything OS-specific sits behind a guard.
     public static IServiceCollection AddPlatformServices(this IServiceCollection services)
     {
         services.AddSingleton<IUiDispatcher, AvaloniaUiDispatcher>();
@@ -30,6 +30,11 @@ public static class DesktopServiceRegistration
             services.AddSingleton<ISessionEnd, SessionWatcher>();
         }
 
+        if (OperatingSystem.IsLinux())
+        {
+            services.AddLinuxPlatformServices();
+        }
+
         return services;
     }
 
@@ -50,6 +55,11 @@ public static class DesktopServiceRegistration
 #pragma warning disable CA1416
             services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<TrayController>());
 #pragma warning restore CA1416
+        }
+
+        if (OperatingSystem.IsLinux())
+        {
+            services.AddLinuxUiServices();
         }
 
         return services;

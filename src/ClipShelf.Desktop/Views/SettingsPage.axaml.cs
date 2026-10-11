@@ -44,13 +44,15 @@ public sealed partial class SettingsPage : UserControl
     [SupportedOSPlatform("windows")]
     private void OnExitClick(object? sender, RoutedEventArgs e)
     {
-        if (OperatingSystem.IsWindows()) _tray!.Value.Exit();
+        if (!OperatingSystem.IsWindows()) return;   // no tray to exit through on Linux yet
+        _tray!.Value.Exit();
     }
 
     [SupportedOSPlatform("windows")]
     private void OnRestartClick(object? sender, RoutedEventArgs e)
     {
-        if (OperatingSystem.IsWindows()) _tray!.Value.Restart();
+        if (!OperatingSystem.IsWindows()) return;
+        _tray!.Value.Restart();
     }
 
     private void OnLockWhenClick(object? sender, RoutedEventArgs e)
