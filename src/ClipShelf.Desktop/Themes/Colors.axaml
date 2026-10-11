@@ -1,39 +1,45 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Light values live at the base level and double as the fallback.
-       Dark overrides sit in the theme dictionary below. -->
-  <SolidColorBrush x:Key="SurfaceBackground" Color="#F5F5F7" />
-  <SolidColorBrush x:Key="SurfaceCard" Color="#FFFFFF" />
-  <SolidColorBrush x:Key="SurfaceElevated" Color="#FFFFFF" />
-  <SolidColorBrush x:Key="SurfaceOverlay" Color="#E8E8ED" />
+  <!-- One source of truth: FluentTheme. These aliases exist only because the
+       clip views speak in ClipShelf words (surface, card, muted text) rather
+       than Fluent's SystemControl names. Every value resolves to a key that
+       was measured in Avalonia.Themes.Fluent 11.3.22, so light and dark both
+       come from Fluent and there is no second palette to drift.
+       Do not add a literal color here unless Fluent genuinely has no key. -->
+  <StaticResource x:Key="SurfaceBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+  <StaticResource x:Key="SurfaceCard" ResourceKey="SystemControlBackgroundAltHighBrush" />
+  <StaticResource x:Key="SurfaceElevated" ResourceKey="SystemControlBackgroundAltMediumHighBrush" />
+  <StaticResource x:Key="SurfaceOverlay" ResourceKey="FlyoutPresenterBackground" />
 
-  <SolidColorBrush x:Key="TextPrimary" Color="#1A1A2E" />
-  <SolidColorBrush x:Key="TextSecondary" Color="#5A5A72" />
-  <SolidColorBrush x:Key="TextMuted" Color="#8A8A9E" />
-  <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
+  <StaticResource x:Key="TextPrimary" ResourceKey="SystemControlForegroundBaseHighBrush" />
+  <StaticResource x:Key="TextSecondary" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+  <StaticResource x:Key="TextMuted" ResourceKey="SystemControlForegroundBaseMediumHighBrush" />
+  <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFFFF" />
 
-  <SolidColorBrush x:Key="AccentBrush" Color="#3B82F6" />
-  <SolidColorBrush x:Key="AccentHoverBrush" Color="#2563EB" />
-  <SolidColorBrush x:Key="AccentPressBrush" Color="#1D4ED8" />
-  <SolidColorBrush x:Key="AccentSubtleBrush" Color="#DBEAFE" />
+  <StaticResource x:Key="AccentBrush" ResourceKey="SystemControlForegroundAccentBrush" />
+  <StaticResource x:Key="AccentHoverBrush" ResourceKey="AccentButtonBackgroundPointerOver" />
+  <StaticResource x:Key="AccentPressBrush" ResourceKey="AccentButtonBackgroundPressed" />
+  <!-- Fluent has no translucent accent tint; this is its neutral low wash,
+       which is what Fluent's own selection surfaces use. -->
+  <StaticResource x:Key="AccentSubtleBrush" ResourceKey="SystemControlHighlightListLowBrush" />
 
-  <SolidColorBrush x:Key="BorderSubtle" Color="#E5E5EA" />
-  <SolidColorBrush x:Key="BorderDefault" Color="#D1D1D8" />
+  <StaticResource x:Key="BorderSubtle" ResourceKey="SystemControlBackgroundListLowBrush" />
+  <StaticResource x:Key="BorderDefault" ResourceKey="SystemControlTransientBorderBrush" />
 
-  <SolidColorBrush x:Key="ErrorBrush" Color="#DC2626" />
-  <SolidColorBrush x:Key="ErrorSubtleBrush" Color="#FEE2E2" />
-  <SolidColorBrush x:Key="SuccessBrush" Color="#059669" />
+  <StaticResource x:Key="ErrorBrush" ResourceKey="SystemControlErrorTextForegroundBrush" />
+  <StaticResource x:Key="ErrorSubtleBrush" ResourceKey="NotificationCardErrorBackgroundBrush" />
+  <StaticResource x:Key="SuccessBrush" ResourceKey="NotificationCardSuccessBackgroundBrush" />
 
-  <SolidColorBrush x:Key="HoverOverlay" Color="#1A1A2E" Opacity="0.06" />
-  <SolidColorBrush x:Key="DividerBrush" Color="#E5E5EA" />
+  <StaticResource x:Key="HoverOverlay" ResourceKey="SystemControlHighlightListLowBrush" />
+  <StaticResource x:Key="DividerBrush" ResourceKey="SystemControlBackgroundListLowBrush" />
+  <StaticResource x:Key="SidebarBackground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+  <StaticResource x:Key="SidebarBorder" ResourceKey="SystemControlTransientBorderBrush" />
 
-  <SolidColorBrush x:Key="SidebarBackground" Color="#FFFFFF" />
-  <SolidColorBrush x:Key="SidebarBorder" Color="#E5E5EA" />
+  <!-- A shadow is not a theme color: it is geometry over whatever is behind
+       it, so it stays a fixed translucent black in both variants. -->
+  <SolidColorBrush x:Key="ShadowColor" Color="#33000000" />
 
-  <SolidColorBrush x:Key="ShadowColor" Color="#1A1A2E" Opacity="0.12" />
-
-  <!-- Theme-independent tokens. -->
   <x:Double x:Key="FontSizeDisplay">32</x:Double>
   <x:Double x:Key="FontSizeHeadline">24</x:Double>
   <x:Double x:Key="FontSizeTitle2">20</x:Double>
@@ -41,44 +47,11 @@
   <x:Double x:Key="FontSizeBodySmall">13</x:Double>
   <x:Double x:Key="FontSizeCaption">12</x:Double>
 
-  <x:Double x:Key="RadiusSmall">6</x:Double>
-  <x:Double x:Key="RadiusMedium">10</x:Double>
-  <x:Double x:Key="RadiusLarge">14</x:Double>
-  <x:Double x:Key="RadiusXLarge">20</x:Double>
+  <!-- Fluent's ControlCornerRadius is 4; larger steps are ours. -->
+  <x:Double x:Key="RadiusSmall">4</x:Double>
+  <x:Double x:Key="RadiusMedium">4</x:Double>
+  <x:Double x:Key="RadiusLarge">8</x:Double>
+  <x:Double x:Key="RadiusXLarge">12</x:Double>
   <x:Double x:Key="RadiusFull">9999</x:Double>
-
-  <ResourceDictionary.ThemeDictionaries>
-    <ResourceDictionary x:Key="Dark">
-      <SolidColorBrush x:Key="SurfaceBackground" Color="#1C1C1E" />
-      <SolidColorBrush x:Key="SurfaceCard" Color="#2C2C2E" />
-      <SolidColorBrush x:Key="SurfaceElevated" Color="#3A3A3C" />
-      <SolidColorBrush x:Key="SurfaceOverlay" Color="#48484A" />
-
-      <SolidColorBrush x:Key="TextPrimary" Color="#F5F5F7" />
-      <SolidColorBrush x:Key="TextSecondary" Color="#AEAEB2" />
-      <SolidColorBrush x:Key="TextMuted" Color="#8E8E93" />
-      <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
-
-      <SolidColorBrush x:Key="AccentBrush" Color="#3B82F6" />
-      <SolidColorBrush x:Key="AccentHoverBrush" Color="#60A5FA" />
-      <SolidColorBrush x:Key="AccentPressBrush" Color="#2563EB" />
-      <SolidColorBrush x:Key="AccentSubtleBrush" Color="#333B82F6" />
-
-      <SolidColorBrush x:Key="BorderSubtle" Color="#38383A" />
-      <SolidColorBrush x:Key="BorderDefault" Color="#48484A" />
-
-      <SolidColorBrush x:Key="ErrorBrush" Color="#FF453A" />
-      <SolidColorBrush x:Key="ErrorSubtleBrush" Color="#3D2B2B" />
-      <SolidColorBrush x:Key="SuccessBrush" Color="#30D158" />
-
-      <SolidColorBrush x:Key="HoverOverlay" Color="#FFFFFF" Opacity="0.08" />
-      <SolidColorBrush x:Key="DividerBrush" Color="#38383A" />
-
-      <SolidColorBrush x:Key="SidebarBackground" Color="#232327" />
-      <SolidColorBrush x:Key="SidebarBorder" Color="#38383A" />
-
-      <SolidColorBrush x:Key="ShadowColor" Color="#000000" Opacity="0.30" />
-    </ResourceDictionary>
-  </ResourceDictionary.ThemeDictionaries>
 
 </ResourceDictionary>

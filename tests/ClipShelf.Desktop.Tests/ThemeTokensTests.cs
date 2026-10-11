@@ -8,29 +8,52 @@ using ClipShelf.Presentation.Hosting;
 
 namespace ClipShelf.Desktop.Tests;
 
-// Headless coverage for the theme tokens: the same keys resolve to light values
-// under the Light variant and dark values under the Dark variant, and applying
-// dark settings flips the app variant.
+// Headless coverage for the theme tokens: the ClipShelf palette aliases resolve
+// to Fluent's light and dark values, and applying dark settings flips the app
+// variant.
 [Collection("headless")]
 [SupportedOSPlatform("windows")]
 public sealed class ThemeTokensTests : IDisposable
 {
     private readonly HeadlessApp _app = new();
 
-    [Fact]
-    public void Tokens_ResolvePerThemeVariant()
+    // The palette is Fluent's. The invariant is not a specific hex value, it
+    // is that every alias resolves to a real brush and that the surface and
+    // text tokens change between light and dark because FluentTheme supplies
+    // both. Hardcoding hexes here would re-freeze the palette we just removed.
+    public static TheoryData<string> PaletteKeys() =>
+    [
+        "SurfaceBackground", "SurfaceCard", "SurfaceElevated", "SurfaceOverlay",
+        "TextPrimary", "TextSecondary", "TextMuted",
+        "AccentBrush", "AccentSubtleBrush",
+        "BorderSubtle", "BorderDefault", "DividerBrush",
+        "HoverOverlay", "SidebarBackground", "ErrorBrush", "SuccessBrush",
+    ];
+
+    [Theory]
+    [MemberData(nameof(PaletteKeys))]
+    public void Tokens_ResolveToABrushInBothVariants(string key)
     {
         _app.Dispatch(() =>
         {
             var host = Application.Current!;
-            Assert.Equal(Color.Parse("#F5F5F7"), Brush(host, ThemeVariant.Light, "SurfaceBackground").Color);
-            Assert.Equal(Color.Parse("#1C1C1E"), Brush(host, ThemeVariant.Dark, "SurfaceBackground").Color);
-            Assert.Equal(Color.Parse("#FFFFFF"), Brush(host, ThemeVariant.Light, "SurfaceCard").Color);
-            Assert.Equal(Color.Parse("#2C2C2E"), Brush(host, ThemeVariant.Dark, "SurfaceCard").Color);
-            Assert.Equal(Color.Parse("#1A1A2E"), Brush(host, ThemeVariant.Light, "TextPrimary").Color);
-            Assert.Equal(Color.Parse("#F5F5F7"), Brush(host, ThemeVariant.Dark, "TextPrimary").Color);
-            Assert.Equal(Color.Parse("#3B82F6"), Brush(host, ThemeVariant.Light, "AccentBrush").Color);
-            Assert.Equal(Color.Parse("#3B82F6"), Brush(host, ThemeVariant.Dark, "AccentBrush").Color);
+            Assert.NotNull(Brush(host, ThemeVariant.Light, key));
+            Assert.NotNull(Brush(host, ThemeVariant.Dark, key));
+        });
+    }
+
+    [Fact]
+    public void Tokens_FollowFluentLightAndDark()
+    {
+        _app.Dispatch(() =>
+        {
+            var host = Application.Current!;
+            foreach (var key in (string[])["SurfaceBackground", "SurfaceCard", "TextPrimary", "TextSecondary"])
+            {
+                var light = Brush(host, ThemeVariant.Light, key).Color;
+                var dark = Brush(host, ThemeVariant.Dark, key).Color;
+                Assert.True(light != dark, $"{key} did not change between light and dark.");
+            }
         });
     }
 
