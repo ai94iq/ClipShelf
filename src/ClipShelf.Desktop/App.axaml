@@ -1,20 +1,105 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:common="using:ClipShelf.Desktop.Common"
+             xmlns:controls="using:ClipShelf.Desktop.Controls"
              x:Class="ClipShelf.Desktop.App"
              RequestedThemeVariant="Default">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://ClipShelf/Themes/Tokens.axaml" />
-        <ResourceInclude Source="avares://ClipShelf/Themes/Cells.axaml" />
+        <ResourceInclude Source="avares://ClipShelf/Themes/Colors.axaml" />
+        <ResourceInclude Source="avares://ClipShelf/Themes/ClipItemTemplate.axaml" />
       </ResourceDictionary.MergedDictionaries>
       <common:BytesToImageConverter x:Key="BytesToImage" />
       <common:StateEqualsConverter x:Key="StateEquals" />
+      <common:BoolToVisibilityConverter x:Key="BoolVisible" />
+      <common:PinIconConverter x:Key="PinIcon" />
+      <common:AccentSwatchConverter x:Key="AccentSwatch" />
+      <common:LoadStateToVisibilityConverter x:Key="LoadStateVisible" />
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />
-    <StyleInclude Source="avares://ClipShelf/Themes/Controls.axaml" />
+
+    <!-- SettingsCard: one row inside a settings group -->
+    <Style Selector="controls|SettingsCard">
+      <Setter Property="MinHeight" Value="64" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="ContentTemplate">
+        <DataTemplate>
+          <Grid ColumnSpacing="16" MinHeight="64">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{Binding Header, RelativeSource={RelativeSource AncestorType=controls:SettingsCard}}" FontSize="15" />
+              <TextBlock Text="{Binding Description, RelativeSource={RelativeSource AncestorType=controls:SettingsCard}}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextMuted}"
+                         TextWrapping="Wrap"
+                         IsVisible="{Binding Description, RelativeSource={RelativeSource AncestorType=controls:SettingsCard}, Converter={StaticResource BoolVisible}}" />
+            </StackPanel>
+            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" Content="{Binding}" />
+          </Grid>
+        </DataTemplate>
+      </Setter>
+    </Style>
+
+    <!-- Sidebar rail: icon rows, the active one wears a blue pill. -->
+    <Style Selector="Button.nav">
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.nav TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="Button.nav controls|AppIcon">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="Button.nav.selected">
+      <Setter Property="Background" Value="{DynamicResource AccentSubtleBrush}" />
+    </Style>
+    <Style Selector="Button.nav.selected TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.nav.selected controls|AppIcon">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <!-- Row action buttons: transparent, small, with hover wash -->
+    <Style Selector="Button.row-action">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Width" Value="30" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="Button.row-action:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource HoverOverlay}" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <!-- Settings group: one floating card holding rows, a hairline between them. -->
+    <Style Selector="Border.settings-group">
+      <Setter Property="Background" Value="{DynamicResource SurfaceCard}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="BoxShadow" Value="0 4 16 -4 #1A1A2E" />
+    </Style>
+    <Style Selector="Border.settings-divider">
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource DividerBrush}" />
+    </Style>
+
+    <!-- Deferred-delete bar: "Clip deleted  [Undo]" shown while undo is still possible. -->
+    <Style Selector="Border.undo-bar">
+      <Setter Property="Background" Value="{DynamicResource SurfaceCard}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
   </Application.Styles>
 </Application>

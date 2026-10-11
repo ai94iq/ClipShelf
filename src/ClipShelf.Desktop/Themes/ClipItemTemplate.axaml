@@ -1,0 +1,93 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:common="using:ClipShelf.Desktop.Common"
+                    xmlns:controls="using:ClipShelf.Desktop.Controls"
+                    xmlns:l="using:ClipShelf.Desktop.Common"
+                    xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel">
+
+  <!-- One history row, used by the flyout and the full history window. -->
+  <DataTemplate x:Key="ClipItemTemplate" DataType="vm:ClipItemViewModel">
+    <Grid ColumnSpacing="6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Checked rows in Select mode wear the accent wash; the current row's wash comes from
+           the list itself. -->
+      <Border Grid.ColumnSpan="3"
+              Background="{DynamicResource AccentSubtleBrush}"
+              CornerRadius="4"
+              IsVisible="{Binding IsSelected, Converter={StaticResource BoolVisible}}" />
+
+      <!-- Select mode indicator: the row itself is the hit target, so the box only shows state. -->
+      <CheckBox Grid.Column="0"
+                MinWidth="0"
+                Padding="0"
+                VerticalAlignment="Center"
+                Focusable="False"
+                IsHitTestVisible="False"
+                IsChecked="{Binding IsSelected, Mode=OneWay}"
+                IsVisible="{Binding ShowSelection, Converter={StaticResource BoolVisible}}" />
+
+      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+        <Grid IsVisible="{Binding HasImage, Converter={StaticResource BoolVisible}}"
+              HorizontalAlignment="Left"
+              Margin="0,2">
+          <Border BorderBrush="{DynamicResource BorderSubtle}"
+                  BorderThickness="1"
+                  CornerRadius="4">
+            <Image Source="{Binding ThumbnailBytes, Converter={StaticResource BytesToImage}}"
+                   MaxWidth="160"
+                   MaxHeight="72"
+                   Stretch="Uniform" />
+          </Border>
+          <Border Background="#CC1A1A2E"
+                  CornerRadius="4"
+                  Padding="4,2"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom"
+                  Margin="4">
+            <controls:AppIcon Kind="Image" Width="12" Height="12" Foreground="#FFFFFF" />
+          </Border>
+        </Grid>
+        <TextBlock Text="{Binding Preview}"
+                   FontSize="13"
+                   TextTrimming="CharacterEllipsis"
+                   TextWrapping="NoWrap"
+                   IsVisible="{Binding ShowPreview, Converter={StaticResource BoolVisible}}" />
+        <TextBlock Text="{Binding SourceText}"
+                   FontSize="11"
+                   TextTrimming="CharacterEllipsis"
+                   TextWrapping="NoWrap"
+                   Foreground="{DynamicResource TextSecondary}" />
+      </StackPanel>
+
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+        <Button Classes="row-action"
+                Focusable="False"
+                Command="{Binding TogglePinCommand}"
+                ToolTip.Tip="{l:Tr Key=Panel_PinToggle}"
+                AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
+          <controls:AppIcon Kind="{Binding IsPinned, Converter={StaticResource PinIcon}}" Width="16" Height="16" />
+        </Button>
+        <Button Classes="row-action"
+                Focusable="False"
+                Command="{Binding CategoryCommand}"
+                ToolTip.Tip="{l:Tr Key=Panel_Category}"
+                AutomationProperties.Name="{l:Tr Key=Panel_Category}">
+          <controls:AppIcon Kind="Folder" Width="16" Height="16" />
+        </Button>
+        <Button Classes="row-action"
+                Focusable="False"
+                Command="{Binding DeleteCommand}"
+                ToolTip.Tip="{l:Tr Key=Panel_Delete}"
+                AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
+          <controls:AppIcon Kind="Delete" Width="16" Height="16" />
+        </Button>
+      </StackPanel>
+    </Grid>
+  </DataTemplate>
+
+</ResourceDictionary>

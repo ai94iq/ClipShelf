@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:ClipShelf.Desktop.Common"
+             xmlns:controls="using:ClipShelf.Desktop.Controls"
+             x:Class="ClipShelf.Desktop.Controls.LoadStateOverlay"
+             x:CompileBindings="False">
+  <!-- Put this on top of the page content in the same Grid cell. -->
+  <Grid>
+    <ProgressBar Width="120"
+                 IsIndeterminate="True"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 IsVisible="{Binding State, Converter={StaticResource LoadStateVisible}, ConverterParameter=Loading}" />
+
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="10"
+                MaxWidth="280"
+                IsVisible="{Binding State, Converter={StaticResource LoadStateVisible}, ConverterParameter=Empty}">
+      <controls:AppIcon Kind="Clipboard"
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Center"
+                        Opacity="0.7"
+                        Foreground="{DynamicResource TextSecondary}" />
+      <TextBlock Text="{Binding EmptyTitle}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 Foreground="{DynamicResource TextSecondary}" />
+      <TextBlock Text="{Binding EmptyHint}"
+                 HorizontalAlignment="Center"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextMuted}" />
+    </StackPanel>
+
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="12"
+                IsVisible="{Binding State, Converter={StaticResource LoadStateVisible}, ConverterParameter=Error}">
+      <TextBlock Text="{Binding ErrorMessage}"
+                 Foreground="{DynamicResource ErrorBrush}"
+                 TextWrapping="Wrap" />
+      <Button Content="{l:Tr Key=Common_Retry}"
+              Command="{Binding RetryCommand}"
+              HorizontalAlignment="Center" />
+    </StackPanel>
+  </Grid>
+</UserControl>

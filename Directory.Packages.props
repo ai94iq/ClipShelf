@@ -22,10 +22,11 @@
     <!-- Tray icon for WinUI 3, which has none built in (see docs/decisions/0001). -->
     <PackageVersion Include="H.NotifyIcon.WinUI" Version="2.4.1" />
     <!-- Avalonia: the cross-platform desktop head (plan 2a). -->
-    <PackageVersion Include="Avalonia" Version="12.1.3" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.1.3" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.3" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="12.1.3" />
-    <PackageVersion Include="Avalonia.Headless" Version="12.1.3" />
+    <!-- HARDSET to 11.3.22 - 12.x has breaking changes and Avalonia.Diagnostics not on nuget.org -->
+    <PackageVersion Include="Avalonia" Version="11.3.22" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.22" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.3.22" />
   </ItemGroup>
 </Project>
