@@ -1,13 +1,12 @@
 # DESIGN.md
 
 <!-- impeccable:design-schema 1 -->
-<!-- World: Memry card language (surface brief .impeccable/surfaces/src-clipshelf-desktop.md, amendment 2026-10-10). Scope: src/ClipShelf.Desktop on Avalonia 11.3.22. Light theme only; dark tokens are open work. -->
+<!-- World: Memry card language (surface brief .impeccable/surfaces/src-clipshelf-desktop.md, amendment 2026-10-10). Scope: src/ClipShelf.Desktop on Avalonia 11.3.22. Light and Dark token sets; BoxShadow literals stay light-tuned. -->
 
 ## Ground and surfaces
 
-- Window ground: muted system gray `#F5F5F7` (`SurfaceBackground`). Content sits on it, never edge to edge.
-- Floating cards: white `#FFFFFF` (`SurfaceCard`), corner radius 10, 1px `#E5E5EA` border, soft shadow `0 4 16 -4 #1A1A2E`. Used for settings groups, the history list, dialogs. Dialog cards use a deeper shadow `0 8 24 -8 #1A1A2E`.
-- Sidebar rail: white ground with a 1px right hairline. Dark text on light only.
+- Light: muted system gray `#F5F5F7` ground, white `#FFFFFF` cards. Dark: `#1C1C1E` ground, `#2C2C2E` cards, `#232327` rail. Both sets live in `Themes/Colors.axaml`, light at base level, dark in the theme dictionary; text and borders flip with them, accent stays `#3B82F6`.
+- Floating cards: corner radius 10, 1px subtle border, soft shadow `0 4 16 -4 #1A1A2E` (literal, tuned for light). Used for settings groups, the history list, dialogs (`0 8 24 -8` on dialogs).
 
 ## Accent (one job each)
 

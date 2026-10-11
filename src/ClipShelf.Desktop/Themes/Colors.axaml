@@ -1,7 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Light theme colors -->
+  <!-- Light values live at the base level and double as the fallback.
+       Dark overrides sit in the theme dictionary below. -->
   <SolidColorBrush x:Key="SurfaceBackground" Color="#F5F5F7" />
   <SolidColorBrush x:Key="SurfaceCard" Color="#FFFFFF" />
   <SolidColorBrush x:Key="SurfaceElevated" Color="#FFFFFF" />
@@ -32,7 +33,7 @@
 
   <SolidColorBrush x:Key="ShadowColor" Color="#1A1A2E" Opacity="0.12" />
 
-  <!-- Spacing tokens -->
+  <!-- Theme-independent tokens. -->
   <x:Double x:Key="FontSizeDisplay">32</x:Double>
   <x:Double x:Key="FontSizeHeadline">24</x:Double>
   <x:Double x:Key="FontSizeTitle2">20</x:Double>
@@ -45,5 +46,39 @@
   <x:Double x:Key="RadiusLarge">14</x:Double>
   <x:Double x:Key="RadiusXLarge">20</x:Double>
   <x:Double x:Key="RadiusFull">9999</x:Double>
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="SurfaceBackground" Color="#1C1C1E" />
+      <SolidColorBrush x:Key="SurfaceCard" Color="#2C2C2E" />
+      <SolidColorBrush x:Key="SurfaceElevated" Color="#3A3A3C" />
+      <SolidColorBrush x:Key="SurfaceOverlay" Color="#48484A" />
+
+      <SolidColorBrush x:Key="TextPrimary" Color="#F5F5F7" />
+      <SolidColorBrush x:Key="TextSecondary" Color="#AEAEB2" />
+      <SolidColorBrush x:Key="TextMuted" Color="#8E8E93" />
+      <SolidColorBrush x:Key="TextOnAccent" Color="#FFFFFF" />
+
+      <SolidColorBrush x:Key="AccentBrush" Color="#3B82F6" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#60A5FA" />
+      <SolidColorBrush x:Key="AccentPressBrush" Color="#2563EB" />
+      <SolidColorBrush x:Key="AccentSubtleBrush" Color="#333B82F6" />
+
+      <SolidColorBrush x:Key="BorderSubtle" Color="#38383A" />
+      <SolidColorBrush x:Key="BorderDefault" Color="#48484A" />
+
+      <SolidColorBrush x:Key="ErrorBrush" Color="#FF453A" />
+      <SolidColorBrush x:Key="ErrorSubtleBrush" Color="#3D2B2B" />
+      <SolidColorBrush x:Key="SuccessBrush" Color="#30D158" />
+
+      <SolidColorBrush x:Key="HoverOverlay" Color="#FFFFFF" Opacity="0.08" />
+      <SolidColorBrush x:Key="DividerBrush" Color="#38383A" />
+
+      <SolidColorBrush x:Key="SidebarBackground" Color="#232327" />
+      <SolidColorBrush x:Key="SidebarBorder" Color="#38383A" />
+
+      <SolidColorBrush x:Key="ShadowColor" Color="#000000" Opacity="0.30" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
 
 </ResourceDictionary>
