@@ -25,9 +25,9 @@ public sealed class LinuxRegistrationTests
         Maps<IKeyStore, LibsecretKeyStore>(services);
         Maps<IClipboardMonitor, X11ClipboardService>(services);
         Maps<IClipboardWriter, X11ClipboardService>(services);
-        Maps<IGlobalHotkey, LinuxHotkey>(services);
+        Maps<IGlobalHotkey, X11HotkeyService>(services);
         Maps<IPasteBack, LinuxPasteBack>(services);
-        Maps<IForegroundApp, LinuxForegroundApp>(services);
+        Maps<IForegroundApp, X11ForegroundApp>(services);
         Maps<ISystemTheme, LinuxSystemTheme>(services);
         Maps<ISessionEnd, LinuxSessionEnd>(services);
         Maps<IStartupRegistration, LinuxStartup>(services);

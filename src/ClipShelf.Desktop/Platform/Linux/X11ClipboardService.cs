@@ -133,6 +133,7 @@ public sealed class X11ClipboardService : IClipboardMonitor, IDisposable
     {
         _disposed = true;
         if (OperatingSystem.IsLinux() && _pump.IsAlive) _pump.Join(TimeSpan.FromSeconds(2));
+        FailQueued();
         _queue.Dispose();
     }
 
@@ -210,7 +211,14 @@ public sealed class X11ClipboardService : IClipboardMonitor, IDisposable
 
     private void FailQueued()
     {
-        _queue.CompleteAdding();
+        try
+        {
+            _queue.CompleteAdding();
+        }
+        catch (InvalidOperationException)
+        {
+            // Dispose already finished the queue.
+        }
     }
 
     private void Open()

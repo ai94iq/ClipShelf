@@ -17,10 +17,10 @@ public static class LinuxServiceRegistration
         services.AddSingleton<X11ClipboardService>();
         services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<X11ClipboardService>());
         services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<X11ClipboardService>());
-        services.AddSingleton<LinuxHotkey>();
-        services.AddSingleton<IGlobalHotkey>(sp => sp.GetRequiredService<LinuxHotkey>());
+        services.AddSingleton<X11HotkeyService>();
+        services.AddSingleton<IGlobalHotkey>(sp => sp.GetRequiredService<X11HotkeyService>());
         services.AddSingleton<IPasteBack, LinuxPasteBack>();
-        services.AddSingleton<IForegroundApp, LinuxForegroundApp>();
+        services.AddSingleton<IForegroundApp, X11ForegroundApp>();
         services.AddSingleton<IStartupRegistration, LinuxStartup>();
         services.AddSingleton<ISystemTheme, LinuxSystemTheme>();
         services.AddSingleton<ISessionEnd, LinuxSessionEnd>();
