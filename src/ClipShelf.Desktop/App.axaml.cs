@@ -78,7 +78,17 @@ public partial class App : Application
         if (OperatingSystem.IsLinux())
         {
             // No tray yet (Phase 3 task), so boot straight into history instead
-            // of waiting tray-first like on Windows.
+            // of waiting tray-first like on Windows. The hotkey toggles the
+            // flyout directly and follows settings changes.
+            // The lambdas defer execution; the analyzer cannot see this branch is Linux-only.
+#pragma warning disable CA1416
+            var flyout = _host.Services.GetRequiredService<LinuxFlyoutWindow>();
+            var hotkey = _host.Services.GetRequiredService<IGlobalHotkey>();
+            var settingsService = _host.Services.GetRequiredService<SettingsService>();
+            hotkey.Pressed += (_, _) => flyout.Toggle();
+            settingsService.Changed += (_, _) => hotkey.Register(settingsService.Current.Hotkey);
+            hotkey.Register(settingsService.Current.Hotkey);
+#pragma warning restore CA1416
             _host.Services.GetRequiredService<MainWindow>().ShowHistory();
         }
 

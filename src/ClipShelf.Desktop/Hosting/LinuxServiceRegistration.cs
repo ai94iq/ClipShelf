@@ -27,12 +27,13 @@ public static class LinuxServiceRegistration
         return services;
     }
 
-    // The windows are portable; only the tray and the flyout stay Windows-only
-    // until their Linux counterparts land.
+    // The windows are portable; the tray and the Windows flyout stay
+    // Windows-only until their Linux counterparts land.
     [SupportedOSPlatform("linux")]
     public static IServiceCollection AddLinuxUiServices(this IServiceCollection services)
     {
         services.AddSingleton<ClipboardPanelViewModel>();
+        services.AddSingleton<LinuxFlyoutWindow>();
         services.AddSingleton<HistoryPage>();
         services.AddSingleton<SettingsPage>();
         return services;

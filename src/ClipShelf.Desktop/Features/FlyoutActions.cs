@@ -1,19 +1,17 @@
-using System.Runtime.Versioning;
 using Avalonia.Input;
-using ClipShelf.Desktop.Views;
 
 namespace ClipShelf.Desktop.Features;
 
 // Keeps the flyout's keyboard and pointer commands together: arrows move the selection, Enter and
 // Ctrl+1..9 pick, Esc steps back, a left click picks, a right click opens the category menu.
-[SupportedOSPlatform("windows")]
+// Platform-neutral: the host supplies hiding and the paste-back target.
 internal sealed class FlyoutActions
 {
-    private readonly FlyoutWindow _window;
+    private readonly IFlyoutHost _window;
     private readonly ClipboardPanelViewModel _viewModel;
     private readonly IPasteBack _pasteBack;
 
-    public FlyoutActions(FlyoutWindow window, ClipboardPanelViewModel viewModel, IPasteBack pasteBack)
+    public FlyoutActions(IFlyoutHost window, ClipboardPanelViewModel viewModel, IPasteBack pasteBack)
     {
         _window = window;
         _viewModel = viewModel;
@@ -55,7 +53,7 @@ internal sealed class FlyoutActions
     public void ActivateItem(ClipItemViewModel item) => _viewModel.Activate(item);
 
     public Task OpenCategoryMenuAsync(ClipItemViewModel item) =>
-        CategoryMenu.ShowAsync(_window, item, _viewModel);
+        CategoryMenu.ShowAsync(_window.Anchor, item, _viewModel);
 
     private void OnItemActivated(object? sender, EventArgs e)
     {

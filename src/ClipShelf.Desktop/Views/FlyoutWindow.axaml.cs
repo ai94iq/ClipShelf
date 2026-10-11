@@ -13,7 +13,7 @@ namespace ClipShelf.Desktop.Views;
 // hides when it loses focus or the user presses Esc. Window work from inside the Win32 foreground
 // hook is deferred through the dispatcher; doing it inline once crashed the WinUI build.
 [SupportedOSPlatform("windows")]
-public sealed partial class FlyoutWindow : Window
+public sealed partial class FlyoutWindow : Window, IFlyoutHost
 {
     private ClipboardPanelViewModel? _viewModel;
     private FlyoutActions? _actions;
@@ -57,7 +57,9 @@ public sealed partial class FlyoutWindow : Window
         _viewModel.IsViewVisible = false;
     }
 
-    internal IntPtr PreviousWindowHandle => _previousWindow;
+    public IntPtr PreviousWindowHandle => _previousWindow;
+
+    Control IFlyoutHost.Anchor => this;
 
     public void Toggle()
     {

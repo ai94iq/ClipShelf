@@ -90,6 +90,11 @@ internal static class X11Native
     internal static extern int XFree(IntPtr data);
 
     [DllImport("libX11.so.6")]
+    internal static extern int XQueryPointer(
+        IntPtr display, IntPtr window, out IntPtr root, out IntPtr child,
+        out int rootX, out int rootY, out int windowX, out int windowY, out uint mask);
+
+    [DllImport("libX11.so.6")]
     internal static extern uint XKeysymToKeycode(IntPtr display, ulong keysym);
 
     [DllImport("libX11.so.6", CharSet = CharSet.Ansi)]
