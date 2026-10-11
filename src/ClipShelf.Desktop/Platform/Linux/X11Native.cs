@@ -89,6 +89,49 @@ internal static class X11Native
     [DllImport("libX11.so.6")]
     internal static extern int XFree(IntPtr data);
 
+    [DllImport("libX11.so.6")]
+    internal static extern uint XKeysymToKeycode(IntPtr display, ulong keysym);
+
+    [DllImport("libX11.so.6", CharSet = CharSet.Ansi)]
+    internal static extern ulong XStringToKeysym(string name);
+
+    [DllImport("libX11.so.6")]
+    internal static extern int XGrabKey(
+        IntPtr display, int keycode, uint modifiers, IntPtr grabWindow,
+        bool ownerEvents, int pointerMode, int keyboardMode);
+
+    [DllImport("libX11.so.6")]
+    internal static extern int XUngrabKey(IntPtr display, int keycode, uint modifiers, IntPtr grabWindow);
+
+    [DllImport("libX11.so.6")]
+    internal static extern int XSync(IntPtr display, bool discard);
+
+    internal delegate int XErrorHandler(ref XErrorEvent error);
+
+    internal static IntPtr XSetErrorHandler(XErrorHandler handler) =>
+        SetErrorHandlerByDelegate(handler);
+
+    internal static IntPtr XSetErrorHandler(IntPtr previous) =>
+        SetErrorHandlerByPointer(previous);
+
+    [DllImport("libX11.so.6", EntryPoint = "XSetErrorHandler")]
+    private static extern IntPtr SetErrorHandlerByDelegate(XErrorHandler handler);
+
+    [DllImport("libX11.so.6", EntryPoint = "XSetErrorHandler")]
+    private static extern IntPtr SetErrorHandlerByPointer(IntPtr previous);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct XErrorEvent
+    {
+        internal int Type;
+        internal IntPtr Display;
+        internal IntPtr ResourceId;
+        internal IntPtr Serial;
+        internal byte ErrorCode;
+        internal byte RequestCode;
+        internal byte MinorCode;
+    }
+
     internal static string ReadAtomName(IntPtr display, IntPtr atom)
     {
         var name = XGetAtomName(display, atom);
@@ -103,10 +146,10 @@ internal static class X11Native
         }
     }
 
-    internal static byte[]? ReadBytes(IntPtr display, IntPtr window, IntPtr property, IntPtr incrAtom)
+    internal static byte[]? ReadBytes(IntPtr display, IntPtr window, IntPtr property, IntPtr incrAtom, bool remove = true)
     {
         var status = XGetWindowProperty(display, window, property, IntPtr.Zero, (IntPtr)AllBytes,
-            true, (IntPtr)AnyPropertyType, out var type, out var format, out var count, out _,
+            remove, (IntPtr)AnyPropertyType, out var type, out var format, out var count, out _,
             out var value);
         if (status != 0 || value == IntPtr.Zero) return null;
         try
