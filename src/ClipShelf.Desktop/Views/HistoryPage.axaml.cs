@@ -13,6 +13,9 @@ public sealed partial class HistoryPage : UserControl
 {
     private long? _lastFilterValue;
 
+    // Parameterless constructor for XAML designer/loader
+    public HistoryPage() => InitializeComponent();
+
     public HistoryPage(ClipboardPanelViewModel viewModel)
     {
         ViewModel = viewModel;
@@ -25,48 +28,51 @@ public sealed partial class HistoryPage : UserControl
         GroupsList.AddHandler(Button.ClickEvent, OnRowClick);
     }
 
-    public ClipboardPanelViewModel ViewModel { get; }
+    public ClipboardPanelViewModel? ViewModel { get; }
 
     // True while the shell window shows this page; the shared view model's menu request must only
     // be handled by the window the user actually clicked in.
     public bool IsActive { get; set; }
 
     public Task LoadAsync() =>
-        Task.WhenAll(ViewModel.RefreshAsync(), ViewModel.RefreshCategoryFilterAsync());
+        Task.WhenAll(ViewModel!.RefreshAsync(), ViewModel!.RefreshCategoryFilterAsync());
 
     // Click-to-copy runs through the row's ActivateCommand; the accent wash belongs to the
     // keyboard selection and Select mode, not to the last clicked row.
-    private void OnRowClick(object? sender, RoutedEventArgs e) => ViewModel.SelectedItem = null;
+    private void OnRowClick(object? sender, RoutedEventArgs e) => ViewModel!.SelectedItem = null;
 
-    // Up and Down move the focus through the rows; Enter activates natively through the focused
-    // button; Esc leaves select mode or cancels the clear confirmation, the page stays open.
+    // Up and Down move the view-model selection (the accent wash follows); Enter picks the
+    // selection; Esc leaves select mode or cancels the clear confirmation, the page stays open.
+    // The filter combo keeps its own arrows.
     private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
     {
+        if (e.Source is ComboBox) return;
+
         if (e.Key is Key.Up or Key.Down)
         {
-            MoveRowFocus(e.Key == Key.Down ? 1 : -1);
+            ViewModel!.MoveSelection(e.Key == Key.Down ? 1 : -1);
+            FocusSelectedRow();
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Enter)
+        {
+            ViewModel!.ActivateSelected();
             e.Handled = true;
         }
         else if (e.Key == Key.Escape)
         {
-            e.Handled = ViewModel.DismissTransient();
+            e.Handled = ViewModel!.DismissTransient();
         }
     }
 
-    // Moves the keyboard focus to the next or previous row button, in visual order.
-    internal void MoveRowFocus(int delta)
+    // Moves keyboard focus to the selected row so screen readers and Enter stay on the same clip.
+    private void FocusSelectedRow()
     {
-        var rows = this.GetVisualDescendants()
-            .OfType<Button>()
-            .Where(button => button.Classes.Contains("clip-row"))
-            .ToList();
-        if (rows.Count == 0) return;
-
-        var focused = rows.FindIndex(button => button.IsFocused);
-        var next = focused < 0
-            ? (delta > 0 ? 0 : rows.Count - 1)
-            : Math.Clamp(focused + delta, 0, rows.Count - 1);
-        rows[next].Focus();
+        if (ViewModel!.SelectedItem is not { } selected) return;
+        this.GetVisualDescendants()
+            .OfType<ListBoxItem>()
+            .FirstOrDefault(row => ReferenceEquals(row.DataContext, selected))
+            ?.Focus();
     }
 
     // Loads the next page once the scroll is within 200 px of the bottom.
@@ -81,6 +87,7 @@ public sealed partial class HistoryPage : UserControl
 
     private void OnGroupsPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (e.Source is Button) return;
         if (!e.GetCurrentPoint(this).Properties.IsRightButtonPressed) return;
         if ((e.Source as Control)?.DataContext is not ClipItemViewModel item) return;
 
@@ -88,18 +95,27 @@ public sealed partial class HistoryPage : UserControl
         OnCategoryMenuRequested(item);
     }
 
+    // Left click picks the row, mirroring the WinUI ItemClick path. Action buttons handle
+    // their own release, so a release landing on one never reaches here.
+    private void OnGroupsPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Left) return;
+        if (e.Source is Button) return;
+        if ((e.Source as Control)?.DataContext is ClipItemViewModel item) ViewModel!.Activate(item);
+    }
+
     private void OnCategoryMenuRequested(ClipItemViewModel item)
     {
         // The view model is shared with the flyout; only this page's own clicks open its menu.
         if (!IsActive) return;
 
-        _ = CategoryMenu.ShowAsync(this, item, ViewModel);
+        _ = CategoryMenu.ShowAsync(this, item, ViewModel!);
     }
 
     // Picking a locked category asks for its password instead of showing an empty list.
     private async void OnCategoryFilterChanged(object? sender, SelectionChangedEventArgs e)
     {
-        var selected = ViewModel.SelectedCategoryFilter;
+        var selected = ViewModel!.SelectedCategoryFilter;
         if (selected is null || selected.Value == _lastFilterValue) return;
 
         if (!ViewModel.IsCategoryFilterLocked)
@@ -122,11 +138,11 @@ public sealed partial class HistoryPage : UserControl
 
     private async Task<bool> UnlockSelectedFilterAsync()
     {
-        if (ViewModel.SelectedCategoryFilter?.Value is not long id || !ViewModel.IsCategoryFilterLocked)
+        if (ViewModel!.SelectedCategoryFilter?.Value is not long id || !ViewModel.IsCategoryFilterLocked)
             return false;
 
         if (TopLevel.GetTopLevel(this) is not Window owner) return false;
-        if (!await PasswordDialogs.VerifyAsync(owner, ViewModel.VerifyLockPassword)) return false;
+        if (!await PasswordDialogs.VerifyAsync(owner, ViewModel!.VerifyLockPassword)) return false;
 
         await ViewModel.UnlockCategoryAsync(id);
         _lastFilterValue = id;

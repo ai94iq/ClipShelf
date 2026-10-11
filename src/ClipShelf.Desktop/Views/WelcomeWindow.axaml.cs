@@ -10,18 +10,28 @@ namespace ClipShelf.Desktop.Views;
 // Shown once, on the first run: explains the hotkey and that the app lives in the tray.
 public sealed partial class WelcomeWindow : Window
 {
-    public WelcomeWindow(SettingsService settings)
+    // Parameterless constructor for XAML designer/loader
+    public WelcomeWindow()
     {
-        WelcomeHotkey = Tr.Format("Welcome_Hotkey", HotkeyText.Format(settings.Current.Hotkey));
+        WelcomeHotkey = string.Empty;
         InitializeComponent();
         Title = Tr.Get("App_Name");
-        HotkeyLine.Text = WelcomeHotkey;
         ApplyCulture();
         SetAppIcon();
         Center();
     }
 
-    public string WelcomeHotkey { get; }
+    public WelcomeWindow(SettingsService settings)
+    {
+        WelcomeHotkey = Tr.Format("Welcome_Hotkey", HotkeyText.Format(settings.Current.Hotkey));
+        InitializeComponent();
+        Title = Tr.Get("App_Name");
+        ApplyCulture();
+        SetAppIcon();
+        Center();
+    }
+
+    public string WelcomeHotkey { get; private set; }
 
     private void OnOk(object? sender, RoutedEventArgs e) => Close();
 

@@ -1,4 +1,6 @@
 using SkiaSharp;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace ClipShelf.Desktop.Imaging;
 
@@ -30,7 +32,7 @@ public static class SkiaImageCodec
         var width = Math.Max(1, (int)Math.Round(bitmap.Width * scale));
         var height = Math.Max(1, (int)Math.Round(bitmap.Height * scale));
 
-        using var scaled = bitmap.Resize(new SKImageInfo(width, height), SKSamplingOptions.Default);
+        using var scaled = bitmap.Resize(new SKImageInfo(width, height), SKFilterQuality.High);
         if (scaled is null) return null;
 
         using var image = SKImage.FromBitmap(scaled);
@@ -106,28 +108,41 @@ public static class SkiaImageCodec
 
         var info = new SKImageInfo(width, absHeight, SKColorType.Bgra8888, SKAlphaType.Premul);
         var bitmap = new SKBitmap(info);
-        var destination = bitmap.GetPixelSpan();
+
+        // Allocate a pixel buffer and write to it, then install into the bitmap.
+        var pixelBytes = new byte[width * absHeight * 4];
 
         for (var y = 0; y < absHeight; y++)
         {
             var sourceRow = (topDown ? y : absHeight - 1 - y) * stride;
             var row = dib.AsSpan((int)(HeaderSize + sourceRow), (int)stride);
-            var target = destination.Slice(y * width * 4);
+            var targetOffset = y * width * 4;
 
             if (bitCount == 32)
             {
-                row[..(width * 4)].CopyTo(target);
+                row[..(width * 4)].CopyTo(pixelBytes.AsSpan(targetOffset, width * 4));
             }
             else
             {
                 for (var x = 0; x < width; x++)
                 {
-                    target[x * 4] = row[x * 3];
-                    target[x * 4 + 1] = row[x * 3 + 1];
-                    target[x * 4 + 2] = row[x * 3 + 2];
-                    target[x * 4 + 3] = 0xFF;
+                    pixelBytes[targetOffset + x * 4] = row[x * 3];
+                    pixelBytes[targetOffset + x * 4 + 1] = row[x * 3 + 1];
+                    pixelBytes[targetOffset + x * 4 + 2] = row[x * 3 + 2];
+                    pixelBytes[targetOffset + x * 4 + 3] = 0xFF;
                 }
             }
+        }
+
+        // Pin the array and install pixels via pointer.
+        GCHandle handle = GCHandle.Alloc(pixelBytes, GCHandleType.Pinned);
+        try
+        {
+            bitmap.InstallPixels(info, handle.AddrOfPinnedObject(), width * 4);
+        }
+        finally
+        {
+            handle.Free();
         }
 
         return bitmap;

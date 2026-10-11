@@ -51,12 +51,12 @@ public sealed partial class PasswordDialog : Window
         };
         CancelButton.Content = Tr.Get("Common_Cancel");
 
-        CurrentBox.PlaceholderText = Tr.Get("Password_Current");
-        NewBox.PlaceholderText = Tr.Get("Password_New");
-        ConfirmBox.PlaceholderText = Tr.Get("Password_Confirm");
-        CurrentBox.IsVisible = mode is Mode.Verify or Mode.Change or Mode.Remove;
-        NewBox.IsVisible = mode is Mode.Set or Mode.Change;
-        ConfirmBox.IsVisible = mode is Mode.Set or Mode.Change;
+        CurrentPasswordBox.Watermark = Tr.Get("Password_Current");
+        NewPasswordBox.Watermark = Tr.Get("Password_New");
+        ConfirmPasswordBox.Watermark = Tr.Get("Password_Confirm");
+        CurrentPasswordBox.IsVisible = mode is Mode.Verify or Mode.Change or Mode.Remove;
+        NewPasswordBox.IsVisible = mode is Mode.Set or Mode.Change;
+        ConfirmPasswordBox.IsVisible = mode is Mode.Set or Mode.Change;
 
         if (mode == Mode.Remove)
         {
@@ -64,9 +64,9 @@ public sealed partial class PasswordDialog : Window
             WarningText.IsVisible = true;
         }
 
-        CurrentBox.TextChanged += (_, _) => RefreshPrimary();
-        NewBox.TextChanged += (_, _) => RefreshPrimary();
-        ConfirmBox.TextChanged += (_, _) => RefreshPrimary();
+        CurrentPasswordBox.TextChanged += (_, _) => RefreshPrimary();
+        NewPasswordBox.TextChanged += (_, _) => RefreshPrimary();
+        ConfirmPasswordBox.TextChanged += (_, _) => RefreshPrimary();
         RefreshPrimary();
     }
 
@@ -75,12 +75,12 @@ public sealed partial class PasswordDialog : Window
     {
         PrimaryButton.IsEnabled = _mode switch
         {
-            Mode.Verify => !string.IsNullOrEmpty(CurrentBox.Text),
-            Mode.Set => !string.IsNullOrEmpty(NewBox.Text) && !string.IsNullOrEmpty(ConfirmBox.Text),
-            Mode.Change => !string.IsNullOrEmpty(CurrentBox.Text)
-                && !string.IsNullOrEmpty(NewBox.Text)
-                && !string.IsNullOrEmpty(ConfirmBox.Text),
-            _ => !string.IsNullOrEmpty(CurrentBox.Text),
+            Mode.Verify => !string.IsNullOrEmpty(CurrentPasswordBox.Text),
+            Mode.Set => !string.IsNullOrEmpty(NewPasswordBox.Text) && !string.IsNullOrEmpty(ConfirmPasswordBox.Text),
+            Mode.Change => !string.IsNullOrEmpty(CurrentPasswordBox.Text)
+                && !string.IsNullOrEmpty(NewPasswordBox.Text)
+                && !string.IsNullOrEmpty(ConfirmPasswordBox.Text),
+            _ => !string.IsNullOrEmpty(CurrentPasswordBox.Text),
         };
     }
 
@@ -119,7 +119,7 @@ public sealed partial class PasswordDialog : Window
         switch (_mode)
         {
             case Mode.Verify:
-                if (_verify!(CurrentBox.Text ?? string.Empty))
+                if (_verify != null && _verify(CurrentPasswordBox.Text ?? string.Empty))
                 {
                     _result.TrySetResult(true);
                     Close();
@@ -132,9 +132,9 @@ public sealed partial class PasswordDialog : Window
                 break;
 
             case Mode.Set:
-                if (TryCreate(NewBox.Text ?? string.Empty, ConfirmBox.Text ?? string.Empty, out var setError))
+                if (TryCreate(NewPasswordBox.Text ?? string.Empty, ConfirmPasswordBox.Text ?? string.Empty, out var setError))
                 {
-                    _result.TrySetResult(NewBox.Text);
+                    _result.TrySetResult(NewPasswordBox.Text);
                     Close();
                 }
                 else
@@ -145,14 +145,14 @@ public sealed partial class PasswordDialog : Window
                 break;
 
             case Mode.Change:
-                if (!_verify!(CurrentBox.Text ?? string.Empty))
+                if (_verify == null || !_verify(CurrentPasswordBox.Text ?? string.Empty))
                 {
                     ShowError(Tr.Get("Password_Wrong"));
                 }
                 else if (TryCreate(
-                    NewBox.Text ?? string.Empty, ConfirmBox.Text ?? string.Empty, out var changeError))
+                    NewPasswordBox.Text ?? string.Empty, ConfirmPasswordBox.Text ?? string.Empty, out var changeError))
                 {
-                    _result.TrySetResult(NewBox.Text);
+                    _result.TrySetResult(NewPasswordBox.Text);
                     Close();
                 }
                 else
@@ -163,7 +163,7 @@ public sealed partial class PasswordDialog : Window
                 break;
 
             default:
-                if (_verify!(CurrentBox.Text ?? string.Empty))
+                if (_verify != null && _verify(CurrentPasswordBox.Text ?? string.Empty))
                 {
                     _result.TrySetResult(true);
                     Close();
@@ -179,17 +179,23 @@ public sealed partial class PasswordDialog : Window
 
     private void OnCancelClick(object? sender, RoutedEventArgs e) => Close();
 
-    internal static async Task<bool> VerifyCoreAsync(Window owner, Func<string, bool> verify) =>
-        await RunAsync(owner, Mode.Verify, verify) is true;
+    internal static async Task<bool> VerifyAsync(Window owner, Func<string, bool> verify)
+    {
+        var result = await RunAsync(owner, Mode.Verify, verify);
+        return (bool)(result ?? false);
+    }
 
-    internal static async Task<string?> SetCoreAsync(Window owner) =>
+    internal static async Task<string?> SetAsync(Window owner) =>
         await RunAsync(owner, Mode.Set, null) as string;
 
-    internal static async Task<string?> ChangeCoreAsync(Window owner, Func<string, bool> verify) =>
+    internal static async Task<string?> ChangeAsync(Window owner, Func<string, bool> verify) =>
         await RunAsync(owner, Mode.Change, verify) as string;
 
-    internal static async Task<bool> ConfirmRemoveCoreAsync(Window owner, Func<string, bool> verify) =>
-        await RunAsync(owner, Mode.Remove, verify) is true;
+    internal static async Task<bool> ConfirmRemoveAsync(Window owner, Func<string, bool> verify)
+    {
+        var result = await RunAsync(owner, Mode.Remove, verify);
+        return (bool)(result ?? false);
+    }
 
     private static async Task<object?> RunAsync(Window owner, Mode mode, Func<string, bool>? verify)
     {
@@ -204,14 +210,14 @@ public sealed partial class PasswordDialog : Window
 public static class PasswordDialogs
 {
     public static Task<bool> VerifyAsync(Window owner, Func<string, bool> verify) =>
-        PasswordDialog.VerifyCoreAsync(owner, verify);
+        PasswordDialog.VerifyAsync(owner, verify);
 
     public static Task<string?> SetAsync(Window owner) =>
-        PasswordDialog.SetCoreAsync(owner);
+        PasswordDialog.SetAsync(owner);
 
     public static Task<string?> ChangeAsync(Window owner, Func<string, bool> verify) =>
-        PasswordDialog.ChangeCoreAsync(owner, verify);
+        PasswordDialog.ChangeAsync(owner, verify);
 
-    public static Task<bool> ConfirmRemoveAsync(Window owner, Func<string, bool> verify) =>
-        PasswordDialog.ConfirmRemoveCoreAsync(owner, verify);
+    internal static Task<bool> ConfirmRemoveAsync(Window owner, Func<string, bool> verify) =>
+        PasswordDialog.ConfirmRemoveAsync(owner, verify);
 }

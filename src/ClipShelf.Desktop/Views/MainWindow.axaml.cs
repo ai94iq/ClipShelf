@@ -35,6 +35,8 @@ public sealed partial class MainWindow : Window
         var page = _history.Value;
         ContentArea.Content = page;
         page.IsActive = true;
+        HistoryButton.Classes.Add("selected");
+        SettingsButton.Classes.Remove("selected");
         if (!IsVisible) Show();
         Activate();
         _ = page.LoadAsync();
@@ -45,6 +47,8 @@ public sealed partial class MainWindow : Window
         if (_history.IsValueCreated) _history.Value.IsActive = false;
         var page = _settings.Value;
         ContentArea.Content = page;
+        SettingsButton.Classes.Add("selected");
+        HistoryButton.Classes.Remove("selected");
         if (!IsVisible) Show();
         Activate();
         _ = page.LoadAsync();

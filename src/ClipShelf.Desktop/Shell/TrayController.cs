@@ -95,7 +95,10 @@ public sealed class TrayController : IHotkeyRegistration, IDisposable
         if (_settings.Current.LockOnExit) _locks.Reset();
         if (Application.Current?.ApplicationLifetime is
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.Shutdown();
+        {
+            // Ensure shutdown runs on UI thread
+            Dispatcher.UIThread.Post(() => desktop.Shutdown());
+        }
     }
 
     // A language or accent change needs a fresh process: start the new instance first, then let

@@ -15,12 +15,15 @@ namespace ClipShelf.Desktop.Views;
 [SupportedOSPlatform("windows")]
 public sealed partial class FlyoutWindow : Window
 {
-    private readonly ClipboardPanelViewModel _viewModel;
-    private readonly FlyoutActions _actions;
-    private readonly NativeMethods.WinEventProc _foregroundChanged;
+    private ClipboardPanelViewModel? _viewModel;
+    private FlyoutActions? _actions;
+    private NativeMethods.WinEventProc? _foregroundChanged;
     private readonly IntPtr _handle;
     private IntPtr _previousWindow = IntPtr.Zero;
     private bool _shown;
+
+    // Parameterless constructor for XAML designer/loader
+    public FlyoutWindow() => InitializeComponent();
 
     public FlyoutWindow(ClipboardPanelViewModel viewModel, IPasteBack pasteBack)
     {
@@ -67,14 +70,14 @@ public sealed partial class FlyoutWindow : Window
         if (!_shown) return;
 
         _shown = false;
-        _viewModel.IsViewVisible = false;
+        _viewModel!.IsViewVisible = false;
         PanelFrame.RestoreForeground(this, _previousWindow);
         PanelFrame.MoveOffscreen(this);
     }
 
     private void ShowFlyout()
     {
-        _viewModel.ResetTransientState();
+        _viewModel!.ResetTransientState();
         _viewModel.IsViewVisible = true;
         _previousWindow = NativeMethods.GetForegroundWindow();
         _shown = true;
@@ -89,21 +92,23 @@ public sealed partial class FlyoutWindow : Window
         _ = _viewModel.RefreshQuietAsync();
     }
 
-    private void OnPreviewKeyDown(object? sender, KeyEventArgs e) => _actions.OnKeyDown(e);
+    private void OnPreviewKeyDown(object? sender, KeyEventArgs e) => _actions!.OnKeyDown(e);
 
     private void OnClipListPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (e.InitialPressMouseButton != MouseButton.Left) return;
-        if (ItemAt(e.Source) is { } item) _actions.ActivateItem(item);
+        if (e.Source is Button) return;
+        if (ItemAt(e.Source) is { } item) _actions!.ActivateItem(item);
     }
 
     private void OnClipListPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (e.Source is Button) return;
         if (!e.GetCurrentPoint(this).Properties.IsRightButtonPressed) return;
         if (ItemAt(e.Source) is not { } item) return;
 
         e.Handled = true;
-        _ = _actions.OpenCategoryMenuAsync(item);
+        _ = _actions!.OpenCategoryMenuAsync(item);
     }
 
     private static ClipItemViewModel? ItemAt(object? source) =>

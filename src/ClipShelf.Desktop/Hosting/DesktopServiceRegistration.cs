@@ -41,7 +41,7 @@ public static class DesktopServiceRegistration
 
         if (OperatingSystem.IsWindows())
         {
-            services.AddTransient<ClipboardPanelViewModel>();
+            services.AddSingleton<ClipboardPanelViewModel>();
             services.AddSingleton<FlyoutWindow>();
             services.AddSingleton<HistoryPage>();
             services.AddSingleton<SettingsPage>();
