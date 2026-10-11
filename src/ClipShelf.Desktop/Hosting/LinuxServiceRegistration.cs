@@ -14,9 +14,9 @@ public static class LinuxServiceRegistration
     public static IServiceCollection AddLinuxPlatformServices(this IServiceCollection services)
     {
         services.AddSingleton<IKeyStore, LibsecretKeyStore>();
-        services.AddSingleton<LinuxClipboard>();
-        services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<LinuxClipboard>());
-        services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<LinuxClipboard>());
+        services.AddSingleton<X11ClipboardService>();
+        services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<X11ClipboardService>());
+        services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<X11ClipboardService>());
         services.AddSingleton<LinuxHotkey>();
         services.AddSingleton<IGlobalHotkey>(sp => sp.GetRequiredService<LinuxHotkey>());
         services.AddSingleton<IPasteBack, LinuxPasteBack>();

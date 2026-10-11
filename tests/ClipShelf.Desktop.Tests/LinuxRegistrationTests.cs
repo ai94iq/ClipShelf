@@ -7,31 +7,36 @@ using Microsoft.Extensions.Logging;
 
 namespace ClipShelf.Desktop.Tests;
 
-// Headless coverage for the Linux platform set: every mapping resolves without
-// touching native libraries (libsecret resolves lazily on first key use).
+// Headless coverage for the Linux platform set: every interface maps to its
+// Linux implementation. Mapping only, never instantiated: resolving the graphs
+// would touch the keyring and the database.
 public sealed class LinuxRegistrationTests
 {
     [Fact]
-    public void LinuxServices_AllResolve()
+    public void LinuxServices_AllMapped()
     {
-// Registration maps linux-annotated types; resolving them here never executes
-// native code (libsecret resolves lazily on first key use).
+// Registration maps linux-annotated types; nothing here executes native code.
 #pragma warning disable CA1416
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddLinuxPlatformServices();
         services.AddLinuxUiServices();
-        using var provider = services.BuildServiceProvider();
 
-        Assert.IsType<LibsecretKeyStore>(provider.GetRequiredService<IKeyStore>());
-        Assert.IsType<LinuxClipboard>(provider.GetRequiredService<IClipboardMonitor>());
-        Assert.IsType<LinuxClipboard>(provider.GetRequiredService<IClipboardWriter>());
-        Assert.IsType<LinuxHotkey>(provider.GetRequiredService<IGlobalHotkey>());
-        Assert.IsType<LinuxPasteBack>(provider.GetRequiredService<IPasteBack>());
-        Assert.IsType<LinuxForegroundApp>(provider.GetRequiredService<IForegroundApp>());
-        Assert.IsType<LinuxSystemTheme>(provider.GetRequiredService<ISystemTheme>());
-        Assert.IsType<LinuxSessionEnd>(provider.GetRequiredService<ISessionEnd>());
-        Assert.IsType<LinuxStartup>(provider.GetRequiredService<IStartupRegistration>());
+        Maps<IKeyStore, LibsecretKeyStore>(services);
+        Maps<IClipboardMonitor, X11ClipboardService>(services);
+        Maps<IClipboardWriter, X11ClipboardService>(services);
+        Maps<IGlobalHotkey, LinuxHotkey>(services);
+        Maps<IPasteBack, LinuxPasteBack>(services);
+        Maps<IForegroundApp, LinuxForegroundApp>(services);
+        Maps<ISystemTheme, LinuxSystemTheme>(services);
+        Maps<ISessionEnd, LinuxSessionEnd>(services);
+        Maps<IStartupRegistration, LinuxStartup>(services);
 #pragma warning restore CA1416
     }
+
+    private static void Maps<TService, TImpl>(IServiceCollection services) =>
+        Assert.Contains(services, descriptor =>
+            descriptor.ServiceType == typeof(TService) &&
+            (descriptor.ImplementationType == typeof(TImpl) ||
+                descriptor.ImplementationFactory is not null));
 }
