@@ -1,21 +1,38 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Common"
         x:Class="ClipShelf.Desktop.Views.RenameDialog"
-        Width="320"
+        Title="{l:Tr Key=Category_RenameTitle}"
+        Width="440"
         SizeToContent="Height"
-        CanResize="False"
-        ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
-        Background="{DynamicResource GridPaperBrush}">
-  <StackPanel Margin="16" Spacing="12">
-    <TextBox x:Name="NameBox" />
-    <TextBlock x:Name="ErrorText"
-               TextWrapping="Wrap"
-               Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-               IsVisible="False" />
-    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-      <Button x:Name="PrimaryButton" Click="OnPrimaryClick" />
-      <Button x:Name="CancelButton" Click="OnCancelClick" />
+        CanResize="False"
+        Background="{DynamicResource SurfaceBackground}">
+  <Border Background="{DynamicResource SurfaceCard}"
+          BorderBrush="{DynamicResource BorderSubtle}"
+          BorderThickness="1"
+          CornerRadius="10"
+          BoxShadow="0 8 24 -8 #1A1A2E"
+          Margin="16">
+    <StackPanel Margin="24" Spacing="20">
+      <TextBlock Text="{l:Tr Key=Category_RenameTitle}" FontSize="20" FontWeight="600" />
+
+      <TextBox x:Name="NameBox"
+               Watermark="{l:Tr Key=Category_NewPlaceholder}"
+               Margin="0,8,0,0" />
+
+      <TextBlock x:Name="ErrorText"
+                 FontSize="12"
+                 Foreground="{DynamicResource ErrorBrush}"
+                 TextWrapping="Wrap"
+                 IsVisible="False" />
+
+      <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" Margin="0,16,0,0">
+        <Button x:Name="CancelButton" Content="{l:Tr Key=Common_Cancel}" Width="120" Height="40"
+                Click="OnCancelClick" />
+        <Button x:Name="PrimaryButton" Content="{l:Tr Key=Category_Create}" Width="120" Height="40"
+                Click="OnPrimaryClick" />
+      </StackPanel>
     </StackPanel>
-  </StackPanel>
+  </Border>
 </Window>

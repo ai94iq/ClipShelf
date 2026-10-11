@@ -1,23 +1,40 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="using:ClipShelf.Desktop.Common"
+        xmlns:controls="using:ClipShelf.Desktop.Controls"
+        xmlns:views="using:ClipShelf.Desktop.Views"
         x:Class="ClipShelf.Desktop.Views.WelcomeWindow"
-        Title="ClipShelf"
-        Width="460"
-        Height="360"
+        x:DataType="views:WelcomeWindow"
+        x:CompileBindings="False"
+        Title="{l:Tr Key=App_Name}"
+        Width="440"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
         CanResize="False"
-        ShowInTaskbar="False"
-        Background="{DynamicResource GridPaperBrush}">
-  <StackPanel Margin="24" Spacing="14" VerticalAlignment="Center">
-    <TextBlock Text="{l:Tr Key=App_Welcome}" Classes="grid-title" />
-    <TextBlock x:Name="HotkeyLine" TextWrapping="Wrap" />
-    <TextBlock Text="{l:Tr Key=Welcome_Tray}"
-               TextWrapping="Wrap"
-               Foreground="{DynamicResource GridMutedBrush}" />
-    <Button Content="{l:Tr Key=Welcome_Ok}"
-            Classes="accent"
-            Click="OnOk"
-            Margin="0,8,0,0"
-            HorizontalAlignment="{l:RtlAlign Desired=Right}" />
-  </StackPanel>
+        Background="{DynamicResource SurfaceBackground}">
+  <Border Background="{DynamicResource SurfaceCard}"
+          BorderBrush="{DynamicResource BorderSubtle}"
+          BorderThickness="1"
+          CornerRadius="10"
+          BoxShadow="0 8 24 -8 #1A1A2E"
+          Margin="16">
+    <StackPanel Margin="24" Spacing="14" VerticalAlignment="Center">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <Border Width="56" Height="56" CornerRadius="14" Background="{DynamicResource AccentSubtleBrush}">
+          <controls:AppIcon Kind="Clipboard" Width="28" Height="28" Foreground="{DynamicResource AccentBrush}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel VerticalAlignment="Center" Spacing="4">
+          <TextBlock Text="{l:Tr Key=App_Welcome}" FontSize="20" FontWeight="600" />
+          <TextBlock Text="{Binding WelcomeHotkey}" FontSize="14" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" />
+        </StackPanel>
+      </StackPanel>
+      <TextBlock Text="{l:Tr Key=Welcome_Tray}"
+                 FontSize="14"
+                 TextWrapping="Wrap"
+                 Foreground="{DynamicResource TextSecondary}" />
+      <Button Content="{l:Tr Key=Welcome_Ok}" Width="200" Height="40"
+              HorizontalAlignment="Right" Click="OnOk" Margin="0,8,0,0" />
+    </StackPanel>
+  </Border>
 </Window>

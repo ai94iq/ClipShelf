@@ -6,40 +6,66 @@
         Title="ClipShelf"
         Width="980"
         Height="640"
-        Background="{DynamicResource GridPaperBrush}">
-  <Grid ColumnDefinitions="64,*">
-    <Border Grid.Column="0" Background="{DynamicResource GridRailBrush}">
-      <StackPanel Margin="0,14" Spacing="6">
+        Background="{DynamicResource SurfaceBackground}">
+  <Grid ColumnDefinitions="72,*">
+    <!-- Sidebar -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource SidebarBackground}"
+            BorderBrush="{DynamicResource SidebarBorder}"
+            BorderThickness="0,0,1,0">
+      <StackPanel Margin="0,20,0,0" Spacing="4">
+        <!-- Logo/Brand -->
         <TextBlock Text="CS"
-                   Classes="grid-title"
-                   Foreground="{DynamicResource GridRailInkBrush}"
+                   FontSize="24" FontWeight="600"
+                   Foreground="{DynamicResource AccentBrush}"
                    HorizontalAlignment="Center"
-                   Margin="0,0,0,8" />
+                   Margin="0,0,0,24" />
+
+        <!-- Navigation -->
         <Button x:Name="HistoryButton"
+                Classes="nav"
                 Click="OnHistoryClick"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Stretch"
                 Background="Transparent"
                 BorderThickness="0"
-                Padding="10,8"
+                Padding="16,12"
+                HorizontalContentAlignment="Left"
+                Margin="8,0"
                 ToolTip.Tip="{l:Tr Key=History_Title}"
                 AutomationProperties.Name="{l:Tr Key=History_Title}">
-          <controls:AppIcon Kind="Clipboard" Width="20" Height="20" Foreground="{DynamicResource GridRailInkBrush}" />
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left">
+            <controls:AppIcon Kind="Clipboard" Width="20" Height="20" />
+            <TextBlock Text="{l:Tr Key=History_Title}"
+                       FontSize="14"
+                       VerticalAlignment="Center" />
+          </StackPanel>
         </Button>
+
         <Button x:Name="SettingsButton"
+                Classes="nav"
                 Click="OnSettingsClick"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Stretch"
                 Background="Transparent"
                 BorderThickness="0"
-                Padding="10,8"
+                Padding="16,12"
+                HorizontalContentAlignment="Left"
+                Margin="8,0"
                 ToolTip.Tip="{l:Tr Key=Nav_Settings}"
                 AutomationProperties.Name="{l:Tr Key=Nav_Settings}">
-          <controls:AppIcon Kind="Settings" Width="20" Height="20" Foreground="{DynamicResource GridRailInkBrush}" />
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Left">
+            <controls:AppIcon Kind="Settings" Width="20" Height="20" />
+            <TextBlock Text="{l:Tr Key=Nav_Settings}"
+                       FontSize="14"
+                       VerticalAlignment="Center" />
+          </StackPanel>
         </Button>
       </StackPanel>
     </Border>
+
+    <!-- Main content area -->
     <Grid Grid.Column="1">
-      <controls:GridBackdrop />
-      <ContentControl x:Name="ContentArea" />
+      <Border Background="{DynamicResource SurfaceBackground}" />
+      <ContentControl x:Name="ContentArea" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
     </Grid>
   </Grid>
 </Window>
