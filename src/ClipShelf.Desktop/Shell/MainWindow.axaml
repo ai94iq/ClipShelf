@@ -6,9 +6,7 @@
         Title="{l:Tr Key=App_Name}"
         Icon="/Assets/app.ico"
         Width="940" Height="660" MinWidth="560" MinHeight="400"
-        WindowStartupLocation="CenterScreen"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaTitleBarHeightHint="48">
+        WindowStartupLocation="CenterScreen">
   <Window.Styles>
     <!-- Rail item: icon only, a hover wash, the accent tint when selected. -->
     <Style Selector="RadioButton.rail">
@@ -38,41 +36,37 @@
     </Style>
   </Window.Styles>
 
-  <Grid RowDefinitions="48,*">
-    <!-- Title row in the caption area; the OS draws the caption buttons. -->
-    <Grid Grid.Row="0" Margin="16,0">
-      <TextBlock Text="{l:Tr Key=App_Name}"
-                 VerticalAlignment="Center"
-                 FontSize="12"
-                 IsHitTestVisible="False"
-                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+  <!-- The OS draws the title bar (app name, caption buttons) on every platform; Avalonia's
+       drawn caption doubled the title and added a fullscreen button. -->
+  <!-- The OS draws the title bar (app name, caption buttons) on every platform; Avalonia's
+       drawn caption doubled the title and added a fullscreen button. -->
+  <Grid ColumnDefinitions="48,*">
+    <!-- Compact rail: History on top, Settings in the footer. -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="4,8,4,8">
+      <RadioButton x:Name="HistoryButton"
+                   Classes="rail" GroupName="Nav"
+                   ToolTip.Tip="{l:Tr Key=Nav_History}"
+                   AutomationProperties.Name="{l:Tr Key=Nav_History}">
+        <controls:AppIcon Kind="Document" />
+      </RadioButton>
+      <RadioButton x:Name="SettingsButton"
+                   Grid.Row="2"
+                   Classes="rail" GroupName="Nav"
+                   ToolTip.Tip="{l:Tr Key=Nav_Settings}"
+                   AutomationProperties.Name="{l:Tr Key=Nav_Settings}">
+        <controls:AppIcon Kind="Settings" />
+      </RadioButton>
+    </Grid>
+
+    <!-- Content column: the Settings search (Settings only) above the section. -->
+    <Grid Grid.Column="1" RowDefinitions="Auto,*">
       <TextBox x:Name="SearchBox"
-               Width="360" Height="32"
-               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Width="360" Height="32" Margin="0,8,0,0"
+               HorizontalAlignment="Center"
                PlaceholderText="{l:Tr Key=Settings_SearchPlaceholder}"
                AutomationProperties.Name="{l:Tr Key=Settings_SearchPlaceholder}"
                IsVisible="False" />
-    </Grid>
-
-    <Grid Grid.Row="1" ColumnDefinitions="48,*">
-      <!-- Compact rail: History on top, Settings in the footer. -->
-      <Grid RowDefinitions="Auto,*,Auto" Margin="4,0,4,8">
-        <RadioButton x:Name="HistoryButton"
-                     Classes="rail" GroupName="Nav"
-                     ToolTip.Tip="{l:Tr Key=Nav_History}"
-                     AutomationProperties.Name="{l:Tr Key=Nav_History}">
-          <controls:AppIcon Kind="Document" />
-        </RadioButton>
-        <RadioButton x:Name="SettingsButton"
-                     Grid.Row="2"
-                     Classes="rail" GroupName="Nav"
-                     ToolTip.Tip="{l:Tr Key=Nav_Settings}"
-                     AutomationProperties.Name="{l:Tr Key=Nav_Settings}">
-          <controls:AppIcon Kind="Settings" />
-        </RadioButton>
-      </Grid>
-
-      <ContentControl x:Name="Section" Grid.Column="1" Margin="24,8,24,24" />
+      <ContentControl x:Name="Section" Grid.Row="1" Margin="24,8,24,24" />
     </Grid>
   </Grid>
 </Window>

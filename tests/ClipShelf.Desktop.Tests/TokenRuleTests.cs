@@ -35,8 +35,9 @@ public sealed class TokenRuleTests
     {
         Application.Current!.TryGetResource("ClipShelfAccentSubtleBrush", ThemeVariant.Light, out var light);
         Application.Current!.TryGetResource("ClipShelfAccentSubtleBrush", ThemeVariant.Dark, out var dark);
-        Assert.NotEqual(Assert.IsType<ISolidColorBrush>(light, exactMatch: false).Color,
-            Assert.IsType<ISolidColorBrush>(dark, exactMatch: false).Color);
+        var lightBrush = Assert.IsType<ISolidColorBrush>(light, exactMatch: false);
+        var darkBrush = Assert.IsType<ISolidColorBrush>(dark, exactMatch: false);
+        Assert.NotEqual((lightBrush.Color, lightBrush.Opacity), (darkBrush.Color, darkBrush.Opacity));
     });
 
     [Fact]

@@ -9,12 +9,12 @@ surface follow its WinUI file on `main`; see the
 - `<FluentTheme />` is the only theme and the only token source. Views reference Fluent keys
   through `{DynamicResource}` so light, dark and the accent follow the app without a restart.
 - The accent is Fluent's `SystemAccentColor` family, set from Settings by `ThemeService`.
-- Literal colors live only in `Themes/Exceptions.axaml`, per theme variant, each with a comment
-  naming the Fluent gap it fills:
+- ClipShelf-owned resources live only in `Themes/Exceptions.axaml`, per theme variant, each with
+  a comment naming the Fluent gap it fills:
 
 | Key | Job | Why it is an exception |
 |---|---|---|
-| `ClipShelfAccentSubtleBrush` | selected rail item, selected or checked row | Fluent has no translucent accent tint |
+| `ClipShelfAccentSubtleBrush` | selected rail item, selected or checked row | Fluent has no translucent accent tint; it is `SystemAccentColor` at 15% (light) / 25% (dark), so it follows the chosen accent |
 | `ClipShelfCardShadow` | settings groups, history list, dialogs | Fluent has no card elevation shadow |
 
 - A color that looks wrong is fixed by choosing a different Fluent key or by an exceptions entry,
@@ -28,5 +28,11 @@ literal color appears outside `Exceptions.axaml`.
 
 ## Not decided yet
 
-Full black surfaces (renders as Dark until the dark pass, batch 8) and the dark tint value, which
-is a first pick.
+Full black surfaces (renders as Dark until the dark pass, batch 8).
+
+## Window chrome
+
+The OS draws the title bar on every platform. Avalonia 12's own drawn caption (with
+`ExtendClientAreaToDecorationsHint`) doubled the title and added a fullscreen button, so the
+title row from the WinUI app is not reproduced; the Settings search sits at the top of the
+window instead.

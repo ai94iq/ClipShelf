@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
@@ -80,6 +81,21 @@ public sealed class MainWindowTests
         window.Close();
 
         Assert.True(closed);
+    });
+
+    [Fact]
+    public Task The_rail_stays_put_when_the_search_box_appears() => Ui.Run(() =>
+    {
+        var window = new MainWindow(new AppLifetime());
+        var history = window.FindControl<RadioButton>("HistoryButton")!;
+        window.ShowHistory();
+        window.UpdateLayout();
+        var before = history.TranslatePoint(default, window);
+
+        window.ShowSettings();
+        window.UpdateLayout();
+
+        Assert.Equal(before, history.TranslatePoint(default, window));
     });
 
     [Theory]
