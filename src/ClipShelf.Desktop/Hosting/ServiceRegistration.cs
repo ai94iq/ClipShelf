@@ -41,6 +41,7 @@ public static class ServiceRegistration
     public static IServiceCollection AddUiServices(this IServiceCollection services)
     {
         services.AddSingleton<AppLifetime>();
+        services.AddSingleton<MainWindow>();
         services.AddSingleton<AppShellService>();
         services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<AppShellService>());
         return services;

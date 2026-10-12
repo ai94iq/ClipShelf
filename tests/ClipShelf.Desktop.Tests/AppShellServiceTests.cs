@@ -12,6 +12,8 @@ public sealed class AppShellServiceTests
 {
     private readonly ICategoryLockService _locks = Substitute.For<ICategoryLockService>();
     private readonly IGlobalHotkey _hotkey = Substitute.For<IGlobalHotkey>();
+    private readonly AppLifetime _lifetime = new();
+    private MainWindow? _window;
 
     [Fact]
     public void Exit_resets_the_locks_before_it_asks_the_app_to_exit()
@@ -64,10 +66,44 @@ public sealed class AppShellServiceTests
         Assert.Equal(settings.Hotkey, shell.RegisteredHotkey);
     }
 
+    [Fact]
+    public Task Exit_marks_the_app_as_exiting_before_it_asks_to_exit() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+        var exitingWhenAsked = false;
+        shell.ExitRequested += (_, _) => exitingWhenAsked = _lifetime.IsExiting;
+
+        shell.Exit();
+
+        Assert.True(exitingWhenAsked);
+    });
+
+    [Fact]
+    public Task The_tray_history_item_opens_the_window_on_history() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+
+        shell.ShowHistory();
+
+        Assert.True(_window!.IsVisible);
+        Assert.False(_window.IsSettings);
+    });
+
+    [Fact]
+    public Task The_tray_settings_item_opens_the_window_on_settings() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+
+        shell.ShowSettings();
+
+        Assert.True(_window!.IsSettings);
+    });
+
     private AppShellService Create(AppSettings settings) =>
         Create(new SettingsService(Substitute.For<ISettingsStore>(), settings));
 
     private AppShellService Create(SettingsService settings) =>
-        new(_hotkey, settings, Substitute.For<ISystemTheme>(), _locks, new AppLifetime(),
+        new(_hotkey, settings, Substitute.For<ISystemTheme>(), _locks, _lifetime,
+            new Lazy<MainWindow>(() => _window = new MainWindow(_lifetime)),
             NullLogger<AppShellService>.Instance);
 }

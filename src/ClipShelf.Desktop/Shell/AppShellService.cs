@@ -14,6 +14,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     private readonly SettingsService _settings;
     private readonly ISystemTheme _systemTheme;
     private readonly ICategoryLockService _locks;
+    private readonly Lazy<MainWindow> _mainWindow;
     private readonly ILogger<AppShellService> _log;
     private readonly HotkeyRegistrationState _hotkeyState = new();
     private TrayIcon? _tray;
@@ -26,12 +27,14 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         ISystemTheme systemTheme,
         ICategoryLockService locks,
         AppLifetime lifetime,
+        Lazy<MainWindow> mainWindow,
         ILogger<AppShellService> log)
     {
         _hotkey = hotkey;
         _settings = settings;
         _systemTheme = systemTheme;
         _locks = locks;
+        _mainWindow = mainWindow;
         _log = log;
         Lifetime = lifetime;
 
@@ -48,16 +51,17 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public event EventHandler? ExitRequested;
 
-    // ponytail: the windows arrive in batches 3-4; until then these only log.
-    public void ShowHistory() => _log.LogInformation("History requested");
+    public void ShowHistory() => _mainWindow.Value.ShowHistory();
 
-    public void ShowSettings() => _log.LogInformation("Settings requested");
+    public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
+    // ponytail: the flyout arrives in batch 4; until then this only logs.
     public void TogglePanel() => _log.LogInformation("Flyout toggle requested");
 
     public void Exit()
     {
         if (_settings.Current.LockOnExit) _locks.Reset();
+        Lifetime.IsExiting = true;           // windows close for real from here on
         ExitRequested?.Invoke(this, EventArgs.Empty);
     }
 
