@@ -15,6 +15,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     private readonly ISystemTheme _systemTheme;
     private readonly ICategoryLockService _locks;
     private readonly Lazy<MainWindow> _mainWindow;
+    private readonly Lazy<FlyoutWindow> _flyout;
     private readonly ILogger<AppShellService> _log;
     private readonly HotkeyRegistrationState _hotkeyState = new();
     private TrayIcon? _tray;
@@ -28,6 +29,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         ICategoryLockService locks,
         AppLifetime lifetime,
         Lazy<MainWindow> mainWindow,
+        Lazy<FlyoutWindow> flyout,
         ILogger<AppShellService> log)
     {
         _hotkey = hotkey;
@@ -35,6 +37,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         _systemTheme = systemTheme;
         _locks = locks;
         _mainWindow = mainWindow;
+        _flyout = flyout;
         _log = log;
         Lifetime = lifetime;
 
@@ -55,8 +58,24 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
-    // ponytail: the flyout arrives in batch 4; until then this only logs.
-    public void TogglePanel() => _log.LogInformation("Flyout toggle requested");
+    public void TogglePanel() => Flyout.Toggle();
+
+    // Built on first use; the flyout's "open full history" hands over to the main window.
+    private FlyoutWindow Flyout
+    {
+        get
+        {
+            if (_flyout.IsValueCreated) return _flyout.Value;
+
+            var flyout = _flyout.Value;
+            flyout.ViewModel.OpenHistoryRequested += (_, _) =>
+            {
+                flyout.HideFlyout();
+                ShowHistory();
+            };
+            return flyout;
+        }
+    }
 
     public void Exit()
     {
@@ -78,6 +97,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         // is not wired; add it with a click-timing check if the setting must keep working.
         _tray.Clicked += (_, _) => TogglePanel();
         TrayIcon.SetIcons(Application.Current!, [_tray]);
+        _ = Flyout;              // build the flyout now so the first hotkey press opens it at once
         ApplyTraySettings();
         _systemTheme.Changed += OnSystemThemeChanged;
     }

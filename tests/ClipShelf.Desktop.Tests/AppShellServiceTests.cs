@@ -14,6 +14,7 @@ public sealed class AppShellServiceTests
     private readonly IGlobalHotkey _hotkey = Substitute.For<IGlobalHotkey>();
     private readonly AppLifetime _lifetime = new();
     private MainWindow? _window;
+    private FlyoutTestKit? _flyout;
 
     [Fact]
     public void Exit_resets_the_locks_before_it_asks_the_app_to_exit()
@@ -99,11 +100,37 @@ public sealed class AppShellServiceTests
         Assert.True(_window!.IsSettings);
     });
 
+    [Fact]
+    public Task The_hotkey_toggles_the_flyout() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+
+        shell.TogglePanel();
+        Assert.True(_flyout!.Window.IsOpen);
+
+        shell.TogglePanel();
+        Assert.False(_flyout.Window.IsOpen);
+    });
+
+    [Fact]
+    public Task Open_full_history_closes_the_flyout_and_opens_history() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+        shell.TogglePanel();
+
+        _flyout!.ViewModel.OpenHistoryCommand.Execute(null);
+
+        Assert.False(_flyout.Window.IsOpen);
+        Assert.True(_window!.IsVisible);
+        Assert.False(_window.IsSettings);
+    });
+
     private AppShellService Create(AppSettings settings) =>
         Create(new SettingsService(Substitute.For<ISettingsStore>(), settings));
 
     private AppShellService Create(SettingsService settings) =>
         new(_hotkey, settings, Substitute.For<ISystemTheme>(), _locks, _lifetime,
             new Lazy<MainWindow>(() => _window = new MainWindow(_lifetime)),
+            new Lazy<FlyoutWindow>(() => (_flyout = new FlyoutTestKit()).Window),
             NullLogger<AppShellService>.Instance);
 }

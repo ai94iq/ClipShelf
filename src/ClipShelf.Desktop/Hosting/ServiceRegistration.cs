@@ -34,6 +34,7 @@ public static class ServiceRegistration
         services.AddSingleton<IStartupRegistration, StartupRegistration>();
         services.AddSingleton<ISystemTheme, SystemThemeService>();
         services.AddSingleton<ISessionEnd, SessionWatcher>();
+        services.AddSingleton<IFlyoutPlatform, WindowsFlyoutPlatform>();
         return services;
     }
 
@@ -42,6 +43,9 @@ public static class ServiceRegistration
     {
         services.AddSingleton<AppLifetime>();
         services.AddSingleton<MainWindow>();
+        services.AddTransient<ClipboardPanelViewModel>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<FlyoutWindow>();
         services.AddSingleton<AppShellService>();
         services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<AppShellService>());
         return services;
