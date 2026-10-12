@@ -11,40 +11,53 @@ using NSubstitute;
 
 namespace ClipShelf.Desktop.Tests;
 
-// A flyout over a real view model with faked storage, clipboard and platform.
-internal sealed class FlyoutTestKit
+// A real ClipboardPanelViewModel over a faked store and clipboard. The store returns whatever
+// the test added, the way the real one would, and reports StoredTotal as its count.
+internal class ViewModelKit
+{
+    private readonly List<ClipListItem> _stored = [];
+
+    public IClipboardWriter Clipboard { get; } = Substitute.For<IClipboardWriter>();
+    public IClipRepository Repository { get; } = Substitute.For<IClipRepository>();
+    public ICategoryRepository Categories { get; } = Substitute.For<ICategoryRepository>();
+    public ClipboardPanelViewModel ViewModel { get; }
+    public int? StoredTotal { get; set; }
+
+    public ViewModelKit()
+    {
+        Repository.GetRecentAsync(default, default, default)
+            .ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<ClipListItem>>(
+                _stored.OrderByDescending(clip => clip.IsPinned).ToList()));
+        Repository.CountAsync(default, default, default, default).ReturnsForAnyArgs(_ => StoredTotal ?? _stored.Count);
+        Categories.GetCategoriesAsync(default).ReturnsForAnyArgs(Array.Empty<Category>());
+        ViewModel = new ClipboardPanelViewModel(
+            Repository, Categories, Substitute.For<ICategoryLockService>(),
+            Substitute.For<ILockPasswordService>(), Clipboard, Substitute.For<IDateFormatter>(),
+            NullLogger<ClipboardPanelViewModel>.Instance);
+    }
+
+    // Stored only; a refresh shows it.
+    public void StoreClip(string text, bool pinned = false) =>
+        _stored.Add(new ClipListItem(_stored.Count + 1, text, "Notepad", pinned, DateTimeOffset.UtcNow,
+            new PageCursor(DateTimeOffset.UtcNow.ToString("O"), _stored.Count + 1)));
+
+    // Stored and shown at once.
+    public void AddClip(string text)
+    {
+        StoreClip(text);
+        ViewModel.Items.Add(new ClipItemViewModel(_stored[^1], Substitute.For<IDateFormatter>(), ViewModel));
+    }
+}
+
+// A flyout over a ViewModelKit with a faked platform and paste-back.
+internal sealed class FlyoutTestKit : ViewModelKit
 {
     public FakeFlyoutPlatform Platform { get; } = new();
     public IPasteBack PasteBack { get; } = Substitute.For<IPasteBack>();
-    public IClipboardWriter Clipboard { get; } = Substitute.For<IClipboardWriter>();
-    public IClipRepository Repository { get; } = Substitute.For<IClipRepository>();
     public ManualTime Time { get; } = new();
-    public ClipboardPanelViewModel ViewModel { get; }
     public FlyoutWindow Window { get; }
 
-    public FlyoutTestKit()
-    {
-        // The faked store returns whatever the test added, the way the real one would.
-        Repository.GetRecentAsync(default, default, default)
-            .ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<ClipListItem>>(_stored.ToList()));
-        Repository.CountAsync(default, default, default, default).ReturnsForAnyArgs(_ => _stored.Count);
-        ViewModel = new ClipboardPanelViewModel(
-            Repository, Substitute.For<ICategoryRepository>(), Substitute.For<ICategoryLockService>(),
-            Substitute.For<ILockPasswordService>(), Clipboard, Substitute.For<IDateFormatter>(),
-            NullLogger<ClipboardPanelViewModel>.Instance);
-        Window = new FlyoutWindow(ViewModel, Platform, PasteBack, Time);
-    }
-
-    private readonly List<ClipListItem> _stored = [];
-
-    // Stored and shown, newest last in the order added.
-    public void AddClip(string text)
-    {
-        var clip = new ClipListItem(_stored.Count + 1, text, "Notepad", false, DateTimeOffset.UtcNow,
-            new PageCursor(DateTimeOffset.UtcNow.ToString("O"), _stored.Count + 1));
-        _stored.Add(clip);
-        ViewModel.Items.Add(new ClipItemViewModel(clip, Substitute.For<IDateFormatter>(), ViewModel));
-    }
+    public FlyoutTestKit() => Window = new FlyoutWindow(ViewModel, Platform, PasteBack, Time);
 }
 
 internal sealed class FakeFlyoutPlatform : IFlyoutPlatform
