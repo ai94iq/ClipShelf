@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Platform.Windows;
+using ClipShelf.Desktop.Shell;
 
 namespace ClipShelf.Desktop.Hosting;
 
@@ -33,6 +34,15 @@ public static class ServiceRegistration
         services.AddSingleton<IStartupRegistration, StartupRegistration>();
         services.AddSingleton<ISystemTheme, SystemThemeService>();
         services.AddSingleton<ISessionEnd, SessionWatcher>();
+        return services;
+    }
+
+    // The shell; windows join it in later batches.
+    public static IServiceCollection AddUiServices(this IServiceCollection services)
+    {
+        services.AddSingleton<AppLifetime>();
+        services.AddSingleton<AppShellService>();
+        services.AddSingleton<IHotkeyRegistration>(sp => sp.GetRequiredService<AppShellService>());
         return services;
     }
 }
