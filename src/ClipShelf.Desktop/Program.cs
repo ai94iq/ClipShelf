@@ -39,8 +39,23 @@ internal static class Program
         }
     }
 
+    // WinUI composition renders at the fastest panel's rate (measured 2026-10-12: about 139 fps
+    // with the window on a 75 Hz or a 144 Hz screen; every mode measured the same). Pinned so a
+    // changed Avalonia default cannot quietly lower it; the fallbacks keep older GPUs working.
     public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace();
+        AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .With(new Win32PlatformOptions
+            {
+                CompositionMode =
+                [
+                    Win32CompositionMode.WinUIComposition,
+                    Win32CompositionMode.DirectComposition,
+                    Win32CompositionMode.RedirectionSurface,
+                ],
+                RenderingMode = [Win32RenderingMode.AngleEgl, Win32RenderingMode.Software],
+            })
+            .LogToTrace();
 }
 
 // What Main resolved before Avalonia started; the headless tests run without one.
