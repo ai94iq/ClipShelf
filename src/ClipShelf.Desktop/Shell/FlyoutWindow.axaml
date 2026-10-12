@@ -1,0 +1,13 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Localization"
+        x:Class="ClipShelf.Desktop.Shell.FlyoutWindow"
+        Title="{l:Tr Key=App_Name}"
+        Width="360" Height="480"
+        CanResize="False"
+        WindowDecorations="None"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual">
+  <Grid x:Name="Root" />
+</Window>
