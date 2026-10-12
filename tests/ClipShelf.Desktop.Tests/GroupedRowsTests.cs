@@ -41,4 +41,19 @@ public sealed class GroupedRowsTests
 
         Assert.Equal(["[Pinned]", "three", "[Recent]", "one", "two"], rows.Select(Describe));
     });
+
+    // Only the Recent group's contents change; the group list itself stays the same.
+    [Fact]
+    public Task Rows_follow_a_new_clip_in_an_existing_group() => Ui.Run(async () =>
+    {
+        var kit = new ViewModelKit();
+        kit.StoreClip("one");
+        var rows = new GroupedRows(kit.ViewModel.Groups);
+        await kit.ViewModel.RefreshAsync();
+
+        kit.StoreClip("two");
+        await kit.ViewModel.RefreshAsync();
+
+        Assert.Equal(["[Recent]", "one", "two"], rows.Select(Describe));
+    });
 }
