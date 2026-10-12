@@ -19,6 +19,13 @@
     <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <!-- Avalonia head (spec 2026-10-12). One version for all four. Avalonia.Headless.XUnit
+         12.1.4 is built against xUnit v3 3.2 and fails discovery on 4.x, so tests drive
+         Avalonia.Headless sessions directly. -->
+    <PackageVersion Include="Avalonia" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.4" />
     <!-- Tray icon for WinUI 3, which has none built in (see docs/decisions/0001). -->
     <PackageVersion Include="H.NotifyIcon.WinUI" Version="2.4.1" />
   </ItemGroup>
