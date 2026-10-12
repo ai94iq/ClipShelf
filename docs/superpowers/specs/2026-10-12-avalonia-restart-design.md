@@ -18,11 +18,13 @@ implementations, and the named-pipe single instance with `--toggle` and `--histo
    after `main` ships the Avalonia app.
 2. **Toolkit floor.** Avalonia 12.1.x, the latest stable at scaffold time. 12.x adds the Linux
    AT-SPI accessibility tree, tray fixes and an opt-in Wayland backend.
-3. **One token layer.** `<FluentTheme />` is the only theme. `Themes/Colors.axaml` holds
-   ClipShelf-named aliases that resolve to Fluent keys. Literal colors are allowed only in one
-   marked exceptions block, each with a comment naming the missing Fluent key. Initial
-   exceptions: the accent subtle tint (selected rail item, selected row) and the card shadow.
-   A wrong color is fixed at the alias, never in a view. `App.axaml` carries no ad-hoc setters.
+3. **One token layer.** `<FluentTheme />` is the only theme. Views reference Fluent keys
+   directly through `{DynamicResource}`; there is no alias layer, because a
+   `StaticResource` alias resolves once at load and can stay on the startup variant after a
+   theme switch. Literal colors are allowed only in `Themes/Exceptions.axaml`, per variant,
+   each with a comment naming the missing Fluent key. Initial exceptions: the accent subtle
+   tint (selected rail item, selected row) and the card shadow. `App.axaml` carries no ad-hoc
+   setters. `DESIGN.md` holds the current list.
 4. **Visual reference.** Each surface matches its WinUI file on `main` in structure and
    behavior. `DESIGN.md` is rewritten for this token rule as the shell lands.
 5. **Process.** One surface per batch. Each batch: build, tests, run the app, owner looks, then

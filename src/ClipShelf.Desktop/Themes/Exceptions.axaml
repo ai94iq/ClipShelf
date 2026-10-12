@@ -1,0 +1,17 @@
+<!-- The only literal colors in the app. Views use Fluent keys through DynamicResource; an entry
+     belongs here only when Fluent has no key for the job, and its comment names the gap. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <!-- Fluent has no translucent accent tint for a selected rail item or row. -->
+      <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="#DBEAFE" />
+      <!-- Fluent has no card elevation shadow. -->
+      <BoxShadows x:Key="ClipShelfCardShadow">0 4 16 -4 #1A000000</BoxShadows>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="#1E3A5F" />
+      <BoxShadows x:Key="ClipShelfCardShadow">0 4 16 -4 #66000000</BoxShadows>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>
