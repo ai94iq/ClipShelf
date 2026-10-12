@@ -48,6 +48,51 @@ public sealed class ImageClipCodecTests
     [InlineData(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F, 0, 0, 0, 0 })]   // absurd header size
     public void A_corrupt_dib_is_skipped_not_thrown(byte[] dib) => Assert.Null(ImageClipCodec.ToPng(dib));
 
+    // What Windows hands out for most screenshots: 32 bpp BI_BITFIELDS, three DWORD masks
+    // between the header and the pixels.
+    [Fact]
+    public void A_bitfields_dib_keeps_its_pixels()
+    {
+        const int width = 2, height = 2;
+        var dib = new byte[40 + 12 + width * height * 4];
+        BitConverter.TryWriteBytes(dib.AsSpan(0), 40);
+        BitConverter.TryWriteBytes(dib.AsSpan(4), width);
+        BitConverter.TryWriteBytes(dib.AsSpan(8), height);
+        BitConverter.TryWriteBytes(dib.AsSpan(12), (short)1);
+        BitConverter.TryWriteBytes(dib.AsSpan(14), (short)32);
+        BitConverter.TryWriteBytes(dib.AsSpan(16), 3);                   // BI_BITFIELDS
+        BitConverter.TryWriteBytes(dib.AsSpan(40), 0x00FF0000u);         // red mask
+        BitConverter.TryWriteBytes(dib.AsSpan(44), 0x0000FF00u);         // green mask
+        BitConverter.TryWriteBytes(dib.AsSpan(48), 0x000000FFu);         // blue mask
+        for (var i = 52; i < dib.Length; i += 4)                         // BGRX: opaque orange
+        {
+            dib[i] = 0x00; dib[i + 1] = 0xA5; dib[i + 2] = 0xFF;
+        }
+
+        using var png = SKBitmap.Decode(ImageClipCodec.ToPng(dib)!);
+
+        Assert.Equal(new SKColor(0xFF, 0xA5, 0x00), png.GetPixel(0, 0));
+    }
+
+    // 8 bpp: a palette sits between the header and the pixels.
+    [Fact]
+    public void A_palette_dib_keeps_its_pixels()
+    {
+        const int width = 4, height = 1;                                 // 4-byte rows, no padding
+        var dib = new byte[40 + 256 * 4 + width * height];
+        BitConverter.TryWriteBytes(dib.AsSpan(0), 40);
+        BitConverter.TryWriteBytes(dib.AsSpan(4), width);
+        BitConverter.TryWriteBytes(dib.AsSpan(8), height);
+        BitConverter.TryWriteBytes(dib.AsSpan(12), (short)1);
+        BitConverter.TryWriteBytes(dib.AsSpan(14), (short)8);
+        dib[40 + 4 * 7] = 0xFF;                                         // palette[7] = blue (BGRA)
+        dib.AsSpan(40 + 1024).Fill(7);
+
+        using var png = SKBitmap.Decode(ImageClipCodec.ToPng(dib)!);
+
+        Assert.Equal(new SKColor(0x00, 0x00, 0xFF), png.GetPixel(3, 0));
+    }
+
     [Fact]
     public void Garbage_is_not_a_png() => Assert.Null(ImageClipCodec.ToDib([1, 2, 3]));
 

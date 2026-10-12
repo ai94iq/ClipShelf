@@ -90,6 +90,26 @@ public static class ImageClipCodec
         return data.ToArray();
     }
 
+    // Where the pixels start inside the DIB: after the header, the colour masks a 40-byte header
+    // keeps outside itself (BI_BITFIELDS, which most screenshots use), and the palette.
+    internal static int PixelOffset(byte[] dib, int headerSize)
+    {
+        const int BiBitfields = 3, BiAlphaBitfields = 6;
+        if (headerSize < 40) return headerSize + (BitConverter.ToInt16(dib, 10) <= 8 ? (1 << BitConverter.ToInt16(dib, 10)) * 3 : 0);
+
+        var bitCount = BitConverter.ToInt16(dib, 14);
+        var compression = BitConverter.ToInt32(dib, 16);
+        var colorsUsed = BitConverter.ToInt32(dib, 32);
+        var masks = headerSize != 40 ? 0 : compression switch
+        {
+            BiBitfields => 12,
+            BiAlphaBitfields => 16,
+            _ => 0,
+        };
+        var paletteEntries = colorsUsed > 0 ? colorsUsed : bitCount <= 8 ? 1 << bitCount : 0;
+        return headerSize + masks + paletteEntries * 4;
+    }
+
     // A 14-byte BITMAPFILEHEADER in front of the DIB makes it a .bmp the decoder accepts.
     private static byte[] WrapDibAsBmp(byte[] dib, int headerSize)
     {
@@ -97,7 +117,7 @@ public static class ImageClipCodec
         file[0] = (byte)'B';
         file[1] = (byte)'M';
         BitConverter.TryWriteBytes(file.AsSpan(2), file.Length);
-        BitConverter.TryWriteBytes(file.AsSpan(10), FileHeaderSize + headerSize);
+        BitConverter.TryWriteBytes(file.AsSpan(10), FileHeaderSize + PixelOffset(dib, headerSize));
         dib.CopyTo(file, FileHeaderSize);
         return file;
     }

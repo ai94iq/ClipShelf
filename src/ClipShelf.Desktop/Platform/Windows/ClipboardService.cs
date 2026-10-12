@@ -113,7 +113,11 @@ public sealed class ClipboardService : IClipboardMonitor, IDisposable
     {
         // Decoding runs on a worker thread: the imaging calls must never touch the UI thread.
         var png = await Task.Run(() => ImageClipCodec.ToPng(dib));
-        if (png is null) return;
+        if (png is null)
+        {
+            _log.LogWarning("An image copy could not be decoded ({Bytes} bytes); it was not saved", dib.Length);
+            return;
+        }
 
         var thumbnail = await Task.Run(() => ImageClipCodec.Thumbnail(png)) ?? png;
         await _capture.CaptureImageAsync(

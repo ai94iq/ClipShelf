@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using System.Runtime.InteropServices;
+using ClipShelf.Desktop.Platform;
 
 namespace ClipShelf.Desktop.Platform.Windows;
 
@@ -106,7 +107,7 @@ internal static class Win32Clipboard
     // can overstate the allocation for handles rendered by another app, and trusting it walked off
     // the mapped memory in Marshal.Copy - an access violation .NET cannot catch, so the process
     // died. The copy length is the smaller of the header-derived size and the allocation.
-    private static byte[]? ReadBounded(IntPtr pointer, ulong allocation)
+    internal static byte[]? ReadBounded(IntPtr pointer, ulong allocation)
     {
         const int HeaderSize = 40;                       // BITMAPINFOHEADER
         const long MaxImageBytes = 128L * 1024 * 1024;   // sanity bound; anything larger is not a screenshot
@@ -116,13 +117,16 @@ internal static class Win32Clipboard
         var header = new byte[HeaderSize];
         Marshal.Copy(pointer, header, 0, HeaderSize);
 
-        var headerBytes = BitConverter.ToUInt32(header, 0);          // biSize
+        var headerBytes = BitConverter.ToInt32(header, 0);           // biSize
+        if (headerBytes < 12 || (ulong)headerBytes > allocation) return null;
         var width = BitConverter.ToInt32(header, 4);
         var height = BitConverter.ToInt32(header, 8);
         var bitCount = BitConverter.ToUInt16(header, 14);            // biBitCount
-        var palette = bitCount <= 8 ? (1L << bitCount) * 4 : 0;      // an upper bound covers biClrUsed
-        var pixels = (((long)Math.Abs(width) * Math.Abs(height) * bitCount) + 7) / 8;
-        var expected = (long)headerBytes + palette + pixels;
+        // The masks and palette between header and pixels count too, and rows pad to 4 bytes;
+        // missing either left the block short and undecodable (BI_BITFIELDS screenshots lost 12).
+        var stride = ((long)Math.Abs(width) * bitCount + 31) / 32 * 4;
+        var pixels = stride * Math.Abs(height);
+        var expected = (long)ImageClipCodec.PixelOffset(header, headerBytes) + pixels;
         if (expected <= HeaderSize) return null;
 
         var size = (int)Math.Min(expected, (long)allocation);
