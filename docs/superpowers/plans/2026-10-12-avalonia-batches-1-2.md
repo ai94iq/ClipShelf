@@ -4,6 +4,11 @@
 > step. Execution: Native (inline, owner choice 2026-10-12), superpowers:executing-plans with
 > superpowers:test-driven-development on every task. Steps use `- [ ]` checkboxes.
 
+**Status (2026-10-12):** all tasks done, commits 87bc367..3bd7245. Deviations: plain
+`Avalonia.Headless` instead of `Avalonia.Headless.XUnit` (xUnit 4 incompatibility); an extra fix
+commit d9cb613 for BI_BITFIELDS and row padding in clipboard image reads, found in the Task 7
+live check. Batch 2 gate (owner check of the tray) is open.
+
 **Goal:** an Avalonia 12 app that starts tray-first on Windows, owns the single instance,
 captures text and image clips into the existing encrypted database, registers the hotkey and
 exits cleanly, on a Fluent-only token rule guarded by tests. No visible windows yet.
@@ -83,7 +88,7 @@ theme; the spec text is updated in the same commit.
 **Interfaces produced:** `ClipShelf.Desktop.App` (Avalonia `Application`),
 `ClipShelf.Desktop.Program.BuildAvaloniaApp()`, test `[assembly: AvaloniaTestApplication]`.
 
-- [ ] Step 1: packages in `Directory.Packages.props`
+- [x] Step 1: packages in `Directory.Packages.props`
 ```xml
 <!-- Avalonia head (spec 2026-10-12). One version for all four. -->
 <PackageVersion Include="Avalonia" Version="12.1.4" />
@@ -91,7 +96,7 @@ theme; the spec text is updated in the same commit.
 <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.4" />
 <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.4" />
 ```
-- [ ] Step 2: test project + failing test
+- [x] Step 2: test project + failing test
 ```xml
 <!-- tests/ClipShelf.Desktop.Tests/ClipShelf.Desktop.Tests.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -129,8 +134,8 @@ public sealed class AppBootTests
         Assert.IsType<FluentTheme>(Assert.Single(Application.Current!.Styles));
 }
 ```
-- [ ] Step 3: run tests, expect FAIL (compile error: `ClipShelf.Desktop` / `App` missing).
-- [ ] Step 4: minimal head
+- [x] Step 3: run tests, expect FAIL (compile error: `ClipShelf.Desktop` / `App` missing).
+- [x] Step 4: minimal head
 ```xml
 <!-- src/ClipShelf.Desktop/ClipShelf.Desktop.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -200,9 +205,9 @@ internal static class Program
 }
 ```
   Add both projects to `ClipShelf.slnx` (`/src/` and `/tests/` folders).
-- [ ] Step 5: run Desktop tests, expect 1/1 PASS; run `test.bat --no-pause`, expect all green
+- [x] Step 5: run Desktop tests, expect 1/1 PASS; run `test.bat --no-pause`, expect all green
   (310 + 1). If an Avalonia 12 API name differs, fix from the compiler error, not by guessing.
-- [ ] Step 6: commit `desktop: chore: scaffold the avalonia 12 head and its headless tests`.
+- [x] Step 6: commit `desktop: chore: scaffold the avalonia 12 head and its headless tests`.
 
 ### Task 2: the Fluent-only token rule and its guards
 
@@ -213,7 +218,7 @@ internal static class Program
 **Interfaces produced:** resource keys `ClipShelfAccentSubtleBrush`, `ClipShelfCardShadow`
 (`BoxShadows`); helper `TokenRuleTests.ReferencedKeys()` reused by later batches.
 
-- [ ] Step 1: failing tests
+- [x] Step 1: failing tests
 ```csharp
 using System.Text.RegularExpressions;
 using Avalonia;
@@ -260,8 +265,8 @@ public sealed class TokenRuleTests
     }
 }
 ```
-- [ ] Step 2: run, expect FAIL on the two exception keys (missing).
-- [ ] Step 3: implement
+- [x] Step 2: run, expect FAIL on the two exception keys (missing).
+- [x] Step 3: implement
 ```xml
 <!-- Themes/Exceptions.axaml: the only literal colors in the app. Each names the Fluent gap. -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -281,11 +286,11 @@ public sealed class TokenRuleTests
 ```
   `App.axaml`: `<Application.Resources><ResourceDictionary><ResourceDictionary.MergedDictionaries><ResourceInclude Source="/Themes/Exceptions.axaml"/></ResourceDictionary.MergedDictionaries></ResourceDictionary></Application.Resources>`.
   (`#DBEAFE` light tint carries over from DESIGN.md; dark value is a first pick, tuned in Batch 8.)
-- [ ] Step 4: run, expect PASS; full suite green.
-- [ ] Step 5: rewrite `DESIGN.md` (short): Fluent 12 is the token source, views use Fluent keys
+- [x] Step 4: run, expect PASS; full suite green.
+- [x] Step 5: rewrite `DESIGN.md` (short): Fluent 12 is the token source, views use Fluent keys
   via DynamicResource, the exceptions list with reasons, type sizes, components kept from WinUI
   `main`; drop all Memry hexes and "Retired" history. Update spec item 3 to the amendment above.
-- [ ] Step 6: commit `desktop: feat: fluent-only token rule with an exceptions block`.
+- [x] Step 6: commit `desktop: feat: fluent-only token rule with an exceptions block`.
 
 ### Task 3: theme and accent service
 
@@ -295,7 +300,7 @@ public sealed class TokenRuleTests
 **Interfaces:** consumes `IThemeService.Apply(AppSettings)` (Presentation),
 `AccentPalette.Shades(string)` (Core). Produces `ThemeService : IThemeService`.
 
-- [ ] Step 1: failing tests
+- [x] Step 1: failing tests
 ```csharp
 public sealed class ThemeServiceTests
 {
@@ -328,8 +333,8 @@ public sealed class ThemeServiceTests
     }
 }
 ```
-- [ ] Step 2: run, expect FAIL (ThemeService missing).
-- [ ] Step 3: implement
+- [x] Step 2: run, expect FAIL (ThemeService missing).
+- [x] Step 3: implement
 ```csharp
 using Avalonia;
 using Avalonia.Media;
@@ -364,8 +369,8 @@ public sealed class ThemeService : IThemeService
     }
 }
 ```
-- [ ] Step 4: run, expect PASS; full suite green.
-- [ ] Step 5: commit `desktop: feat: theme and accent onto fluent`.
+- [x] Step 4: run, expect PASS; full suite green.
+- [x] Step 5: commit `desktop: feat: theme and accent onto fluent`.
 
 **Batch 1 gate:** owner runs `dotnet run --project src/ClipShelf.Desktop -c Release` (no window
 is expected yet; process stays alive, `Get-Process ClipShelf`; stop it) and approves the token
@@ -381,7 +386,7 @@ rule and DESIGN.md.
 `Services/DataChangeNotifier.cs` (copy from `src/ClipShelf.App/Services/DataChangeNotifier.cs`,
 namespace `ClipShelf.Desktop.Services`), test `UiDispatcherTests.cs`.
 
-- [ ] Step 1: failing test
+- [x] Step 1: failing test
 ```csharp
 public sealed class UiDispatcherTests
 {
@@ -396,8 +401,8 @@ public sealed class UiDispatcherTests
     }
 }
 ```
-- [ ] Step 2: run, expect FAIL (type missing).
-- [ ] Step 3: implement
+- [x] Step 2: run, expect FAIL (type missing).
+- [x] Step 3: implement
 ```csharp
 using Avalonia.Threading;
 namespace ClipShelf.Desktop.Platform;
@@ -406,7 +411,7 @@ public sealed class AvaloniaUiDispatcher : IUiDispatcher
     public void Post(Action action) => Dispatcher.UIThread.Post(action);
 }
 ```
-- [ ] Step 4: PASS; suite green. Step 5: commit `desktop: feat: ui dispatcher on avalonia`.
+- [x] Step 4: PASS; suite green. Step 5: commit `desktop: feat: ui dispatcher on avalonia`.
 
 ### Task 5: Skia image codec
 
@@ -418,7 +423,7 @@ WinRT decode swapped for `SKBitmap.Decode`).
 `static byte[]? ToDib(byte[] png)` (for clipboard image writes in Task 6). Synchronous: callers
 already run them on `Task.Run`.
 
-- [ ] Step 1: failing tests (keep the `SampleDib` helper from the old test, made
+- [x] Step 1: failing tests (keep the `SampleDib` helper from the old test, made
   `internal static` so Task 6's clipboard test reuses it)
 ```csharp
 [Fact] public void A_dib_becomes_a_png() =>
@@ -442,14 +447,14 @@ already run them on `Task.Run`.
 [InlineData(new byte[] { 40, 0, 0, 0, 1 })]          // header claims 40 bytes, truncated
 public void A_corrupt_dib_is_skipped_not_thrown(byte[] dib) => Assert.Null(ImageClipCodec.ToPng(dib));
 ```
-- [ ] Step 2: run, expect FAIL (type missing).
-- [ ] Step 3: implement: wrap DIB in a 14-byte BMP header (logic copied from main's
+- [x] Step 2: run, expect FAIL (type missing).
+- [x] Step 3: implement: wrap DIB in a 14-byte BMP header (logic copied from main's
   `WrapDibAsBmp`/`HeaderSize`), `SKBitmap.Decode`, return null on null bitmap or any exception;
   PNG encode via `SKImage.FromBitmap(b).Encode(SKEncodedImageFormat.Png, 100).ToArray()`;
   thumbnail scales by `min(1, 240/w, 160/h)` with `SKSamplingOptions(SKCubicResampler.Mitchell)`;
   `ToDib` decodes PNG, writes a 40-byte BITMAPINFOHEADER (32 bpp BI_RGB, bottom-up rows) plus
   BGRA pixels from `bitmap.Copy(SKColorType.Bgra8888)`.
-- [ ] Step 4: PASS; suite green. Step 5: commit `desktop: feat: skia image codec replacing winrt`.
+- [x] Step 4: PASS; suite green. Step 5: commit `desktop: feat: skia image codec replacing winrt`.
 
 ### Task 6: Windows platform layer
 
@@ -463,7 +468,7 @@ otherwise: from `src/ClipShelf.App/Platform/` `NativeMethods`, `MessagePump`, `W
 Create `Hosting/ServiceRegistration.cs` with `AddPlatformServices()` mirroring main's, minus
 `ThemeService` WinUI (use Task 3's) and with `AvaloniaUiDispatcher`.
 
-- [ ] Step 1: port `TrayIconFileTests` and add a failing test for the one rewritten method,
+- [x] Step 1: port `TrayIconFileTests` and add a failing test for the one rewritten method,
   `ClipboardService.WriteImageAsync`, which must now go through `Win32Clipboard.TryWriteImage(byte[] dib)`
   (new, CF_DIB) using `ImageClipCodec.ToDib`:
 ```csharp
@@ -477,13 +482,13 @@ public void A_png_written_to_the_clipboard_reads_back_as_an_image()
 }
 ```
   (Touches the real clipboard of the test machine; that is project work, not a system change.)
-- [ ] Step 2: run, expect FAIL (`TryWriteImage` missing; ported tests compile-fail until copy).
-- [ ] Step 3: copy the files; add `TryWriteImage` to `Win32Clipboard` (OpenClipboard with the
+- [x] Step 2: run, expect FAIL (`TryWriteImage` missing; ported tests compile-fail until copy).
+- [x] Step 3: copy the files; add `TryWriteImage` to `Win32Clipboard` (OpenClipboard with the
   existing retry loop, EmptyClipboard, GlobalAlloc(GMEM_MOVEABLE) + copy, SetClipboardData(CF_DIB=8));
   rewrite `ClipboardService.WriteImageAsync` to `Task.Run(() => Win32Clipboard.TryWriteImage(dib))`
   and drop the WinRT stream field; `CaptureImageAsync` uses `ImageClipCodec.ToPng/Thumbnail`.
-- [ ] Step 4: PASS; `dotnet build -c Release` has zero warnings; suite green.
-- [ ] Step 5: commit `desktop: feat: windows platform layer on the avalonia head`.
+- [x] Step 4: PASS; `dotnet build -c Release` has zero warnings; suite green.
+- [x] Step 5: commit `desktop: feat: windows platform layer on the avalonia head`.
 
 ### Task 7: host, single instance and tray
 
@@ -496,7 +501,7 @@ culture, logging before Avalonia starts); test `AppShellServiceTests.cs`.
 `Exit()`, `TogglePanel()`, `ShowHistory()`, `ShowSettings()` (the last three log-only until
 Batches 3-4 add windows).
 
-- [ ] Step 1: failing test
+- [x] Step 1: failing test
 ```csharp
 public sealed class AppShellServiceTests
 {
@@ -515,8 +520,8 @@ public sealed class AppShellServiceTests
 ```
   (`AppShellServiceFactory` is a test helper building the service with NSubstitute fakes for
   `IGlobalHotkey`, `ISystemTheme` and a real `SettingsService` over a temp `ISettingsStore`.)
-- [ ] Step 2: run, expect FAIL.
-- [ ] Step 3: port `AppShellService` from main: `TrayIcon` built in code, added with
+- [x] Step 2: run, expect FAIL.
+- [x] Step 3: port `AppShellService` from main: `TrayIcon` built in code, added with
   `TrayIcon.SetIcons(Application.Current, new TrayIcons { _tray })` (12.1.3+ needs the
   collection attachment), `NativeMenu` with Open history, Settings, separator, Exit; tray
   variant via `TrayIconFiles` + `ISystemTheme`; hotkey via `HotkeyRegistrationState` exactly as
@@ -526,13 +531,13 @@ public sealed class AppShellServiceTests
   `AddPlatformServices`, `AddUiServices`, DB `BackupAndMigrate`, warm-up, startup registration,
   `ClipboardService`, `SessionCleanup`, retention prune); `ExitRequested` disposes the host and
   calls `desktop.Shutdown()`. Welcome window and real History/Settings come in later batches.
-- [ ] Step 4: PASS; suite green.
-- [ ] Step 5: manual (Windows): stop any ClipShelf, run the Release build; check: tray icon
+- [x] Step 4: PASS; suite green.
+- [x] Step 5: manual (Windows): stop any ClipShelf, run the Release build; check: tray icon
   appears with the right light/dark variant; copy text and an image (Snipping Tool); second
   launch `ClipShelf.exe --toggle` exits and the log shows the command received; Exit from the
   tray ends the process (`Get-Process ClipShelf` empty). Then launch main's WinUI build and
   confirm the captured clips appear in its History (same database).
-- [ ] Step 6: commit `desktop: feat: tray-first host with single instance on avalonia`.
+- [x] Step 6: commit `desktop: feat: tray-first host with single instance on avalonia`.
 
 **Batch 2 gate:** owner repeats the Step 5 checks and approves.
 
