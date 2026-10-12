@@ -1,8 +1,11 @@
 using Avalonia;
+using Avalonia.Threading;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
+using ClipShelf.Desktop.Features;
 using ClipShelf.Desktop.Shell;
+using NSubstitute;
 
 namespace ClipShelf.Desktop.Tests;
 
@@ -106,5 +109,35 @@ public sealed class MainWindowTests
         var window = new MainWindow(new AppLifetime());
 
         Assert.Equal(name, AutomationProperties.GetName(window.FindControl<RadioButton>(button)!));
+    });
+
+    [Fact]
+    public Task History_shows_the_real_page_and_loads_it() => Ui.Run(() =>
+    {
+        var kit = new ViewModelKit();
+        kit.StoreClip("one");
+        var window = new MainWindow(new AppLifetime(), new Lazy<HistoryPage>(() => new HistoryPage(kit.ViewModel)));
+
+        window.ShowHistory();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.IsType<HistoryPage>(window.FindControl<ContentControl>("Section")!.Content);
+        Assert.True(kit.ViewModel.IsViewVisible);
+        kit.Repository.ReceivedWithAnyArgs().GetRecentAsync(default, default, default);
+    });
+
+    [Fact]
+    public Task Leaving_history_or_hiding_the_window_marks_it_out_of_view() => Ui.Run(() =>
+    {
+        var kit = new ViewModelKit();
+        var window = new MainWindow(new AppLifetime(), new Lazy<HistoryPage>(() => new HistoryPage(kit.ViewModel)));
+        window.ShowHistory();
+
+        window.ShowSettings();
+        Assert.False(kit.ViewModel.IsViewVisible);
+
+        window.ShowHistory();
+        window.Close();
+        Assert.False(kit.ViewModel.IsViewVisible);
     });
 }

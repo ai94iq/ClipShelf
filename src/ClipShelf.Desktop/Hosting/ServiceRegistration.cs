@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using ClipShelf.Desktop.Features;
 using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Platform.Windows;
 using ClipShelf.Desktop.Shell;
@@ -42,6 +43,7 @@ public static class ServiceRegistration
     public static IServiceCollection AddUiServices(this IServiceCollection services)
     {
         services.AddSingleton<AppLifetime>();
+        services.AddSingleton<HistoryPage>();
         services.AddSingleton<MainWindow>();
         services.AddTransient<ClipboardPanelViewModel>();
         services.AddSingleton(TimeProvider.System);
