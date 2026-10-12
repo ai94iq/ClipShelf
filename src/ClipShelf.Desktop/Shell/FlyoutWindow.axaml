@@ -56,37 +56,7 @@
                SelectionMode="Single">
         <ListBox.ItemTemplate>
           <DataTemplate x:DataType="vm:ClipItemViewModel">
-            <Grid ColumnDefinitions="*,Auto">
-              <StackPanel VerticalAlignment="Center">
-                <Image IsVisible="{Binding HasImage}"
-                       Source="{Binding ThumbnailBytes, Converter={x:Static controls:BytesToBitmapConverter.Instance}}"
-                       MaxWidth="160" MaxHeight="72" Stretch="Uniform"
-                       HorizontalAlignment="Left" Margin="0,2" />
-                <TextBlock Text="{Binding Preview}"
-                           IsVisible="{Binding ShowPreview}"
-                           FontSize="13" TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding SourceText}"
-                           FontSize="11" TextTrimming="CharacterEllipsis"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-              </StackPanel>
-              <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Classes="row"
-                        Command="{Binding TogglePinCommand}"
-                        ToolTip.Tip="{l:Tr Key=Panel_PinToggle}"
-                        AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
-                  <Panel>
-                    <controls:AppIcon Kind="Pin" IsVisible="{Binding !IsPinned}" />
-                    <controls:AppIcon Kind="PinOff" IsVisible="{Binding IsPinned}" />
-                  </Panel>
-                </Button>
-                <Button Classes="row"
-                        Command="{Binding DeleteCommand}"
-                        ToolTip.Tip="{l:Tr Key=Panel_Delete}"
-                        AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
-                  <controls:AppIcon Kind="Delete" />
-                </Button>
-              </StackPanel>
-            </Grid>
+            <controls:ClipRow />
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
