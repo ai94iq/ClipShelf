@@ -1,5 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ClipShelf.Desktop.Platform;
 
 namespace ClipShelf.Desktop.Shell;
@@ -34,6 +37,12 @@ public sealed partial class FlyoutWindow : Window
         DataContext = viewModel;
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
         Deactivated += (_, _) => HideAfterDeactivation();
+
+        // Tunnel, so the flyout sees its keys before whichever control has focus.
+        AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
+        ClipList.AddHandler(PointerReleasedEvent, OnListClicked, RoutingStrategies.Bubble, handledEventsToo: true);
+        viewModel.ItemActivated += (_, _) => PasteBack();
+        viewModel.SelectionCopied += (_, _) => HideFlyout();
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -83,6 +92,7 @@ public sealed partial class FlyoutWindow : Window
 
         Show();
         Activate();
+        SearchBox.Focus();
         _platform.ForceForeground(TryGetPlatformHandle()?.Handle ?? IntPtr.Zero);
 
         // Refresh after the window is on screen so opening is never delayed; the quiet refresh
@@ -98,6 +108,52 @@ public sealed partial class FlyoutWindow : Window
         ViewModel.IsViewVisible = false;
         _platform.RestoreForeground(TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, _previousWindow);
         Hide();
+    }
+
+    // The pick went to the clipboard; close and paste into the window the user came from.
+    private void PasteBack()
+    {
+        var target = _previousWindow;
+        HideFlyout();
+        _ = _pasteBack.IntoAsync(target);
+    }
+
+    // Arrows move the selection, Enter picks it, Ctrl+1..9 pick a row, Esc steps back.
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case Key.Down:
+                ViewModel.MoveSelection(1);
+                break;
+            case Key.Up:
+                ViewModel.MoveSelection(-1);
+                break;
+            case Key.Enter:
+                ViewModel.ActivateSelected();
+                break;
+            case Key.Escape:
+                // Leave select mode first, then cancel the confirmation, and only then close.
+                if (!ViewModel.DismissTransient()) HideFlyout();
+                break;
+            case >= Key.D1 and <= Key.D9 when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                var index = e.Key - Key.D1;
+                if (index < ViewModel.Items.Count) ViewModel.Activate(ViewModel.Items[index]);
+                break;
+            default:
+                return;
+        }
+
+        e.Handled = true;
+    }
+
+    // A click on a row picks it; clicks on the row buttons stay with those buttons.
+    private void OnListClicked(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Left || e.Source is not Visual source) return;
+        if (source.FindAncestorOfType<Button>(includeSelf: true) is not null) return;
+        if (source.FindAncestorOfType<ListBoxItem>(includeSelf: true)?.DataContext is ClipItemViewModel item)
+            ViewModel.Activate(item);
     }
 
     internal void HideAfterDeactivation()

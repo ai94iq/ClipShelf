@@ -1,7 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="using:ClipShelf.Desktop.Localization"
+        xmlns:controls="using:ClipShelf.Desktop.Controls"
+        xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel"
         x:Class="ClipShelf.Desktop.Shell.FlyoutWindow"
+        x:DataType="vm:ClipboardPanelViewModel"
         Title="{l:Tr Key=App_Name}"
         Width="360" Height="480"
         CanResize="False"
@@ -9,5 +12,84 @@
         Topmost="True"
         ShowInTaskbar="False"
         WindowStartupLocation="Manual">
-  <Grid x:Name="Root" />
+  <Window.Styles>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="12,5" />
+      <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <!-- Hover stays quiet; the keyboard selection wears the accent tint. -->
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ClipShelfAccentSubtleBrush}" />
+    </Style>
+    <Style Selector="Button.row">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Focusable" Value="False" />
+    </Style>
+    <Style Selector="Button.row controls|AppIcon">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+    </Style>
+  </Window.Styles>
+
+  <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
+    <Grid x:Name="Root" RowDefinitions="Auto,*,Auto">
+      <!-- Search: just the field -->
+      <TextBox x:Name="SearchBox"
+               Grid.Row="0" Margin="12,10,12,4" Height="34"
+               IsEnabled="{Binding CanSearch}"
+               PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
+               AutomationProperties.Name="{l:Tr Key=Panel_SearchPlaceholder}"
+               Text="{Binding SearchText}" />
+
+      <ListBox x:Name="ClipList"
+               Grid.Row="1"
+               Background="Transparent"
+               ItemsSource="{Binding Items}"
+               SelectedItem="{Binding SelectedItem}"
+               SelectionMode="Single">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:ClipItemViewModel">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel VerticalAlignment="Center">
+                <Image IsVisible="{Binding HasImage}"
+                       Source="{Binding ThumbnailBytes, Converter={x:Static controls:BytesToBitmapConverter.Instance}}"
+                       MaxWidth="160" MaxHeight="72" Stretch="Uniform"
+                       HorizontalAlignment="Left" Margin="0,2" />
+                <TextBlock Text="{Binding Preview}"
+                           IsVisible="{Binding ShowPreview}"
+                           FontSize="13" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding SourceText}"
+                           FontSize="11" TextTrimming="CharacterEllipsis"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Classes="row"
+                        Command="{Binding TogglePinCommand}"
+                        ToolTip.Tip="{l:Tr Key=Panel_PinToggle}"
+                        AutomationProperties.Name="{l:Tr Key=Panel_PinToggle}">
+                  <Panel>
+                    <controls:AppIcon Kind="Pin" IsVisible="{Binding !IsPinned}" />
+                    <controls:AppIcon Kind="PinOff" IsVisible="{Binding IsPinned}" />
+                  </Panel>
+                </Button>
+                <Button Classes="row"
+                        Command="{Binding DeleteCommand}"
+                        ToolTip.Tip="{l:Tr Key=Panel_Delete}"
+                        AutomationProperties.Name="{l:Tr Key=Panel_Delete}">
+                  <controls:AppIcon Kind="Delete" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+  </Border>
 </Window>

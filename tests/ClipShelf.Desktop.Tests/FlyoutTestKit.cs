@@ -24,7 +24,10 @@ internal sealed class FlyoutTestKit
 
     public FlyoutTestKit()
     {
-        Repository.GetRecentAsync(default, default, default).ReturnsForAnyArgs(Array.Empty<ClipListItem>());
+        // The faked store returns whatever the test added, the way the real one would.
+        Repository.GetRecentAsync(default, default, default)
+            .ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<ClipListItem>>(_stored.ToList()));
+        Repository.CountAsync(default, default, default, default).ReturnsForAnyArgs(_ => _stored.Count);
         ViewModel = new ClipboardPanelViewModel(
             Repository, Substitute.For<ICategoryRepository>(), Substitute.For<ICategoryLockService>(),
             Substitute.For<ILockPasswordService>(), Clipboard, Substitute.For<IDateFormatter>(),
@@ -32,13 +35,15 @@ internal sealed class FlyoutTestKit
         Window = new FlyoutWindow(ViewModel, Platform, PasteBack, Time);
     }
 
-    public ClipItemViewModel AddClip(string text)
+    private readonly List<ClipListItem> _stored = [];
+
+    // Stored and shown, newest last in the order added.
+    public void AddClip(string text)
     {
-        var item = new ClipItemViewModel(
-            new ClipListItem(ViewModel.Items.Count + 1, text, "Notepad", false, DateTimeOffset.UtcNow, default!),
-            Substitute.For<IDateFormatter>(), ViewModel);
-        ViewModel.Items.Add(item);
-        return item;
+        var clip = new ClipListItem(_stored.Count + 1, text, "Notepad", false, DateTimeOffset.UtcNow,
+            new PageCursor(DateTimeOffset.UtcNow.ToString("O"), _stored.Count + 1));
+        _stored.Add(clip);
+        ViewModel.Items.Add(new ClipItemViewModel(clip, Substitute.For<IDateFormatter>(), ViewModel));
     }
 }
 

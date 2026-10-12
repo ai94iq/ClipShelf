@@ -8,7 +8,9 @@ namespace ClipShelf.Desktop.Tests;
 public static class TestApp
 {
     public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions());
+        AppBuilder.Configure<App>()
+            .UseSkia()                    // real image decoding and text, not stub drawing
+            .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false });
 }
 
 // Runs test bodies on the headless Avalonia UI thread; one app per test assembly.
