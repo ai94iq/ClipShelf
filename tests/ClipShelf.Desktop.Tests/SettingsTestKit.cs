@@ -15,10 +15,10 @@ namespace ClipShelf.Desktop.Tests;
 // A real SettingsViewModel and page over faked services; the shell is real but has no windows.
 internal sealed class SettingsKit
 {
-    public SettingsKit(AppSettings? settings = null)
+    public SettingsKit(AppSettings? settings = null, bool hotkeyRegistered = true)
     {
         Settings = new SettingsService(Substitute.For<ISettingsStore>(), settings ?? new AppSettings());
-        Hotkeys.IsCurrentHotkeyRegistered.Returns(true);
+        Hotkeys.IsCurrentHotkeyRegistered.Returns(hotkeyRegistered);
         Categories.GetCategoriesAsync(default).ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<Category>>(StoredCategories));
         ViewModel = new SettingsViewModel(
             Settings, Theme, Repository, Startup, Export, Categories, Locks, Passwords, Updates,

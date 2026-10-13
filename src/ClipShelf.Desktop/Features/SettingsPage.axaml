@@ -229,7 +229,7 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Button Content="{ReflectionBinding Label}" Height="28" Padding="12,4" FontSize="13"
- />
+                              Click="OnHotkeyAlternativeClick" />
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
