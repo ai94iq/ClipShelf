@@ -16,6 +16,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - A second launch can drive the running app: `ClipShelf.exe --toggle` toggles the flyout and `--history` opens the history window.
 
 ### Changed
+- The app is rebuilt on Avalonia 12 in place of WinUI 3, the step that lets ClipShelf follow to Linux and macOS (ADR 0006). Features, settings and the encrypted history carry over unchanged; dialogs now open inside their window, and Mica Alt shows as Mica.
 - Selected rows wear the accent consistently now: the keyboard selection and checked rows in Select mode get the same soft accent wash the flyout already uses (a click copies and lets the wash go).
 - The Light theme uses a gray canvas with white content cards instead of pure white, so it's easier on the eyes and the layers read apart.
 - Settings section headers use the stronger Fluent subtitle style.

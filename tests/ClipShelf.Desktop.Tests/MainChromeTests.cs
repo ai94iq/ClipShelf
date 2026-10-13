@@ -1,0 +1,112 @@
+using Avalonia.Automation;
+using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
+using ClipShelf.Desktop.Shell;
+
+namespace ClipShelf.Desktop.Tests;
+
+// Main's shell: content runs into the title bar, which carries the app name and (on Settings)
+// the search; the caption buttons are ours, tagged so the OS treats them as caption buttons.
+// Avalonia's own drawn caption doubled the title and added a fullscreen button.
+public sealed class MainChromeTests
+{
+    private static MainWindow Shown()
+    {
+        var window = new MainWindow(new AppLifetime());
+        window.ShowHistory();
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+        return window;
+    }
+
+    private static IEnumerable<Control> WithRole(Window window, WindowDecorationsElementRole role) =>
+        window.GetVisualDescendants().OfType<Control>().Where(c => WindowDecorationProperties.GetElementRole(c) == role);
+
+    [Fact]
+    public Task The_content_runs_into_the_title_bar_with_only_a_border_drawn() => Ui.Run(() =>
+    {
+        var window = Shown();
+
+        Assert.True(window.ExtendClientAreaToDecorationsHint);
+        Assert.Equal(WindowDecorations.BorderOnly, window.WindowDecorations);
+    });
+
+    [Fact]
+    public Task The_title_bar_names_the_app_once() => Ui.Run(() =>
+    {
+        var window = Shown();
+
+        var bar = Assert.Single(WithRole(window, WindowDecorationsElementRole.TitleBar));
+        Assert.Single(window.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "ClipShelf");
+        Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "ClipShelf");
+    });
+
+    [Theory]
+    [InlineData(WindowDecorationsElementRole.MinimizeButton)]
+    [InlineData(WindowDecorationsElementRole.MaximizeButton)]
+    [InlineData(WindowDecorationsElementRole.CloseButton)]
+    public Task Each_caption_button_is_tagged_and_named(WindowDecorationsElementRole role) => Ui.Run(() =>
+    {
+        var button = Assert.IsType<Button>(Assert.Single(WithRole(Shown(), role)));
+
+        Assert.False(string.IsNullOrEmpty(AutomationProperties.GetName(button)));
+    });
+
+    [Fact]
+    public Task There_is_no_fullscreen_button() => Ui.Run(() =>
+        Assert.Empty(WithRole(Shown(), WindowDecorationsElementRole.FullScreenButton)));
+
+    [Fact]
+    public Task The_settings_search_sits_in_the_title_bar() => Ui.Run(() =>
+    {
+        var window = Shown();
+        window.ShowSettings();
+        window.UpdateLayout();
+
+        var bar = Assert.Single(WithRole(window, WindowDecorationsElementRole.TitleBar));
+        var search = window.FindControl<TextBox>("SearchBox")!;
+        Assert.True(search.IsVisible);
+        Assert.Contains(search, bar.GetVisualDescendants());
+        // The search is typed into, so it is not part of the drag area.
+        Assert.Equal(WindowDecorationsElementRole.User, WindowDecorationProperties.GetElementRole(search));
+    });
+
+    [Fact]
+    public Task Minimize_and_maximize_change_the_window_state() => Ui.Run(() =>
+    {
+        var window = Shown();
+        var max = (Button)WithRole(window, WindowDecorationsElementRole.MaximizeButton).Single();
+
+        max.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal(WindowState.Maximized, window.WindowState);
+        max.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal(WindowState.Normal, window.WindowState);
+
+        ((Button)WithRole(window, WindowDecorationsElementRole.MinimizeButton).Single()).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal(WindowState.Minimized, window.WindowState);
+    });
+
+    [Fact]
+    public Task Close_hides_the_window_like_the_system_close() => Ui.Run(() =>
+    {
+        var window = Shown();
+
+        ((Button)WithRole(window, WindowDecorationsElementRole.CloseButton).Single()).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+        Assert.False(window.IsVisible);
+    });
+
+    // Main's content sits on a layer with a rounded leading corner, under the title bar.
+    [Fact]
+    public Task The_content_sits_on_a_rounded_layer() => Ui.Run(() =>
+    {
+        var layer = Shown().FindControl<Border>("ContentLayer")!;
+
+        Assert.Equal(8, layer.CornerRadius.TopLeft);
+        Assert.NotNull(layer.Background);
+    });
+}

@@ -1,0 +1,171 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:ClipShelf.Desktop.Localization"
+        xmlns:controls="using:ClipShelf.Desktop.Controls"
+        xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel"
+        x:Class="ClipShelf.Desktop.Shell.FlyoutWindow"
+        x:DataType="vm:ClipboardPanelViewModel"
+        Title="{l:Tr Key=App_Name}"
+        Width="360" Height="480"
+        CanResize="False"
+        WindowDecorations="BorderOnly"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual">
+  <Window.Styles>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="12,5" />
+      <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <!-- Rows answer the pointer with the list wash; the keyboard row wears the accent tint. -->
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ClipShelfAccentSubtleBrush}" />
+    </Style>
+    <Style Selector="Button.row">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Focusable" Value="False" />
+    </Style>
+    <Style Selector="Button.row PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+    </Style>
+    <!-- The search is a quiet line at the top, as in main: no box until it is typed into. -->
+    <Style Selector="TextBox.quiet">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.quiet:pointerover /template/ Border#PART_BorderElement, TextBox.quiet:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+  </Window.Styles>
+
+  <!-- The platform draws the frame: Windows 11 rounds it and adds the shadow. -->
+  <Grid x:Name="Root" RowDefinitions="Auto,*,Auto">
+      <!-- Search: just the field -->
+      <TextBox x:Name="SearchBox" Classes="quiet"
+               Grid.Row="0" Margin="12,10,12,4" Height="34"
+               IsEnabled="{Binding CanSearch}"
+               PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
+               AutomationProperties.Name="{l:Tr Key=Panel_SearchPlaceholder}"
+               Text="{Binding SearchText}" />
+
+      <ListBox x:Name="ClipList"
+               Grid.Row="1"
+               Background="Transparent"
+               ItemsSource="{Binding Items}"
+               SelectedItem="{Binding SelectedItem}"
+               SelectionMode="Single">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:ClipItemViewModel">
+            <controls:ClipRow />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <!-- Load states over the list -->
+      <ProgressBar Grid.Row="1" IsIndeterminate="True" VerticalAlignment="Top" Margin="12,0"
+                   IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Loading}" />
+      <StackPanel x:Name="EmptyState" Grid.Row="1" Spacing="10" MaxWidth="280"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Empty}">
+        <controls:AppIcon Kind="Clipboard" Width="32" Height="32" HorizontalAlignment="Center" Opacity="0.7"
+                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <TextBlock x:Name="EmptyTitle" Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      </StackPanel>
+      <StackPanel x:Name="ErrorState" Grid.Row="1" Spacing="12"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Error}">
+        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+        <Button HorizontalAlignment="Center" Content="{l:Tr Key=Common_Retry}" Command="{Binding ReloadCommand}" />
+      </StackPanel>
+
+      <!-- Deferred delete: the row is gone, the delete is not, until the flyout closes -->
+      <Border x:Name="UndoBar" Grid.Row="1" Margin="12,0,12,8" Padding="12,6" CornerRadius="4"
+              VerticalAlignment="Bottom"
+              Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+              BoxShadow="{DynamicResource ClipShelfCardShadow}"
+              IsVisible="{Binding HasPendingDelete}">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding PendingDeleteText}" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Content="{l:Tr Key=Common_Undo}" Height="28" Padding="12,4" FontSize="13"
+                  Command="{Binding UndoDeleteCommand}" />
+        </Grid>
+      </Border>
+
+      <!-- Footer: icon-only actions with tooltips -->
+      <Border Grid.Row="2" BorderThickness="0,1,0,0"
+              BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
+        <Grid Margin="12,4" ColumnDefinitions="*,Auto">
+          <Button x:Name="OpenHistoryButton" Classes="row" HorizontalAlignment="Left"
+                  ToolTip.Tip="{l:Tr Key=Panel_OpenFullHistory}"
+                  AutomationProperties.Name="{l:Tr Key=Panel_OpenFullHistory}"
+                  Command="{Binding OpenHistoryCommand}">
+            <controls:AppIcon Kind="Clipboard" />
+          </Button>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+            <Button x:Name="SelectButton" Classes="row"
+                    ToolTip.Tip="{l:Tr Key=Selection_Select}"
+                    AutomationProperties.Name="{l:Tr Key=Selection_Select}"
+                    Command="{Binding ToggleSelectionCommand}"
+                    IsVisible="{Binding ShowSelectButton}">
+              <controls:AppIcon Kind="Checkmark" />
+            </Button>
+            <Button x:Name="CancelSelectButton" Classes="row"
+                    ToolTip.Tip="{l:Tr Key=Common_Cancel}"
+                    AutomationProperties.Name="{l:Tr Key=Common_Cancel}"
+                    Command="{Binding ToggleSelectionCommand}"
+                    IsVisible="{Binding IsSelecting}">
+              <controls:AppIcon Kind="Dismiss" />
+            </Button>
+            <Button x:Name="CopySelectionButton" Classes="row"
+                    ToolTip.Tip="{l:Tr Key=Selection_Copy}"
+                    AutomationProperties.Name="{l:Tr Key=Selection_Copy}"
+                    Command="{Binding CopySelectedCommand}"
+                    IsEnabled="{Binding CanCopySelection}"
+                    IsVisible="{Binding IsSelecting}">
+              <controls:AppIcon Kind="Copy" />
+            </Button>
+            <Button x:Name="ClearAllButton" Classes="row"
+                    ToolTip.Tip="{l:Tr Key=Panel_ClearAll}"
+                    AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
+                    Command="{Binding RequestClearCommand}"
+                    IsEnabled="{Binding HasItems}"
+                    IsVisible="{Binding ShowSelectButton}">
+              <controls:AppIcon Kind="Delete" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- In-flyout confirmation over everything; Esc cancels -->
+      <Panel x:Name="ConfirmPanel" Grid.RowSpan="3" IsVisible="{Binding IsConfirmingClear}">
+        <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Opacity="0.6" />
+        <Border Width="260" Padding="16" CornerRadius="8"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1"
+                BoxShadow="{DynamicResource ClipShelfCardShadow}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="{l:Tr Key=Panel_ClearConfirm}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="accent" Content="{l:Tr Key=Panel_ClearYes}" Command="{Binding ConfirmClearCommand}" />
+              <Button Content="{l:Tr Key=Common_Cancel}" Command="{Binding CancelClearCommand}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Panel>
+    </Grid>
+</Window>

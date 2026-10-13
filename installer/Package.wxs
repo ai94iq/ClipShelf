@@ -12,7 +12,7 @@
     <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="!(loc.DowngradeError)" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.App\Assets\app.ico" />
+    <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.Desktop\Assets\app.ico" />
     <Property Id="ARPPRODUCTICON" Value="ClipShelf.exe" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIBannerBmp" Value="Banner.bmp" />

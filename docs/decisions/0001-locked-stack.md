@@ -1,7 +1,7 @@
 # 0001. Locked technology stack
 
 Date: 2026-10-01
-Status: Accepted
+Status: Accepted; the UI part (WinUI 3) superseded by 0006
 
 ## Context
 

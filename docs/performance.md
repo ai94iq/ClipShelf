@@ -62,10 +62,26 @@ Trimming a history that has already grown far past the limit is a one-time bulk 
 rows in 59.7 s in the "after" run, in a single transaction. Steady state afterwards is back to
 about a millisecond per copy.
 
+## Frame rate (Avalonia head)
+
+Measured 2026-10-12 on an RTX 4060 laptop with a 75 Hz primary (2560x1440) and a 144 Hz secondary
+(1920x1080): the main window with an indeterminate progress bar animating, frames counted through
+`RequestAnimationFrame` over six seconds, WinUI composition with ANGLE.
+
+| Window on | Frames per second |
+|---|---|
+| 75 Hz screen | 138.6 |
+| 144 Hz screen | 139.5 |
+
+Avalonia runs one render clock for the app, paced by the fastest panel, so nothing caps the frame
+rate; on the 75 Hz screen the compositor shows 75 and drops the rest. With nothing animating,
+Avalonia renders only on change, so an idle frame counter reads about half the panel rate in every
+composition mode; that is not a cap. `Program` pins WinUI composition first.
+
 ## What is not measured
 
 - The Win32 clipboard read/write per copy is a constant cost (microseconds) that does not grow
   with the history.
-- UI rendering and the flyout animation are not part of these numbers.
+- UI rendering is covered separately below, not by these numbers.
 - Numbers are from one machine; absolute values vary with disk and CPU, the shapes (flat, linear,
   logarithmic) do not.

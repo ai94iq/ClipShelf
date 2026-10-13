@@ -52,7 +52,7 @@ The installer wizard, with the MIT license, install location and finish-page opt
 
 **Appearance**
 - Themes: System, Light (soft light surfaces), Dark and Full black.
-- Backgrounds where supported: Mica, Mica Alt, Acrylic or solid.
+- Backgrounds where supported: Mica, Acrylic or solid (Mica Alt shows as Mica).
 
 **Tray and behavior**
 - Filled or outline tray icon, hide the tray icon, and choose whether a tray double-click opens the full history.
@@ -99,7 +99,7 @@ A second launch never starts a second copy: `ClipShelf.exe --toggle` toggles the
 
 | Project | Responsibility |
 |---|---|
-| `src/ClipShelf.App` | WinUI 3 (Windows App SDK 1.x, unpackaged) UI, tray integration, clipboard flyout, and app startup |
+| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows platform layer, and app startup |
 | `src/ClipShelf.Presentation` | View models, portable services and the platform interfaces (net10.0) |
 | `src/ClipShelf.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
 | `src/ClipShelf.Data` | SQLite + Dapper repositories and numbered SQL migrations |
@@ -128,7 +128,7 @@ English is the primary language; Arabic ships as a satellite and is selectable i
 
 ## Contributing
 
-- Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `app`, `presentation`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
+- Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `desktop`, `presentation`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
 - Commit body: what changed and why, wrapped at 72 characters.
 - CI runs `test.bat` on every push to `main` and every pull request, and publishes a GitHub release with the MSI when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
 - Before committing, `build.bat` and `test.bat` must pass, and the affected docs must be updated.
@@ -140,8 +140,8 @@ Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/relea
 
 ## Built with
 
-This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill) — the agent skill that fixed the stack (WinUI 3, .NET 10, SQLite, WiX), the project layout and the UI rules used throughout.
+This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill) — the agent skill that fixed the original stack (.NET 10, SQLite, WiX), the project layout and the UI rules. The UI moved from WinUI 3 to Avalonia 12 in October 2026 so ClipShelf can follow to Linux and macOS.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.App/Assets/Fonts/OFL.txt`).
+MIT — see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.Desktop/Assets/Fonts/OFL.txt`).
