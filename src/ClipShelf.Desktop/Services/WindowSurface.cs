@@ -53,11 +53,18 @@ internal static class WindowSurface
         };
     }
 
+    // Live, an opaque window reports "Transparent" under WinUI composition, so only an actual
+    // backdrop counts; anything else keeps the solid surface.
+    public static bool ShowsBackdrop(WindowTransparencyLevel actual) =>
+        actual == WindowTransparencyLevel.Mica ||
+        actual == WindowTransparencyLevel.AcrylicBlur ||
+        actual == WindowTransparencyLevel.Blur;
+
     private static void Paint(Window window, string surfaceKey)
     {
-        if (window.ActualTransparencyLevel == WindowTransparencyLevel.None)
-            window.Bind(Window.BackgroundProperty, window.GetResourceObservable(surfaceKey));
-        else
+        if (ShowsBackdrop(window.ActualTransparencyLevel))
             window.Background = Brushes.Transparent;
+        else
+            window.Bind(Window.BackgroundProperty, window.GetResourceObservable(surfaceKey));
     }
 }

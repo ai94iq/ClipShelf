@@ -84,4 +84,26 @@ public sealed class WindowSurfaceTests
 
             Assert.Equal(Color.Parse("#202020"), Assert.IsType<ISolidColorBrush>(window.Background, exactMatch: false).Color);
         }));
+
+    // Live, an opaque window still reports "Transparent" (WinUI composition): only a real
+    // backdrop may clear the surface, or Light shows black behind dark text.
+    [Theory]
+    [InlineData("Mica", true)]
+    [InlineData("AcrylicBlur", true)]
+    [InlineData("Blur", true)]
+    [InlineData("Transparent", false)]
+    [InlineData("None", false)]
+    public void Only_a_real_backdrop_clears_the_surface(string level, bool seeThrough)
+    {
+        var actual = level switch
+        {
+            "Mica" => WindowTransparencyLevel.Mica,
+            "AcrylicBlur" => WindowTransparencyLevel.AcrylicBlur,
+            "Blur" => WindowTransparencyLevel.Blur,
+            "Transparent" => WindowTransparencyLevel.Transparent,
+            _ => WindowTransparencyLevel.None,
+        };
+
+        Assert.Equal(seeThrough, WindowSurface.ShowsBackdrop(actual));
+    }
 }
