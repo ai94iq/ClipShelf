@@ -101,16 +101,48 @@ public sealed class HistoryPageTests
         Assert.Equal(expected, HistoryPage.IsNearEnd(offset, viewport, extent));
 
     [Fact]
-    public Task A_locked_category_in_the_filter_falls_back_until_it_can_be_unlocked() => Ui.Run(async () =>
+    public Task A_locked_category_in_the_filter_asks_for_the_password() => Ui.Run(async () =>
     {
         var kit = Clips("one");
-        kit.Categories.GetCategoriesAsync(default).ReturnsForAnyArgs(new[] { new Category(5, "Work", IsLocked: true) });
+        kit.StoredCategories.Add(new Category(5, "Work", IsLocked: true));
+        kit.Passwords.Verify("1234").Returns(true);
         var hosted = await Open(kit);
-        var filter = hosted.Page.FindControl<ComboBox>("CategoryFilter")!;
 
-        filter.SelectedIndex = 1;                   // "Work (locked)"
-        Dispatcher.UIThread.RunJobs();
+        hosted.Page.FindControl<ComboBox>("CategoryFilter")!.SelectedIndex = 1;   // "Work (locked)"
+        var dialog = DialogDriver.Open(hosted.Window);
+        DialogDriver.Boxes(dialog)[0].Text = "1234";
+        DialogDriver.Click(dialog.FindControl<Button>("PrimaryButton")!);
+
+        kit.Locks.Received().Unlock(5);
+        Assert.Equal(5, kit.ViewModel.SelectedCategoryFilter!.Value);
+    });
+
+    [Fact]
+    public Task Cancelling_the_password_falls_back_to_the_previous_filter() => Ui.Run(async () =>
+    {
+        var kit = Clips("one");
+        kit.StoredCategories.Add(new Category(5, "Work", IsLocked: true));
+        var hosted = await Open(kit);
+
+        hosted.Page.FindControl<ComboBox>("CategoryFilter")!.SelectedIndex = 1;
+        DialogDriver.Click(DialogDriver.Open(hosted.Window).FindControl<Button>("CancelButton")!);
 
         Assert.Null(kit.ViewModel.SelectedCategoryFilter!.Value);
+        kit.Locks.DidNotReceive().Unlock(Arg.Any<long>());
+    });
+
+    [Fact]
+    public Task Keys_belong_to_an_open_dialog() => Ui.Run(async () =>
+    {
+        var kit = Clips("one");
+        var hosted = await Open(kit);
+        kit.ViewModel.ToggleSelectionCommand.Execute(null);
+        _ = new ClipShelf.Desktop.Controls.InlineDialog("t", "ok").ShowAsync(hosted.Window);
+        Dispatcher.UIThread.RunJobs();
+
+        hosted.Press(Key.Escape);
+
+        Assert.True(kit.ViewModel.IsSelecting);    // Esc closed the dialog, not select mode
+        Assert.Null(ClipShelf.Desktop.Controls.InlineDialog.OpenIn(hosted.Window));
     });
 }

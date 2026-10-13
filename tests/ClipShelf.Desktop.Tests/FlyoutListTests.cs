@@ -40,6 +40,20 @@ public sealed class FlyoutListTests
 
     // Keys arrive while the search box has focus.
     [Fact]
+    public Task Enter_in_an_open_dialog_does_not_paste() => Ui.Run(async () =>
+    {
+        var kit = OpenWith("first");
+        var dialog = new InlineDialog("New category", "Create", new TextBox()).ShowAsync(kit.Window);
+        Dispatcher.UIThread.RunJobs();
+
+        Press(kit, Key.Enter);
+
+        Assert.True(await dialog.WaitAsync(TimeSpan.FromSeconds(5)));
+        _ = kit.PasteBack.DidNotReceiveWithAnyArgs().IntoAsync(default);
+        Assert.True(kit.Window.IsOpen);
+    });
+
+    [Fact]
     public Task Down_then_enter_pastes_that_clip_into_the_previous_window() => Ui.Run(() =>
     {
         var kit = OpenWith("first", "second");

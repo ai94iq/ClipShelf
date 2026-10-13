@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using ClipShelf.Desktop.Controls;
 using ClipShelf.Desktop.Platform;
 
 namespace ClipShelf.Desktop.Shell;
@@ -43,6 +44,7 @@ public sealed partial class FlyoutWindow : Window
         ClipList.AddHandler(PointerReleasedEvent, OnListClicked, RoutingStrategies.Bubble, handledEventsToo: true);
         viewModel.ItemActivated += (_, _) => PasteBack();
         viewModel.SelectionCopied += (_, _) => HideFlyout();
+        viewModel.CategoryMenuRequested += item => _ = CategoryMenu.ShowAsync(CategoryMenu.Anchor(ClipList, item), item, viewModel);
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -121,6 +123,8 @@ public sealed partial class FlyoutWindow : Window
     // Arrows move the selection, Enter picks it, Ctrl+1..9 pick a row, Esc steps back.
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (InlineDialog.IsOpenIn(this)) return;     // Enter and Esc belong to the dialog
+
         switch (e.Key)
         {
             case Key.Down:

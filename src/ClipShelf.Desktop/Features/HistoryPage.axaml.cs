@@ -31,7 +31,10 @@ public sealed partial class HistoryPage : UserControl
         };
         ClipList.AddHandler(PointerReleasedEvent, OnListClicked, RoutingStrategies.Bubble, handledEventsToo: true);
         ClipList.AddHandler(ScrollViewer.ScrollChangedEvent, OnScrolled);
-        CategoryFilter.SelectionChanged += (_, _) => OnCategoryFilterChanged();
+        CategoryFilter.SelectionChanged += async (_, _) => await OnCategoryFilterChangedAsync();
+        // Picking the locked category that is already selected changes nothing; ask again.
+        CategoryFilter.DropDownClosed += async (_, _) => await UnlockSelectedFilterAsync();
+        viewModel.CategoryMenuRequested += item => _ = CategoryMenu.ShowAsync(CategoryMenu.Anchor(ClipList, item), item, viewModel);
     }
 
     public ClipboardPanelViewModel ViewModel { get; }
@@ -57,6 +60,8 @@ public sealed partial class HistoryPage : UserControl
     // Enter copies the keyboard row; Esc leaves select mode or cancels the confirm, never more.
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (InlineDialog.IsOpenIn(this)) return;     // Enter and Esc belong to the dialog
+
         if (e.Key == Key.Enter && ClipList.SelectedItem is ClipItemViewModel item && ClipList.IsKeyboardFocusWithin)
         {
             ViewModel.Activate(item);
@@ -88,9 +93,8 @@ public sealed partial class HistoryPage : UserControl
             source.LoadMoreCommand.Execute(null);
     }
 
-    // ponytail: a locked category needs the password dialog (batch 7); until then the filter
-    // falls back to the previous choice instead of showing an empty list.
-    private void OnCategoryFilterChanged()
+    // Picking a locked category asks for its password instead of showing an empty list.
+    private async Task OnCategoryFilterChangedAsync()
     {
         var selected = ViewModel.SelectedCategoryFilter;
         if (selected is null || selected.Value == _lastFilterValue) return;
@@ -101,8 +105,21 @@ public sealed partial class HistoryPage : UserControl
             return;
         }
 
+        if (await UnlockSelectedFilterAsync()) return;
+
         ViewModel.SelectedCategoryFilter =
             ViewModel.CategoryFilterOptions.FirstOrDefault(option => option.Value == _lastFilterValue)
             ?? ViewModel.CategoryFilterOptions[0];
+    }
+
+    private async Task<bool> UnlockSelectedFilterAsync()
+    {
+        if (ViewModel.SelectedCategoryFilter?.Value is not long id || !ViewModel.IsCategoryFilterLocked) return false;
+        if (InlineDialog.IsOpenIn(this)) return false;
+        if (!await PasswordPrompt.VerifyAsync(this, ViewModel.VerifyLockPassword)) return false;
+
+        _lastFilterValue = id;
+        await ViewModel.UnlockCategoryAsync(id);
+        return true;
     }
 }

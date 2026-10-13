@@ -20,6 +20,9 @@ internal class ViewModelKit
     public IClipboardWriter Clipboard { get; } = Substitute.For<IClipboardWriter>();
     public IClipRepository Repository { get; } = Substitute.For<IClipRepository>();
     public ICategoryRepository Categories { get; } = Substitute.For<ICategoryRepository>();
+    public ICategoryLockService Locks { get; } = Substitute.For<ICategoryLockService>();
+    public ILockPasswordService Passwords { get; } = Substitute.For<ILockPasswordService>();
+    public List<Category> StoredCategories { get; } = [];
     public ClipboardPanelViewModel ViewModel { get; }
     public int? StoredTotal { get; set; }
 
@@ -29,10 +32,10 @@ internal class ViewModelKit
             .ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<ClipListItem>>(
                 _stored.OrderByDescending(clip => clip.IsPinned).ToList()));
         Repository.CountAsync(default, default, default, default).ReturnsForAnyArgs(_ => StoredTotal ?? _stored.Count);
-        Categories.GetCategoriesAsync(default).ReturnsForAnyArgs(Array.Empty<Category>());
+        Categories.GetCategoriesAsync(default).ReturnsForAnyArgs(_ => Task.FromResult<IReadOnlyList<Category>>(StoredCategories.ToList()));
+        Locks.UnlockedCategoryIds.Returns([]);
         ViewModel = new ClipboardPanelViewModel(
-            Repository, Categories, Substitute.For<ICategoryLockService>(),
-            Substitute.For<ILockPasswordService>(), Clipboard, Substitute.For<IDateFormatter>(),
+            Repository, Categories, Locks, Passwords, Clipboard, Substitute.For<IDateFormatter>(),
             NullLogger<ClipboardPanelViewModel>.Instance);
     }
 

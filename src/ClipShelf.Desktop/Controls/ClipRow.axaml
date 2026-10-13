@@ -48,6 +48,12 @@
           <controls:AppIcon Kind="PinOff" IsVisible="{Binding IsPinned}" />
         </Panel>
       </Button>
+      <Button Classes="row category"
+              Command="{Binding CategoryCommand}"
+              ToolTip.Tip="{l:Tr Key=Panel_Category}"
+              AutomationProperties.Name="{l:Tr Key=Panel_Category}">
+        <controls:AppIcon Kind="Folder" />
+      </Button>
       <Button Classes="row"
               Command="{Binding DeleteCommand}"
               ToolTip.Tip="{l:Tr Key=Panel_Delete}"
