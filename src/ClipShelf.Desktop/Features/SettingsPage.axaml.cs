@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using ClipShelf.Core.Export;
 using ClipShelf.Core.Input;
 using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Shell;
@@ -78,6 +80,34 @@ public sealed partial class SettingsPage : UserControl
     {
         if ((sender as Control)?.DataContext is Option<HotkeyGesture> option)
             ViewModel.ApplyHotkeyAlternative(option.Value);
+    }
+
+    private void OnExitClick(object? sender, RoutedEventArgs e) => _shell.Value.Exit();
+
+    private async void OnCheckUpdatesClick(object? sender, RoutedEventArgs e) => await ViewModel.CheckForUpdatesAsync();
+
+    // A password exists whenever these buttons show, so locking needs no prompt.
+    private async void OnLockClick(object? sender, RoutedEventArgs e)
+    {
+        if ((sender as Control)?.DataContext is CategoryRow row) await ViewModel.LockCategoryAsync(row.Id);
+    }
+
+    private async void OnExportClick(object? sender, RoutedEventArgs e)
+    {
+        if (TopLevel.GetTopLevel(this)?.StorageProvider is not { CanSave: true } storage) return;
+
+        var csv = ViewModel.SelectedExportFormat.Value == ClipExportFormat.Csv;
+        var extension = csv ? "csv" : "json";
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            SuggestedFileName = ViewModel.SuggestedExportFileName,
+            DefaultExtension = extension,
+            FileTypeChoices = [new FilePickerFileType(Tr.Get(csv ? "Export_Csv" : "Export_Json")) { Patterns = [$"*.{extension}"] }],
+            SuggestedStartLocation = await storage.TryGetWellKnownFolderAsync(WellKnownFolder.Documents),
+        });
+        if (file?.TryGetLocalPath() is not { } path) return;
+
+        await ViewModel.ExportAsync(path);
     }
 
     public Task LoadAsync() => Task.WhenAll(ViewModel.RefreshCategoriesAsync(), ViewModel.CheckForUpdatesOnceAsync());
