@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Serilog;
@@ -35,7 +36,22 @@ internal static class Program
         }
         finally
         {
+            if (App.RestartOnExit) StartNewInstance(singleInstance);
             Log.CloseAndFlush();
+        }
+    }
+
+    // The pipe goes first, or the new process would find this one and hand itself over.
+    private static void StartNewInstance(SingleInstanceService singleInstance)
+    {
+        singleInstance.Dispose();
+        try
+        {
+            if (Environment.ProcessPath is { } executable) Process.Start(executable);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Restarting the app failed");
         }
     }
 

@@ -17,6 +17,10 @@ public sealed partial class App : Application
 
     internal static LaunchContext? Launch { get; set; }
 
+    // Set when the user asked for a restart; Program starts the new process once this one has
+    // let go of the single-instance pipe.
+    internal static bool RestartOnExit { get; private set; }
+
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
@@ -57,6 +61,11 @@ public sealed partial class App : Application
             // Tray-first: nothing opens at startup.
             var shell = host.Services.GetRequiredService<AppShellService>();
             shell.ExitRequested += (_, _) => Exit(desktop);
+            shell.RestartRequested += (_, _) =>
+            {
+                RestartOnExit = true;
+                shell.Exit();
+            };
             shell.ShowTray();
             _host = host;
 

@@ -53,6 +53,47 @@
     <Style Selector="TextBlock.status.error">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
     </Style>
+    <!-- Accent swatches: plain colored circles with radio semantics. The selected one carries a
+         ring and a check; hover and keyboard focus draw their own rings. -->
+    <Style Selector="RadioButton.swatch">
+      <Setter Property="Width" Value="40" />
+      <Setter Property="Height" Value="40" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel Background="Transparent">
+            <Ellipse x:Name="FocusRing" Width="40" Height="40" StrokeThickness="2" Opacity="0"
+                     Stroke="{DynamicResource SystemControlFocusVisualPrimaryBrush}" />
+            <Ellipse x:Name="HoverRing" Width="34" Height="34" StrokeThickness="2" Opacity="0"
+                     Stroke="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+            <Ellipse x:Name="SelectionRing" Width="28" Height="28" StrokeThickness="2" Opacity="0"
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+            <Ellipse Width="20" Height="20" Fill="{TemplateBinding Background}" />
+            <controls:AppIcon x:Name="Check" Kind="Checkmark" Width="12" Height="12" Opacity="0"
+                              Foreground="{TemplateBinding Foreground}" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="RadioButton.swatch /template/ :is(Control)">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="RadioButton.swatch:pointerover /template/ Ellipse#HoverRing">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="RadioButton.swatch:focus-visible /template/ Ellipse#FocusRing">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="RadioButton.swatch:checked /template/ Ellipse#SelectionRing">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="RadioButton.swatch:checked /template/ controls|AppIcon#Check">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
   </UserControl.Styles>
 
   <ScrollViewer>
@@ -73,7 +114,25 @@
             </controls:SettingsCard>
             <Border Classes="divider" />
             <controls:SettingsCard Header="{l:Tr Key=Settings_Accent}" Description="{l:Tr Key=Settings_AccentHint}">
-              <ItemsControl x:Name="AccentSwatches" ItemsSource="{Binding AccentOptions}" />
+              <ItemsControl x:Name="AccentSwatches" ItemsSource="{Binding AccentOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="4" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <!-- Swatches are the one place a color comes from data, not a theme key. -->
+                  <DataTemplate x:DataType="settings:AccentOption">
+                    <RadioButton Classes="swatch" GroupName="Accent"
+                                 Background="{Binding Value, Converter={x:Static controls:AccentSwatchConverter.Instance}}"
+                                 Foreground="{Binding Value, Converter={x:Static controls:AccentSwatchConverter.Instance}, ConverterParameter=Check}"
+                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                 IsCheckedChanged="OnAccentCheckedChanged"
+                                 ToolTip.Tip="{Binding Label}"
+                                 AutomationProperties.Name="{Binding Label}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
             </controls:SettingsCard>
             <!-- ponytail: the Backdrop row (Mica, Acrylic) returns with the window surfaces in
                  batch 8; until then nothing would apply it. -->
@@ -96,7 +155,7 @@
                               Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
             <TextBlock Grid.Column="1" Text="{l:Tr Key=Settings_RestartHint}" TextWrapping="Wrap" VerticalAlignment="Center" />
             <Button x:Name="RestartButton" Grid.Column="2" Classes="accent" Margin="12,0,0,0"
-                    Content="{l:Tr Key=Settings_RestartNow}" />
+                    Content="{l:Tr Key=Settings_RestartNow}" Click="OnRestartClick" />
           </Grid>
         </Border>
       </StackPanel>
