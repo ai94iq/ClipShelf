@@ -180,4 +180,7 @@
   <data name="Welcome_Hotkey" xml:space="preserve"><value>اضغط {0} في أي مكان لفتح النافذة العائمة، ثم اختر عنصرًا للصقه في التطبيق الذي كنت فيه.</value></data>
   <data name="Welcome_Ok" xml:space="preserve"><value>فهمت</value></data>
   <data name="Welcome_Tray" xml:space="preserve"><value>يبقى ClipShelf يعمل في منطقة الإشعارات — افتح الإعدادات أو اخرج من أيقونته.</value></data>
+  <data name="Window_Minimize" xml:space="preserve"><value>تصغير</value></data>
+  <data name="Window_Maximize" xml:space="preserve"><value>تكبير</value></data>
+  <data name="Window_Close" xml:space="preserve"><value>إغلاق</value></data>
 </root>

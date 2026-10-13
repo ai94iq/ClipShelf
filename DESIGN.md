@@ -17,6 +17,8 @@ surface follow its WinUI file on `main`; see the
 | `ClipShelfAccentSubtleBrush` | selected rail item, selected or checked row | Fluent has no translucent accent tint; it is `SystemAccentColor` at 15% (light) / 25% (dark), so it follows the chosen accent |
 | `ClipShelfCardShadow` | settings groups, history list, dialogs | Fluent has no card elevation shadow |
 | `ClipShelfCanvasBrush` | window surface (main window, welcome) | Fluent's window and cards share one color; main's layers: Light #E6E6E6, Dark #202020, Black #000000 |
+| `ClipShelfLayerBrush` | the content layer under the title bar | main's LayerFillColorDefault: Light #EFEFEF, Dark a 5% white wash (reads over Mica), Black #000000 |
+| `ClipShelfCaptionCloseBrush` | close button hover | Fluent has no caption buttons, so no close red (#C42B1C) |
 | `ClipShelfCardBrush` | settings groups, history list, flyout | the card layer over the canvas: Light #FFFFFF, Dark #2B2B2B, Black #000000 |
 
 - Full black is its own variant (`ThemeService.Black`) inheriting Dark; only the entries above
@@ -41,7 +43,11 @@ literal color appears outside `Exceptions.axaml`.
 
 ## Window chrome
 
-The OS draws the title bar on every platform. Avalonia 12's own drawn caption (with
-`ExtendClientAreaToDecorationsHint`) doubled the title and added a fullscreen button, so the
-title row from the WinUI app is not reproduced; the Settings search sits at the top of the
-window instead.
+The main window runs its content into the title bar, as main does: `WindowDecorations="BorderOnly"`
+with `ExtendClientAreaToDecorationsHint`, and our own title row carrying the app name, the Settings
+search and the caption buttons. Avalonia 12 dropped the system-chrome hint and its own drawn
+caption doubled the title and added a fullscreen button, so the row is ours and each part carries
+`WindowDecorationProperties.ElementRole` (TitleBar, MinimizeButton, MaximizeButton, CloseButton;
+the search is `User`). Probed live: Windows answers HTCAPTION, HTMINBUTTON, HTMAXBUTTON (snap
+layouts) and HTCLOSE over those parts. The section sits on `ClipShelfLayerBrush` with a rounded
+leading corner. The welcome window keeps the OS title bar.

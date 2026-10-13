@@ -14,6 +14,10 @@
            soft gray canvas under white cards, so the groups read apart. -->
       <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#E6E6E6" />
       <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#FFFFFF" />
+      <!-- The content layer between canvas and cards (main's LayerFillColorDefault). -->
+      <SolidColorBrush x:Key="ClipShelfLayerBrush" Color="#EFEFEF" />
+      <!-- Fluent has no caption buttons, so no close-button red. -->
+      <SolidColorBrush x:Key="ClipShelfCaptionCloseBrush" Color="#C42B1C" />
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
       <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="{DynamicResource SystemAccentColor}" Opacity="0.25" />
@@ -21,12 +25,16 @@
       <!-- Windows 11 dark layers: the base surface, and cards a step lighter. -->
       <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#202020" />
       <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#2B2B2B" />
+      <!-- A faint white wash, so the layer reads over Mica as well as over the canvas. -->
+      <SolidColorBrush x:Key="ClipShelfLayerBrush" Color="#0DFFFFFF" />
+      <SolidColorBrush x:Key="ClipShelfCaptionCloseBrush" Color="#C42B1C" />
     </ResourceDictionary>
     <!-- Full black: black throughout, for OLED screens; the borders keep the layers apart.
          Everything not listed here comes from Dark. -->
     <ResourceDictionary x:Key="{x:Static services:ThemeService.Black}">
       <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#000000" />
       <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#000000" />
+      <SolidColorBrush x:Key="ClipShelfLayerBrush" Color="#000000" />
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

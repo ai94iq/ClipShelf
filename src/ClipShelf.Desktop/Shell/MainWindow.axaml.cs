@@ -30,6 +30,19 @@ public sealed partial class MainWindow : Window
                 _settings.Value.ViewModel.Filter = SearchBox.Text ?? string.Empty;
         };
 
+        // Mouse clicks on the caption buttons go to the OS through their roles; these handle
+        // keyboard and screen-reader activation.
+        MinimizeButton.Click += (_, _) => WindowState = WindowState.Minimized;
+        MaximizeButton.Click += (_, _) =>
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        CloseButton.Click += (_, _) => Close();
+        PropertyChanged += (_, e) =>
+        {
+            if (e.Property != WindowStateProperty) return;
+            MaximizeGlyph.IsVisible = WindowState != WindowState.Maximized;
+            RestoreGlyph.IsVisible = WindowState == WindowState.Maximized;
+        };
+
         Closing += (_, args) =>
         {
             if (_lifetime.IsExiting) return;
