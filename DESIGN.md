@@ -16,6 +16,19 @@ surface follow its WinUI file on `main`; see the
 |---|---|---|
 | `ClipShelfAccentSubtleBrush` | selected rail item, selected or checked row | Fluent has no translucent accent tint; it is `SystemAccentColor` at 15% (light) / 25% (dark), so it follows the chosen accent |
 | `ClipShelfCardShadow` | settings groups, history list, dialogs | Fluent has no card elevation shadow |
+| `ClipShelfCanvasBrush` | window surface (main window, welcome) | Fluent's window and cards share one color; main's layers: Light #E6E6E6, Dark #202020, Black #000000 |
+| `ClipShelfCardBrush` | settings groups, history list, flyout | the card layer over the canvas: Light #FFFFFF, Dark #2B2B2B, Black #000000 |
+
+- Full black is its own variant (`ThemeService.Black`) inheriting Dark; only the entries above
+  differ. Its dictionary is keyed with `x:Static`, since the variant type converter rejects
+  custom variants.
+- `ThemeService` overrides two Fluent behaviors in code, because they depend on the chosen
+  accent: text and glyphs on an accent fill (accent buttons, checked toggles and boxes) take
+  black on a light accent and white on a dark one, and accent-colored text on Light uses the
+  accent's darker shade (`SystemAccentColorDark2`).
+- Backdrops (`Services/WindowSurface.cs`): Light and full black are opaque, Dark and System
+  show the chosen backdrop, the flyout is always acrylic; a window the backdrop does not reach
+  keeps its solid surface.
 
 - A color that looks wrong is fixed by choosing a different Fluent key or by an exceptions entry,
   never by a literal in a view. `App.axaml` carries no ad-hoc style setters.
@@ -23,12 +36,8 @@ surface follow its WinUI file on `main`; see the
 ## Guards
 
 `tests/ClipShelf.Desktop.Tests/TokenRuleTests.cs` fails when a view references a key that does
-not resolve in Light or Dark, when an exception stops differing between variants, or when a
+not resolve in Light, Dark or Black, when an exception stops differing between variants, or when a
 literal color appears outside `Exceptions.axaml`.
-
-## Not decided yet
-
-Full black surfaces (renders as Dark until the dark pass, batch 8).
 
 ## Window chrome
 
