@@ -90,4 +90,29 @@ public sealed class VisualGuardTests
 
         Assert.Equal(1, check.Opacity);
     });
+
+    // Main's type ramp: page titles 28 semibold (Title), group titles 14 semibold (BodyStrong).
+    [Fact]
+    public Task Settings_titles_follow_mains_type_ramp() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit();
+        Laid(new Window { Content = kit.Page, Width = 900, Height = 700 });
+
+        var title = kit.Page.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == "Settings");
+        var group = kit.Page.GetVisualDescendants().OfType<TextBlock>().First(t => t.Classes.Contains("group"));
+
+        Assert.Equal((28.0, Avalonia.Media.FontWeight.SemiBold), (title.FontSize, title.FontWeight));
+        Assert.Equal((14.0, Avalonia.Media.FontWeight.SemiBold), (group.FontSize, group.FontWeight));
+    });
+
+    [Fact]
+    public Task The_history_title_matches_settings() => Ui.Run(() =>
+    {
+        var page = new HistoryPage(new ViewModelKit().ViewModel);
+        Laid(new Window { Content = page, Width = 800, Height = 600 });
+
+        var title = page.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == "History");
+
+        Assert.Equal(28.0, title.FontSize);
+    });
 }

@@ -54,4 +54,14 @@ public sealed class SurfaceTests
         var group = kit.Page.FindControl<StackPanel>("TrayGroup")!.Children.OfType<Border>().Single();
         Assert.Equal(Color.Parse("#2B2B2B"), Assert.IsType<ISolidColorBrush>(group.Background, exactMatch: false).Color);
     });
+
+    // Full black cards sit on a black canvas: only their edge tells them apart, so it must show.
+    [Fact]
+    public Task Full_black_keeps_visible_card_edges() => Ui.Run(() =>
+    {
+        var edge = Resolve("SystemControlTransientBorderBrush", ThemeService.Black);
+
+        Assert.Equal(255, edge.A);
+        Assert.InRange(edge.R, 0x30, 0x50);
+    });
 }

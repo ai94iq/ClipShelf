@@ -21,8 +21,13 @@ surface follow its WinUI file on `main`; see the
 | `ClipShelfCaptionCloseBrush` | close button hover | Fluent has no caption buttons, so no close red (#C42B1C) |
 | `ClipShelfCardBrush` | settings groups, history list, flyout | the card layer over the canvas: Light #FFFFFF, Dark #2B2B2B, Black #000000 |
 
+- Avalonia's FluentTheme carries Fluent v1 control fills (buttons 20% black, inputs 40% white
+  with a 60% black border). `Exceptions.axaml` maps the rest, hover and press states of buttons,
+  combo boxes and text boxes onto WinUI 3's ControlFillColor and ControlStrokeColor values, so
+  controls match main; focus and disabled states stay Fluent's.
 - Full black is its own variant (`ThemeService.Black`) inheriting Dark; only the entries above
-  differ. Its dictionary is keyed with `x:Static`, since the variant type converter rejects
+  differ, plus a visible `SystemControlTransientBorderBrush` (#3A3A3A) so black cards keep
+  their edge on the black canvas. Its dictionary is keyed with `x:Static`, since the variant type converter rejects
   custom variants.
 - `ThemeService` overrides two Fluent behaviors in code, because they depend on the chosen
   accent: text and glyphs on an accent fill (accent buttons, checked toggles and boxes) take

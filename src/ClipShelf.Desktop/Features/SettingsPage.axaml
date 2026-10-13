@@ -24,9 +24,9 @@
       </Setter>
     </Style>
     <Style Selector="TextBlock.group">
-      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Margin" Value="0,26,0,8" />
+      <Setter Property="Margin" Value="0,24,0,8" />
     </Style>
     <Style Selector="Border.group">
       <Setter Property="CornerRadius" Value="8" />
@@ -98,7 +98,7 @@
 
   <ScrollViewer>
     <StackPanel Margin="0,0,12,24">
-      <TextBlock Text="{l:Tr Key=Nav_Settings}" FontSize="24" FontWeight="SemiBold" />
+      <TextBlock Text="{l:Tr Key=Nav_Settings}" FontSize="28" FontWeight="SemiBold" />
 
       <!-- Appearance -->
       <StackPanel x:Name="AppearanceGroup" IsVisible="{Binding ShowAppearanceGroup}">
