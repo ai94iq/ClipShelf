@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Styling;
 
+using ClipShelf.Desktop.Services;
+
 namespace ClipShelf.Desktop.Tests;
 
 // Fluent is the only token source; ClipShelf owns just the exceptions block.
@@ -23,9 +25,10 @@ public sealed class TokenRuleTests
     [Theory]
     [InlineData("Light")]
     [InlineData("Dark")]
+    [InlineData("Black")]
     public Task Every_referenced_key_resolves(string variant) => Ui.Run(() =>
     {
-        var theme = variant == "Light" ? ThemeVariant.Light : ThemeVariant.Dark;
+        var theme = variant switch { "Light" => ThemeVariant.Light, "Dark" => ThemeVariant.Dark, _ => ThemeService.Black };
         foreach (var key in ReferencedKeys().Concat(ExceptionKeys))
             Assert.True(Application.Current!.TryGetResource(key, theme, out _), $"{key} missing in {variant}");
     });
