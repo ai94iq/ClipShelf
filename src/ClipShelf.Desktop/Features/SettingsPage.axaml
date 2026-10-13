@@ -183,8 +183,13 @@
                             AutomationProperties.Name="{l:Tr Key=Settings_ShowTrayIcon}"
                             IsChecked="{Binding ShowTrayIcon}" />
             </controls:SettingsCard>
-            <!-- ponytail: "Double-click opens History" returns once the tray double-click is
-                 wired (Avalonia's tray has no such event, see AppShellService). -->
+<Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_DoubleClickTray}">
+              <ToggleSwitch x:Name="DoubleClickSwitch"
+                            OnContent="{l:Tr Key=Common_Enabled}" OffContent="{l:Tr Key=Common_Disabled}"
+                            AutomationProperties.Name="{l:Tr Key=Settings_DoubleClickTray}"
+                            IsChecked="{Binding DoubleClickOpensHistory}" />
+            </controls:SettingsCard>
           </StackPanel>
         </Border>
       </StackPanel>

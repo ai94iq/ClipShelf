@@ -13,6 +13,7 @@ public sealed class AppShellServiceTests
     private readonly ICategoryLockService _locks = Substitute.For<ICategoryLockService>();
     private readonly IGlobalHotkey _hotkey = Substitute.For<IGlobalHotkey>();
     private readonly AppLifetime _lifetime = new();
+    private readonly ManualTime _time = new();
     private MainWindow? _window;
     private FlyoutTestKit? _flyout;
 
@@ -125,6 +126,46 @@ public sealed class AppShellServiceTests
         Assert.False(_window.IsSettings);
     });
 
+    [Fact]
+    public Task A_tray_click_toggles_the_flyout() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings());
+
+        shell.OnTrayClicked();
+        Assert.True(_flyout!.Window.IsOpen);
+
+        _time.Advance(TimeSpan.FromSeconds(1));
+        shell.OnTrayClicked();
+        Assert.False(_flyout.Window.IsOpen);
+    });
+
+    [Fact]
+    public Task A_tray_double_click_opens_history() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings { OpenHistoryOnDoubleClick = true });
+
+        shell.OnTrayClicked();
+        _time.Advance(TimeSpan.FromMilliseconds(200));
+        shell.OnTrayClicked();
+
+        Assert.False(_flyout!.Window.IsOpen);
+        Assert.True(_window!.IsVisible);
+        Assert.False(_window.IsSettings);
+    });
+
+    [Fact]
+    public Task With_double_click_off_the_second_click_just_toggles() => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings { OpenHistoryOnDoubleClick = false });
+
+        shell.OnTrayClicked();
+        _time.Advance(TimeSpan.FromMilliseconds(200));
+        shell.OnTrayClicked();
+
+        Assert.False(_flyout!.Window.IsOpen);
+        Assert.Null(_window);
+    });
+
     private AppShellService Create(AppSettings settings) =>
         Create(new SettingsService(Substitute.For<ISettingsStore>(), settings));
 
@@ -132,5 +173,5 @@ public sealed class AppShellServiceTests
         new(_hotkey, settings, Substitute.For<ISystemTheme>(), _locks, _lifetime,
             new Lazy<MainWindow>(() => _window = new MainWindow(_lifetime)),
             new Lazy<FlyoutWindow>(() => (_flyout = new FlyoutTestKit()).Window),
-            NullLogger<AppShellService>.Instance);
+            NullLogger<AppShellService>.Instance, _time);
 }

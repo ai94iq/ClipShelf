@@ -21,6 +21,8 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     private TrayIcon? _tray;
     private string? _appliedTrayIconFile;
     private HotkeyGesture? _appliedHotkey;
+    private readonly TimeProvider _time;
+    private DateTimeOffset? _lastTrayClick;
 
     public AppShellService(
         IGlobalHotkey hotkey,
@@ -30,8 +32,10 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
         AppLifetime lifetime,
         Lazy<MainWindow> mainWindow,
         Lazy<FlyoutWindow> flyout,
-        ILogger<AppShellService> log)
+        ILogger<AppShellService> log,
+        TimeProvider? time = null)
     {
+        _time = time ?? TimeProvider.System;
         _hotkey = hotkey;
         _settings = settings;
         _systemTheme = systemTheme;
@@ -64,6 +68,29 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
     public void ShowSettings() => _mainWindow.Value.ShowSettings();
 
     public void TogglePanel() => Flyout.Toggle();
+
+    // Avalonia's tray has no double-click event: a second click within the system's double-click
+    // time counts as one. The first click already toggled the flyout, as main does, so the
+    // flyout never waits to see whether another click follows.
+    internal void OnTrayClicked()
+    {
+        var now = _time.GetUtcNow();
+        var isDouble = _lastTrayClick is { } last && now - last <= DoubleClickTime();
+        _lastTrayClick = isDouble ? null : now;
+
+        if (isDouble && _settings.Current.OpenHistoryOnDoubleClick)
+        {
+            Flyout.HideFlyout();
+            ShowHistory();
+            return;
+        }
+
+        TogglePanel();
+    }
+
+    private static TimeSpan DoubleClickTime() =>
+        Application.Current?.PlatformSettings?.GetDoubleTapTime(Avalonia.Input.PointerType.Mouse)
+        ?? TimeSpan.FromMilliseconds(500);
 
     // Built on first use; the flyout's "open full history" hands over to the main window.
     private FlyoutWindow Flyout
@@ -98,9 +125,7 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
             ToolTipText = Tr.Get("App_Name"),
             Menu = BuildMenu(),
         };
-        // ponytail: Avalonia's tray has no double-click event, so "double-click opens History"
-        // is not wired; add it with a click-timing check if the setting must keep working.
-        _tray.Clicked += (_, _) => TogglePanel();
+        _tray.Clicked += (_, _) => OnTrayClicked();
         TrayIcon.SetIcons(Application.Current!, [_tray]);
         _ = Flyout;              // build the flyout now so the first hotkey press opens it at once
         ApplyTraySettings();

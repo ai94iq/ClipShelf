@@ -67,6 +67,17 @@ public sealed class SettingsPageTests
     });
 
     [Fact]
+    public Task The_tray_double_click_switch_saves() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit(new AppSettings { OpenHistoryOnDoubleClick = true });
+        Host(kit.Page);
+
+        kit.Page.FindControl<ToggleSwitch>("DoubleClickSwitch")!.IsChecked = false;
+
+        Assert.False(kit.Settings.Current.OpenHistoryOnDoubleClick);
+    });
+
+    [Fact]
     public Task Picking_a_theme_applies_it_at_once() => Ui.Run(() =>
     {
         var kit = new SettingsKit(new AppSettings { Theme = AppTheme.Light });
