@@ -6,7 +6,20 @@ namespace ClipShelf.Desktop.Controls;
 // The per-row category menu: assign a category, take one away, or create one and assign it.
 internal static class CategoryMenu
 {
+    // Fire-and-forget from the row button, so a failure is logged here instead of lost.
     public static async Task ShowAsync(Control anchor, ClipItemViewModel item, ClipboardPanelViewModel panel)
+    {
+        try
+        {
+            await ShowCoreAsync(anchor, item, panel);
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Showing the category menu failed");
+        }
+    }
+
+    private static async Task ShowCoreAsync(Control anchor, ClipItemViewModel item, ClipboardPanelViewModel panel)
     {
         var categories = await panel.GetCategoriesAsync();
         var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedRight };
