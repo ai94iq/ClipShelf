@@ -1,7 +1,7 @@
 # DESIGN.md
 
 Visual rules for `src/ClipShelf.Desktop` (Avalonia 12). The structure and behavior of every
-surface follow its WinUI file on `main`; see the
+surface follow the WinUI app it replaced (in git history before the swap, ADR 0006); see the
 [restart design](docs/superpowers/specs/2026-10-12-avalonia-restart-design.md) for the batch order.
 
 ## Tokens

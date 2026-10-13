@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 set "RESULT=0"
 
-dotnet run --project "src\ClipShelf.App\ClipShelf.App.csproj" -c Debug -v q
+dotnet run --project "src\ClipShelf.Desktop\ClipShelf.Desktop.csproj" -c Debug -v q
 if errorlevel 1 set "RESULT=1"
 
 if "%RESULT%"=="1" echo [run] FAILED

@@ -21,7 +21,11 @@ public sealed partial class App : Application
     // let go of the single-instance pipe.
     internal static bool RestartOnExit { get; private set; }
 
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        AppFonts.Apply(this, Culture.IsRtl);     // Culture is set in Program, before Avalonia starts
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {

@@ -1,7 +1,7 @@
 # 0002. Tray icon library
 
 Date: 2026-10-01
-Status: Accepted
+Status: Superseded by 0006
 
 ## Context
 The app lives in the notification area and has no permanent window. WinUI 3 (Windows App SDK) provides no tray-icon control, and hand-writing `Shell_NotifyIcon` interop would add a large amount of unowned Win32 code for the same result.
