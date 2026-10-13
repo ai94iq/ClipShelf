@@ -44,6 +44,7 @@ public static class ServiceRegistration
     {
         services.AddSingleton<AppLifetime>();
         services.AddSingleton<HistoryPage>();
+        services.AddSingleton<SettingsPage>();
         services.AddSingleton<MainWindow>();
         services.AddTransient<ClipboardPanelViewModel>();
         services.AddSingleton(TimeProvider.System);

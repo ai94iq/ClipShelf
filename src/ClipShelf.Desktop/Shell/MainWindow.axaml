@@ -38,8 +38,6 @@
 
   <!-- The OS draws the title bar (app name, caption buttons) on every platform; Avalonia's
        drawn caption doubled the title and added a fullscreen button. -->
-  <!-- The OS draws the title bar (app name, caption buttons) on every platform; Avalonia's
-       drawn caption doubled the title and added a fullscreen button. -->
   <Grid ColumnDefinitions="48,*">
     <!-- Compact rail: History on top, Settings in the footer. -->
     <Grid RowDefinitions="Auto,*,Auto" Margin="4,8,4,8">

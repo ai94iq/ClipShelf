@@ -127,6 +127,22 @@ public sealed class MainWindowTests
     });
 
     [Fact]
+    public Task Settings_shows_the_real_page_and_the_search_filters_it() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit();
+        var window = new MainWindow(new AppLifetime(), settings: new Lazy<SettingsPage>(() => kit.Page));
+
+        window.ShowSettings();
+        window.SearchText = "tray";
+
+        Assert.Same(kit.Page, window.FindControl<ContentControl>("Section")!.Content);
+        Assert.Equal("tray", kit.ViewModel.Filter);
+
+        window.ShowHistory();
+        Assert.Equal(string.Empty, kit.ViewModel.Filter);
+    });
+
+    [Fact]
     public Task Leaving_history_or_hiding_the_window_marks_it_out_of_view() => Ui.Run(() =>
     {
         var kit = new ViewModelKit();

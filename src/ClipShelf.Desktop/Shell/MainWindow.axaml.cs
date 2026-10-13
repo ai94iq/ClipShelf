@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Media;
 using ClipShelf.Desktop.Features;
 
 namespace ClipShelf.Desktop.Shell;
@@ -9,11 +8,13 @@ public sealed partial class MainWindow : Window
 {
     private readonly AppLifetime _lifetime;
     private readonly Lazy<HistoryPage>? _history;
+    private readonly Lazy<SettingsPage>? _settings;
 
-    public MainWindow(AppLifetime lifetime, Lazy<HistoryPage>? history = null)
+    public MainWindow(AppLifetime lifetime, Lazy<HistoryPage>? history = null, Lazy<SettingsPage>? settings = null)
     {
         _lifetime = lifetime;
         _history = history;
+        _settings = settings;
         InitializeComponent();
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
 
@@ -21,6 +22,13 @@ public sealed partial class MainWindow : Window
         SettingsButton.IsCheckedChanged += (_, _) => { if (SettingsButton.IsChecked == true) Select(settings: true); };
 
         // Closing only hides the window; the app keeps running in the tray.
+        // The search box filters the Settings groups.
+        SearchBox.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == TextBox.TextProperty && _settings is { IsValueCreated: true })
+                _settings.Value.ViewModel.Filter = SearchBox.Text ?? string.Empty;
+        };
+
         Closing += (_, args) =>
         {
             if (_lifetime.IsExiting) return;
@@ -76,13 +84,15 @@ public sealed partial class MainWindow : Window
         }
 
         MarkHistoryVisible(false);
-        // ponytail: Settings shows its title until the real page lands (batch 6).
-        Section.Content = new TextBlock
+        if (settings && _settings is not null)
         {
-            Text = Tr.Get(settings ? "Nav_Settings" : "History_Title"),
-            FontSize = 24,
-            FontWeight = FontWeight.SemiBold,
-        };
+            Section.Content = _settings.Value;
+            _settings.Value.ViewModel.Filter = SearchBox.Text ?? string.Empty;
+            _ = _settings.Value.LoadAsync();
+            return;
+        }
+
+        Section.Content = null;
     }
 
     // Out of view, the history view model skips background refreshes.

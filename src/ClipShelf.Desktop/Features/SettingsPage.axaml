@@ -1,0 +1,319 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:ClipShelf.Desktop.Localization"
+             xmlns:controls="using:ClipShelf.Desktop.Controls"
+             xmlns:settings="using:ClipShelf.Presentation.Features.Settings"
+             x:Class="ClipShelf.Desktop.Features.SettingsPage"
+             x:DataType="settings:SettingsViewModel">
+  <UserControl.Styles>
+    <Style Selector="controls|SettingsCard">
+      <Setter Property="Padding" Value="16,10" />
+      <Setter Property="MinHeight" Value="60" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Grid ColumnDefinitions="*,Auto" Margin="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
+            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="2">
+              <TextBlock Text="{TemplateBinding Header}" TextWrapping="Wrap" />
+              <TextBlock Text="{TemplateBinding Description}" TextWrapping="Wrap" FontSize="12"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                         IsVisible="{TemplateBinding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" VerticalAlignment="Center" />
+          </Grid>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="TextBlock.group">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="0,26,0,8" />
+    </Style>
+    <Style Selector="Border.group">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlTransientBorderBrush}" />
+    </Style>
+    <Style Selector="Border.divider">
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource SystemControlTransientBorderBrush}" />
+    </Style>
+    <Style Selector="ComboBox, NumericUpDown, DropDownButton">
+      <Setter Property="MinHeight" Value="36" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="MinWidth" Value="240" />
+    </Style>
+    <Style Selector="TextBlock.status">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="Margin" Value="16,0,16,12" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    </Style>
+    <Style Selector="TextBlock.status.error">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <ScrollViewer>
+    <StackPanel Margin="0,0,12,24">
+      <TextBlock Text="{l:Tr Key=Nav_Settings}" FontSize="24" FontWeight="SemiBold" />
+
+      <!-- Appearance -->
+      <StackPanel x:Name="AppearanceGroup" IsVisible="{Binding ShowAppearanceGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_Appearance}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Theme}">
+              <ComboBox x:Name="ThemeCombo"
+                        AutomationProperties.Name="{l:Tr Key=Settings_Theme}"
+                        ItemsSource="{Binding ThemeOptions}"
+                        SelectedItem="{Binding SelectedTheme}"
+                        DisplayMemberBinding="{ReflectionBinding Label}" />
+            </controls:SettingsCard>
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Accent}" Description="{l:Tr Key=Settings_AccentHint}">
+              <ItemsControl x:Name="AccentSwatches" ItemsSource="{Binding AccentOptions}" />
+            </controls:SettingsCard>
+            <!-- ponytail: the Backdrop row (Mica, Acrylic) returns with the window surfaces in
+                 batch 8; until then nothing would apply it. -->
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Language}" Description="{l:Tr Key=Settings_LanguageHint}">
+              <ComboBox AutomationProperties.Name="{l:Tr Key=Settings_Language}"
+                        ItemsSource="{Binding LanguageOptions}"
+                        SelectedItem="{Binding SelectedLanguage}"
+                        DisplayMemberBinding="{ReflectionBinding Label}" />
+            </controls:SettingsCard>
+          </StackPanel>
+        </Border>
+
+        <!-- A language or accent change needs a fresh process; offer it right here. -->
+        <Border x:Name="RestartBar" Margin="0,8,0,0" Padding="16,10" CornerRadius="8"
+                Background="{DynamicResource ClipShelfAccentSubtleBrush}"
+                IsVisible="{Binding NeedsRestart}">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <controls:AppIcon Kind="Info" Width="16" Height="16" Margin="0,0,12,0"
+                              Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
+            <TextBlock Grid.Column="1" Text="{l:Tr Key=Settings_RestartHint}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            <Button x:Name="RestartButton" Grid.Column="2" Classes="accent" Margin="12,0,0,0"
+                    Content="{l:Tr Key=Settings_RestartNow}" />
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- Tray -->
+      <StackPanel x:Name="TrayGroup" IsVisible="{Binding ShowTrayGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_Tray}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_TrayIcon}">
+              <ComboBox AutomationProperties.Name="{l:Tr Key=Settings_TrayIcon}"
+                        ItemsSource="{Binding TrayIconOptions}"
+                        SelectedItem="{Binding SelectedTrayIcon}"
+                        DisplayMemberBinding="{ReflectionBinding Label}" />
+            </controls:SettingsCard>
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_ShowTrayIcon}">
+              <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}" OffContent="{l:Tr Key=Common_Disabled}"
+                            AutomationProperties.Name="{l:Tr Key=Settings_ShowTrayIcon}"
+                            IsChecked="{Binding ShowTrayIcon}" />
+            </controls:SettingsCard>
+            <!-- ponytail: "Double-click opens History" returns once the tray double-click is
+                 wired (Avalonia's tray has no such event, see AppShellService). -->
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Behavior -->
+      <StackPanel x:Name="BehaviorGroup" IsVisible="{Binding ShowBehaviorGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_Behavior}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_RunAtStartup}" Description="{l:Tr Key=Settings_RunAtStartupHint}">
+              <ToggleSwitch OnContent="{l:Tr Key=Common_Enabled}" OffContent="{l:Tr Key=Common_Disabled}"
+                            AutomationProperties.Name="{l:Tr Key=Settings_RunAtStartup}"
+                            IsChecked="{Binding RunAtStartup}" />
+            </controls:SettingsCard>
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Hotkey}" Description="{l:Tr Key=Settings_HotkeyHint}">
+              <Button x:Name="HotkeyButton" MinWidth="160" MinHeight="36" HorizontalContentAlignment="Center"
+                      AutomationProperties.Name="{l:Tr Key=Settings_Hotkey}">
+                <Panel>
+                  <TextBlock x:Name="HotkeyText" Text="{Binding HotkeyDisplay}" />
+                  <TextBlock x:Name="HotkeyPrompt" Text="{l:Tr Key=Settings_HotkeyPrompt}" IsVisible="False" />
+                </Panel>
+              </Button>
+            </controls:SettingsCard>
+          </StackPanel>
+        </Border>
+
+        <!-- A chosen shortcut that could not be registered; the previous one keeps working. -->
+        <Border x:Name="HotkeyWarning" Margin="0,8,0,0" Padding="16,10" CornerRadius="8"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderBrush="{DynamicResource SystemControlErrorTextForegroundBrush}" BorderThickness="1"
+                IsVisible="{Binding HasHotkeyWarning}">
+          <Grid ColumnDefinitions="Auto,*">
+            <controls:AppIcon Kind="ErrorCircle" Width="16" Height="16" Margin="0,2,12,0" VerticalAlignment="Top"
+                              Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+            <StackPanel Grid.Column="1" Spacing="4">
+              <TextBlock Text="{Binding HotkeyConflictTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding HotkeyConflictDetail}" TextWrapping="Wrap" />
+              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                <TextBlock Text="{l:Tr Key=Settings_HotkeyAlternatives}" VerticalAlignment="Center"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                <ItemsControl x:Name="HotkeyAlternatives" ItemsSource="{Binding HotkeyAlternatives}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" Spacing="8" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Button Content="{ReflectionBinding Label}" Height="28" Padding="12,4" FontSize="13"
+ />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- History -->
+      <StackPanel x:Name="HistoryGroup" IsVisible="{Binding ShowHistoryGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_History}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_MaxItems}" Description="{l:Tr Key=Settings_MaxItemsHint}">
+              <NumericUpDown x:Name="MaxItemsBox" Width="200"
+                             Minimum="5" Maximum="1000" Increment="5" FormatString="0"
+                             AutomationProperties.Name="{l:Tr Key=Settings_MaxItems}"
+                             Value="{Binding MaxItems}" />
+            </controls:SettingsCard>
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Retention}" Description="{l:Tr Key=Settings_RetentionHint}">
+              <ComboBox AutomationProperties.Name="{l:Tr Key=Settings_Retention}"
+                        ItemsSource="{Binding RetentionOptions}"
+                        SelectedItem="{Binding SelectedRetention}"
+                        DisplayMemberBinding="{ReflectionBinding Label}" />
+            </controls:SettingsCard>
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_ClearOnSignOut}" Description="{l:Tr Key=Settings_ClearOnSignOutHint}">
+              <ToggleSwitch x:Name="ClearOnSignOutSwitch"
+                            OnContent="{l:Tr Key=Common_Enabled}" OffContent="{l:Tr Key=Common_Disabled}"
+                            AutomationProperties.Name="{l:Tr Key=Settings_ClearOnSignOut}"
+                            IsChecked="{Binding ClearOnSignOut}" />
+            </controls:SettingsCard>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Export -->
+      <StackPanel x:Name="ExportGroup" IsVisible="{Binding ShowExportGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Common_Export}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Export}" Description="{l:Tr Key=Settings_ExportHint}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <ComboBox MinWidth="120"
+                          AutomationProperties.Name="{l:Tr Key=Settings_Export}"
+                          ItemsSource="{Binding ExportFormatOptions}"
+                          SelectedItem="{Binding SelectedExportFormat}"
+                          DisplayMemberBinding="{ReflectionBinding Label}" />
+                <Button x:Name="ExportButton" Classes="accent" MinHeight="36"
+                        Content="{l:Tr Key=Common_Export}"
+                        AutomationProperties.Name="{l:Tr Key=Common_Export}" />
+              </StackPanel>
+            </controls:SettingsCard>
+            <TextBlock x:Name="ExportStatus" Classes="status" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportStatus}" />
+            <TextBlock x:Name="ExportError" Classes="status error" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportError}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Categories and locks -->
+      <StackPanel x:Name="CategoriesGroup" IsVisible="{Binding ShowCategoriesGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_Categories}" />
+        <Border Classes="group">
+          <StackPanel>
+            <!-- ponytail: the password row (set, change, remove) needs the prompt dialog; it
+                 returns in batch 7. -->
+            <controls:SettingsCard Header="{l:Tr Key=Settings_LockWhen}">
+              <DropDownButton MinWidth="160" Content="{Binding LockWhenText}"
+                              AutomationProperties.Name="{l:Tr Key=Settings_LockWhen}">
+                <DropDownButton.Flyout>
+                  <MenuFlyout>
+                    <MenuItem Header="{l:Tr Key=Settings_LockOnExit}" ToggleType="CheckBox" IsChecked="{Binding LockOnExit}" />
+                    <MenuItem Header="{l:Tr Key=Settings_LockOnMinimize}" ToggleType="CheckBox" IsChecked="{Binding LockOnMinimize}" />
+                    <MenuItem Header="{l:Tr Key=Settings_LockOnShutdown}" ToggleType="CheckBox" IsChecked="{Binding LockOnShutdown}" />
+                  </MenuFlyout>
+                </DropDownButton.Flyout>
+              </DropDownButton>
+            </controls:SettingsCard>
+            <Border Classes="divider" IsVisible="{Binding ShowCategoriesEmpty}" />
+            <TextBlock x:Name="CategoriesEmpty" Text="{l:Tr Key=Settings_CategoriesEmpty}" TextWrapping="Wrap" Margin="16"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       IsVisible="{Binding ShowCategoriesEmpty}" />
+            <ItemsControl x:Name="CategoryList" ItemsSource="{Binding CategoryRows}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="settings:CategoryRow">
+                  <StackPanel>
+                    <Border Classes="divider" />
+                    <controls:SettingsCard Header="{Binding Name}">
+                      <!-- ponytail: lock without a password yet, unlock, rename and delete all
+                           ask through a dialog; they return in batch 7. -->
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Classes="lock" MinHeight="36" Content="{l:Tr Key=Settings_LockCategory}">
+                          <Button.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                              <Binding Path="ShowLock" />
+                              <Binding Path="$parent[ItemsControl].((settings:SettingsViewModel)DataContext).HasLockPassword" />
+                            </MultiBinding>
+                          </Button.IsVisible>
+                        </Button>
+                        <Button Classes="locknow" MinHeight="36" Content="{l:Tr Key=Settings_LockNow}"
+                                IsVisible="{Binding ShowLockNow}" />
+                      </StackPanel>
+                    </controls:SettingsCard>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Updates -->
+      <StackPanel x:Name="UpdatesGroup" IsVisible="{Binding ShowUpdatesGroup}">
+        <TextBlock Classes="group" Text="{l:Tr Key=Settings_Updates}" />
+        <Border Classes="group">
+          <StackPanel>
+            <controls:SettingsCard Header="{l:Tr Key=Settings_CheckUpdates}" Description="{l:Tr Key=Settings_CheckUpdatesHint}">
+              <Button x:Name="CheckUpdatesButton" MinHeight="36"
+                      Content="{l:Tr Key=Settings_CheckUpdatesButton}"
+                      IsEnabled="{Binding CanCheckUpdates}" />
+            </controls:SettingsCard>
+            <TextBlock x:Name="UpdateStatus" Classes="status" Text="{Binding UpdateStatus}" IsVisible="{Binding ShowUpdateStatus}" />
+            <TextBlock x:Name="UpdateError" Classes="status error" Text="{Binding UpdateStatus}" IsVisible="{Binding ShowUpdateError}" />
+            <HyperlinkButton x:Name="DownloadLink" Margin="8,0,8,8"
+                             Content="{l:Tr Key=Settings_Download}"
+                             NavigateUri="https://github.com/ai94iq/ClipShelf/releases/latest"
+                             IsVisible="{Binding UpdateAvailable}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Exit -->
+      <Border x:Name="ExitGroup" Classes="group" Margin="0,26,0,0" IsVisible="{Binding ShowExitGroup}">
+        <controls:SettingsCard Header="{l:Tr Key=Settings_ExitApp}" Description="{l:Tr Key=Settings_ExitHint}">
+          <Button x:Name="ExitButton" Content="{l:Tr Key=Common_Exit}" />
+        </controls:SettingsCard>
+      </Border>
+
+      <TextBlock x:Name="NoMatches" Text="{l:Tr Key=Settings_NoMatches}" Margin="0,26,0,0"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                 IsVisible="{Binding ShowNoMatches}" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
