@@ -32,7 +32,7 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="Focusable" Value="False" />
     </Style>
-    <Style Selector="Button.row controls|AppIcon">
+    <Style Selector="Button.row PathIcon">
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
     </Style>

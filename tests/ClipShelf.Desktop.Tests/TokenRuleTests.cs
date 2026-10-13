@@ -52,4 +52,14 @@ public sealed class TokenRuleTests
             .Select(Path.GetFileName);
         Assert.Empty(offenders);
     }
+
+    // AppIcon styles as PathIcon, so a selector naming AppIcon never matches and its setters are
+    // silently dropped (row icons once rendered at 20 px instead of 16).
+    [Fact]
+    public void Style_selectors_name_PathIcon_not_AppIcon()
+    {
+        var offenders = Directory.EnumerateFiles(Src, "*.axaml", SearchOption.AllDirectories)
+            .Where(f => Regex.IsMatch(File.ReadAllText(f), "Selector=\"[^\"]*AppIcon"));
+        Assert.Empty(offenders);
+    }
 }

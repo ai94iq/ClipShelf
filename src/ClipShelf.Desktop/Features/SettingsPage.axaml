@@ -91,7 +91,7 @@
     <Style Selector="RadioButton.swatch:checked /template/ Ellipse#SelectionRing">
       <Setter Property="Opacity" Value="1" />
     </Style>
-    <Style Selector="RadioButton.swatch:checked /template/ controls|AppIcon#Check">
+    <Style Selector="RadioButton.swatch:checked /template/ PathIcon#Check">
       <Setter Property="Opacity" Value="1" />
     </Style>
   </UserControl.Styles>
