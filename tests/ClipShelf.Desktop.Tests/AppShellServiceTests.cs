@@ -166,6 +166,19 @@ public sealed class AppShellServiceTests
         Assert.Null(_window);
     });
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public Task Minimizing_the_window_locks_categories_when_asked(bool lockOnMinimize) => Ui.Run(() =>
+    {
+        var shell = Create(new AppSettings { LockOnMinimize = lockOnMinimize });
+        shell.ShowHistory();
+
+        _window!.WindowState = Avalonia.Controls.WindowState.Minimized;
+
+        _locks.Received(lockOnMinimize ? 1 : 0).Reset();
+    });
+
     private AppShellService Create(AppSettings settings) =>
         Create(new SettingsService(Substitute.For<ISettingsStore>(), settings));
 

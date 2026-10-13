@@ -63,9 +63,29 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public void Restart() => RestartRequested?.Invoke(this, EventArgs.Empty);
 
-    public void ShowHistory() => _mainWindow.Value.ShowHistory();
+    public void ShowHistory() => Main.ShowHistory();
 
-    public void ShowSettings() => _mainWindow.Value.ShowSettings();
+    public void ShowSettings() => Main.ShowSettings();
+
+    // Built on first use. Lock-on-minimize hides unlocked categories again when the window goes
+    // to the taskbar.
+    private MainWindow Main
+    {
+        get
+        {
+            if (_mainWindow.IsValueCreated) return _mainWindow.Value;
+
+            var window = _mainWindow.Value;
+            window.PropertyChanged += (_, e) =>
+            {
+                if (e.Property == Window.WindowStateProperty &&
+                    window.WindowState == WindowState.Minimized &&
+                    _settings.Current.LockOnMinimize)
+                    _locks.Reset();
+            };
+            return window;
+        }
+    }
 
     public void TogglePanel() => Flyout.Toggle();
 
