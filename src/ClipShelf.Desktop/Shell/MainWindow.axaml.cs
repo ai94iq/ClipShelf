@@ -16,6 +16,7 @@ public sealed partial class MainWindow : Window
         _history = history;
         _settings = settings;
         InitializeComponent();
+        WindowSurface.Attach(this, "ClipShelfCanvasBrush");
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
 
         HistoryButton.IsCheckedChanged += (_, _) => { if (HistoryButton.IsChecked == true) Select(settings: false); };

@@ -8,6 +8,7 @@ public sealed partial class WelcomeWindow : Window
     public WelcomeWindow(SettingsService settings)
     {
         InitializeComponent();
+        WindowSurface.Attach(this, "ClipShelfCanvasBrush");
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
         HotkeyText.Text = Tr.Format("Welcome_Hotkey", ClipShelf.Core.Input.HotkeyText.Format(settings.Current.Hotkey));
         OkButton.Click += (_, _) => Close();

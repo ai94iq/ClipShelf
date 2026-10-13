@@ -79,6 +79,18 @@ public sealed class SettingsPageTests
     });
 
     [Fact]
+    public Task Picking_a_backdrop_applies_it_at_once() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit(new AppSettings { Backdrop = ClipShelf.Core.Theming.BackdropKind.Mica });
+        Host(kit.Page);
+
+        kit.Page.FindControl<ComboBox>("BackdropCombo")!.SelectedItem =
+            kit.ViewModel.BackdropOptions.First(o => o.Value == ClipShelf.Core.Theming.BackdropKind.Acrylic);
+
+        kit.Theme.Received().Apply(Arg.Is<AppSettings>(s => s.Backdrop == ClipShelf.Core.Theming.BackdropKind.Acrylic));
+    });
+
+    [Fact]
     public Task The_history_size_box_saves_a_number() => Ui.Run(() =>
     {
         var kit = new SettingsKit(new AppSettings { MaxItems = 100 });

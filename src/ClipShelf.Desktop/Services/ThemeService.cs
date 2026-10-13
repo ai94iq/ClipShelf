@@ -44,6 +44,8 @@ public sealed class ThemeService : IThemeService
             _ => ThemeVariant.Default,
         };
 
+        WindowSurface.Apply(settings);
+
         foreach (var key in AccentKeys.Concat(OnAccentKeys)) app.Resources.Remove(key);
         LightDictionary(app).Remove(AccentTextKey);
         if (settings.Accent is null) return;

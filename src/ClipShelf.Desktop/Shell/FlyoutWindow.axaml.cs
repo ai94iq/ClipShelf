@@ -35,6 +35,7 @@ public sealed partial class FlyoutWindow : Window
         _pasteBack = pasteBack;
         _time = time;
         InitializeComponent();
+        WindowSurface.Attach(this, "ClipShelfCardBrush", flyout: true);
         DataContext = viewModel;
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
         Deactivated += (_, _) => HideAfterDeactivation();

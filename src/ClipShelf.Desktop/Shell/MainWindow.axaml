@@ -2,7 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="using:ClipShelf.Desktop.Localization"
         xmlns:controls="using:ClipShelf.Desktop.Controls"
-        Background="{DynamicResource ClipShelfCanvasBrush}"
         x:Class="ClipShelf.Desktop.Shell.MainWindow"
         Title="{l:Tr Key=App_Name}"
         Icon="/Assets/app.ico"

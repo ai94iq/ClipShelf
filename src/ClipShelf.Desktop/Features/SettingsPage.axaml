@@ -134,8 +134,14 @@
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
             </controls:SettingsCard>
-            <!-- ponytail: the Backdrop row (Mica, Acrylic) returns with the window surfaces in
-                 batch 8; until then nothing would apply it. -->
+            <Border Classes="divider" />
+            <controls:SettingsCard Header="{l:Tr Key=Settings_Backdrop}">
+              <ComboBox x:Name="BackdropCombo"
+                        AutomationProperties.Name="{l:Tr Key=Settings_Backdrop}"
+                        ItemsSource="{Binding BackdropOptions}"
+                        SelectedItem="{Binding SelectedBackdrop}"
+                        DisplayMemberBinding="{ReflectionBinding Label}" />
+            </controls:SettingsCard>
             <Border Classes="divider" />
             <controls:SettingsCard Header="{l:Tr Key=Settings_Language}" Description="{l:Tr Key=Settings_LanguageHint}">
               <ComboBox AutomationProperties.Name="{l:Tr Key=Settings_Language}"
