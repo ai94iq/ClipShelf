@@ -48,6 +48,8 @@ public sealed class VisualGuardTests
         var icon = kit.Window.FindControl<Button>("OpenHistoryButton")!.GetVisualDescendants().OfType<AppIcon>().Single();
 
         Assert.Equal((16, 16), (icon.Bounds.Width, icon.Bounds.Height));
+        Avalonia.Application.Current!.TryGetResource("SystemControlForegroundBaseMediumBrush", kit.Window.ActualThemeVariant, out var medium);
+        Assert.Same(medium, icon.Foreground);
     });
 
     [Fact]

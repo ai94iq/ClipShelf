@@ -106,4 +106,26 @@ public sealed class WindowSurfaceTests
 
         Assert.Equal(seeThrough, WindowSurface.ShowsBackdrop(actual));
     }
+
+    // Avalonia's acrylic has no tint of its own: without the surface over it, Light text sat on
+    // the dark desktop. Blur gets the surface at 80%; Mica is tinted by the system; else opaque.
+    [Theory]
+    [InlineData("AcrylicBlur", 0.8)]
+    [InlineData("Blur", 0.8)]
+    [InlineData("Mica", 0.0)]
+    [InlineData("Transparent", 1.0)]
+    [InlineData("None", 1.0)]
+    public void The_surface_tints_each_backdrop(string level, double opacity)
+    {
+        var actual = level switch
+        {
+            "Mica" => WindowTransparencyLevel.Mica,
+            "AcrylicBlur" => WindowTransparencyLevel.AcrylicBlur,
+            "Blur" => WindowTransparencyLevel.Blur,
+            "Transparent" => WindowTransparencyLevel.Transparent,
+            _ => WindowTransparencyLevel.None,
+        };
+
+        Assert.Equal(opacity, WindowSurface.SurfaceOpacity(actual));
+    }
 }

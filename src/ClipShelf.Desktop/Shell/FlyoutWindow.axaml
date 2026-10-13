@@ -8,7 +8,7 @@
         Title="{l:Tr Key=App_Name}"
         Width="360" Height="480"
         CanResize="False"
-        WindowDecorations="None"
+        WindowDecorations="BorderOnly"
         Topmost="True"
         ShowInTaskbar="False"
         WindowStartupLocation="Manual">
@@ -17,9 +17,9 @@
       <Setter Property="Padding" Value="12,5" />
       <Setter Property="MinHeight" Value="0" />
     </Style>
-    <!-- Hover stays quiet; the keyboard selection wears the accent tint. -->
+    <!-- Rows answer the pointer with the list wash; the keyboard row wears the accent tint. -->
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
     </Style>
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource ClipShelfAccentSubtleBrush}" />
@@ -33,15 +33,25 @@
       <Setter Property="Focusable" Value="False" />
     </Style>
     <Style Selector="Button.row PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
     </Style>
+    <!-- The search is a quiet line at the top, as in main: no box until it is typed into. -->
+    <Style Selector="TextBox.quiet">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.quiet:pointerover /template/ Border#PART_BorderElement, TextBox.quiet:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
   </Window.Styles>
 
-  <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
-    <Grid x:Name="Root" RowDefinitions="Auto,*,Auto">
+  <!-- The platform draws the frame: Windows 11 rounds it and adds the shadow. -->
+  <Grid x:Name="Root" RowDefinitions="Auto,*,Auto">
       <!-- Search: just the field -->
-      <TextBox x:Name="SearchBox"
+      <TextBox x:Name="SearchBox" Classes="quiet"
                Grid.Row="0" Margin="12,10,12,4" Height="34"
                IsEnabled="{Binding CanSearch}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
@@ -158,5 +168,4 @@
         </Border>
       </Panel>
     </Grid>
-  </Border>
 </Window>

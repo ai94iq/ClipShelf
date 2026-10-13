@@ -11,9 +11,9 @@
       <Setter Property="MinHeight" Value="0" />
       <Setter Property="CornerRadius" Value="4" />
     </Style>
-    <!-- Rows are click-to-copy: no hover fill; the keyboard row wears the accent tint. -->
+    <!-- Rows answer the pointer with the list wash; the keyboard row wears the accent tint. -->
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
     </Style>
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource ClipShelfAccentSubtleBrush}" />
@@ -55,8 +55,13 @@
       <ListBox x:Name="ClipList" Background="Transparent" SelectionMode="Single">
         <ListBox.DataTemplates>
           <DataTemplate x:DataType="vm:ClipGroup">
-            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Margin="0,8,0,0"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <!-- Main's group header: the title ruled off from its rows. -->
+            <StackPanel Margin="0,8,0,2" Spacing="8">
+              <TextBlock Text="{Binding Title}" FontWeight="SemiBold"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+              <Border Classes="rule" Height="1"
+                      Background="{DynamicResource SystemControlTransientBorderBrush}" />
+            </StackPanel>
           </DataTemplate>
           <DataTemplate x:DataType="vm:ClipItemViewModel">
             <controls:ClipRow />
