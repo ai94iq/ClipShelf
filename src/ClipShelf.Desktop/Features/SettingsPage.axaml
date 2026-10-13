@@ -31,7 +31,7 @@
     <Style Selector="Border.group">
       <Setter Property="CornerRadius" Value="8" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ClipShelfCardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource SystemControlTransientBorderBrush}" />
     </Style>
     <Style Selector="Border.divider">

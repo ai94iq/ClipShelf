@@ -3,6 +3,7 @@
         xmlns:l="using:ClipShelf.Desktop.Localization"
         xmlns:controls="using:ClipShelf.Desktop.Controls"
         xmlns:vm="using:ClipShelf.Presentation.Features.ClipboardPanel"
+        Background="{DynamicResource ClipShelfCardBrush}"
         x:Class="ClipShelf.Desktop.Shell.FlyoutWindow"
         x:DataType="vm:ClipboardPanelViewModel"
         Title="{l:Tr Key=App_Name}"

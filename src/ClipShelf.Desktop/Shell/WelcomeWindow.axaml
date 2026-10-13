@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="using:ClipShelf.Desktop.Localization"
+        Background="{DynamicResource ClipShelfCanvasBrush}"
         x:Class="ClipShelf.Desktop.Shell.WelcomeWindow"
         Title="{l:Tr Key=App_Name}"
         Icon="/Assets/app.ico"

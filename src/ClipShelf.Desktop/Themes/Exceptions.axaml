@@ -1,7 +1,8 @@
 <!-- The only literal colors in the app. Views use Fluent keys through DynamicResource; an entry
      belongs here only when Fluent has no key for the job, and its comment names the gap. -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:services="using:ClipShelf.Desktop.Services">
   <ResourceDictionary.ThemeDictionaries>
     <ResourceDictionary x:Key="Light">
       <!-- Fluent has no translucent accent tint for a selected rail item or row: the accent at
@@ -9,10 +10,23 @@
       <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="{DynamicResource SystemAccentColor}" Opacity="0.15" />
       <!-- Fluent has no card elevation shadow. -->
       <BoxShadows x:Key="ClipShelfCardShadow">0 4 16 -4 #1A000000</BoxShadows>
+      <!-- Fluent has no layered window surfaces (its window and cards share one white): main's
+           soft gray canvas under white cards, so the groups read apart. -->
+      <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#E6E6E6" />
+      <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#FFFFFF" />
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
       <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="{DynamicResource SystemAccentColor}" Opacity="0.25" />
       <BoxShadows x:Key="ClipShelfCardShadow">0 4 16 -4 #66000000</BoxShadows>
+      <!-- Windows 11 dark layers: the base surface, and cards a step lighter. -->
+      <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#202020" />
+      <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#2B2B2B" />
+    </ResourceDictionary>
+    <!-- Full black: black throughout, for OLED screens; the borders keep the layers apart.
+         Everything not listed here comes from Dark. -->
+    <ResourceDictionary x:Key="{x:Static services:ThemeService.Black}">
+      <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#000000" />
+      <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#000000" />
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

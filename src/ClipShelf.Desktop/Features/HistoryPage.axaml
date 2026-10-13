@@ -48,7 +48,7 @@
 
     <!-- Grouped history (Pinned, then Recent) on a card, with its load states -->
     <Border Grid.Row="2" Margin="0,4,0,8" Padding="8,8,8,4" CornerRadius="8"
-            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            Background="{DynamicResource ClipShelfCardBrush}"
             BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1"
             BoxShadow="{DynamicResource ClipShelfCardShadow}"
             IsVisible="{Binding HasItems}">
