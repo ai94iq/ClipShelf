@@ -280,19 +280,11 @@
                           ItemsSource="{Binding ExportFormatOptions}"
                           SelectedItem="{Binding SelectedExportFormat}"
                           DisplayMemberBinding="{ReflectionBinding Label}" />
-                <!-- ponytail: with a password set, export asks for it first; the prompt arrives in
-                     batch 7, so until then Export stays off while a password is set. -->
                 <Button x:Name="ExportButton" Classes="accent" MinHeight="36"
                         Content="{l:Tr Key=Common_Export}"
                         AutomationProperties.Name="{l:Tr Key=Common_Export}"
-                        Click="OnExportClick">
-                  <Button.IsEnabled>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                      <Binding Path="CanExport" />
-                      <Binding Path="!HasLockPassword" />
-                    </MultiBinding>
-                  </Button.IsEnabled>
-                </Button>
+                        IsEnabled="{Binding CanExport}"
+                        Click="OnExportClick" />
               </StackPanel>
             </controls:SettingsCard>
             <TextBlock x:Name="ExportStatus" Classes="status" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportStatus}" />
@@ -306,8 +298,15 @@
         <TextBlock Classes="group" Text="{l:Tr Key=Settings_Categories}" />
         <Border Classes="group">
           <StackPanel>
-            <!-- ponytail: the password row (set, change, remove) needs the prompt dialog; it
-                 returns in batch 7. -->
+            <controls:SettingsCard Header="{l:Tr Key=Settings_LockPassword}" Description="{l:Tr Key=Settings_LockPasswordHint}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="PasswordButton" MinHeight="36" Content="{Binding PasswordButtonText}"
+                        Click="OnPasswordClick" />
+                <Button x:Name="RemovePasswordButton" MinHeight="36" Content="{l:Tr Key=Common_Remove}"
+                        IsVisible="{Binding HasLockPassword}" Click="OnRemovePasswordClick" />
+              </StackPanel>
+            </controls:SettingsCard>
+            <Border Classes="divider" />
             <controls:SettingsCard Header="{l:Tr Key=Settings_LockWhen}">
               <DropDownButton MinWidth="160" Content="{Binding LockWhenText}"
                               AutomationProperties.Name="{l:Tr Key=Settings_LockWhen}">
@@ -330,20 +329,17 @@
                   <StackPanel>
                     <Border Classes="divider" />
                     <controls:SettingsCard Header="{Binding Name}">
-                      <!-- ponytail: lock without a password yet, unlock, rename and delete all
-                           ask through a dialog; they return in batch 7. -->
                       <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button Classes="lock" MinHeight="36" Content="{l:Tr Key=Settings_LockCategory}"
-                                Click="OnLockClick">
-                          <Button.IsVisible>
-                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                              <Binding Path="ShowLock" />
-                              <Binding Path="$parent[ItemsControl].((settings:SettingsViewModel)DataContext).HasLockPassword" />
-                            </MultiBinding>
-                          </Button.IsVisible>
-                        </Button>
+                                IsVisible="{Binding ShowLock}" Click="OnCategoryActionClick" />
+                        <Button Classes="unlock" MinHeight="36" Content="{l:Tr Key=Settings_UnlockCategory}"
+                                IsVisible="{Binding ShowUnlock}" Click="OnCategoryActionClick" />
                         <Button Classes="locknow" MinHeight="36" Content="{l:Tr Key=Settings_LockNow}"
-                                IsVisible="{Binding ShowLockNow}" Click="OnLockClick" />
+                                IsVisible="{Binding ShowLockNow}" Click="OnCategoryActionClick" />
+                        <Button Classes="rename" MinHeight="36" Content="{l:Tr Key=Settings_RenameCategory}"
+                                Click="OnCategoryActionClick" />
+                        <Button Classes="delete" MinHeight="36" Content="{l:Tr Key=Common_Delete}"
+                                Click="OnCategoryActionClick" />
                       </StackPanel>
                     </controls:SettingsCard>
                   </StackPanel>

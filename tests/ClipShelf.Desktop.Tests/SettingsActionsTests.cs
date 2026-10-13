@@ -19,18 +19,6 @@ public sealed class SettingsActionsTests
 
     private static void Click(Button button) => button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
-    // ponytail: until batch 7 brings the password prompt, Export is off while a password is set.
-    [Theory]
-    [InlineData(false, true)]
-    [InlineData(true, false)]
-    public Task Export_waits_for_the_password_prompt_while_a_password_is_set(bool passwordSet, bool enabled) => Ui.Run(() =>
-    {
-        var kit = new SettingsKit(passwordSet: passwordSet);
-        Host(kit.Page);
-
-        Assert.Equal(enabled, kit.Page.FindControl<Button>("ExportButton")!.IsEnabled);
-    });
-
     [Fact]
     public Task A_finished_export_says_how_many_clips() => Ui.Run(async () =>
     {
@@ -92,22 +80,6 @@ public sealed class SettingsActionsTests
 
         kit.Locks.Received().Lock(7);
         await kit.Categories.Received().SetLockedAsync(7, true, Arg.Any<CancellationToken>());
-    });
-
-    [Theory]
-    [InlineData(true, true)]
-    [InlineData(false, false)]
-    public Task Lock_shows_only_once_a_password_exists(bool passwordSet, bool visible) => Ui.Run(async () =>
-    {
-        var kit = new SettingsKit(passwordSet: passwordSet);
-        kit.StoredCategories.Add(new Category(3, "Bank"));
-        Host(kit.Page);
-        await kit.Page.LoadAsync();
-        Dispatcher.UIThread.RunJobs();
-
-        var lockButton = kit.Page.FindControl<ItemsControl>("CategoryList")!.GetVisualDescendants()
-            .OfType<Button>().Single(b => b.Classes.Contains("lock"));
-        Assert.Equal(visible, lockButton.IsVisible);
     });
 
     [Fact]
