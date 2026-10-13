@@ -31,9 +31,9 @@ public sealed partial class HistoryPage : UserControl
         };
         ClipList.AddHandler(PointerReleasedEvent, OnListClicked, RoutingStrategies.Bubble, handledEventsToo: true);
         ClipList.AddHandler(ScrollViewer.ScrollChangedEvent, OnScrolled);
-        CategoryFilter.SelectionChanged += async (_, _) => await OnCategoryFilterChangedAsync();
+        CategoryFilter.SelectionChanged += (_, _) => UiTask.Run(OnCategoryFilterChangedAsync, "Changing the category filter");
         // Picking the locked category that is already selected changes nothing; ask again.
-        CategoryFilter.DropDownClosed += async (_, _) => await UnlockSelectedFilterAsync();
+        CategoryFilter.DropDownClosed += (_, _) => UiTask.Run(UnlockSelectedFilterAsync, "Unlocking the category filter");
         viewModel.CategoryMenuRequested += item => _ = CategoryMenu.ShowAsync(CategoryMenu.Anchor(ClipList, item), item, viewModel);
     }
 

@@ -132,4 +132,19 @@ public sealed class SettingsDialogsTests
 
         Assert.Equal("Password", DialogDriver.Open(window).FindControl<TextBlock>("TitleText")!.Text);
     });
+
+    // A failing store must not take the app down: the click handlers run detached.
+    [Fact]
+    public Task A_failing_delete_is_logged_not_thrown() => Ui.Run(async () =>
+    {
+        var (kit, window) = await Open(passwordSet: false, new Category(3, "Bank"));
+        kit.Categories.DeleteAsync(3, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("database is locked")));
+
+        DialogDriver.Click(RowButton(kit, "delete"));
+        Fill(window);
+        for (var i = 0; i < 3; i++) { await Task.Yield(); Dispatcher.UIThread.RunJobs(); }
+
+        await kit.Categories.Received().DeleteAsync(3, Arg.Any<CancellationToken>());
+    });
 }

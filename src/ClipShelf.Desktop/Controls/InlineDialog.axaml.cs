@@ -22,7 +22,7 @@ public sealed partial class InlineDialog : UserControl
         PrimaryButton.Content = primaryText;
         foreach (var control in content) ContentHost.Children.Add(control);
 
-        PrimaryButton.Click += async (_, _) => await AcceptAsync();
+        PrimaryButton.Click += (_, _) => UiTask.Run(AcceptAsync, "A dialog action");
         CancelButton.Click += (_, _) => Close(false);
         // Tunnel: a text box would take Enter before it bubbled up here.
         AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
@@ -83,7 +83,7 @@ public sealed partial class InlineDialog : UserControl
         }
         else if (e.Key == Key.Enter)
         {
-            if (IsPrimaryEnabled) _ = AcceptAsync();
+            if (IsPrimaryEnabled) UiTask.Run(AcceptAsync, "A dialog action");
             e.Handled = true;
         }
     }

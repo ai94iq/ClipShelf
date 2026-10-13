@@ -85,9 +85,13 @@ public sealed partial class SettingsPage : UserControl
 
     private void OnExitClick(object? sender, RoutedEventArgs e) => _shell.Value.Exit();
 
-    private async void OnCheckUpdatesClick(object? sender, RoutedEventArgs e) => await ViewModel.CheckForUpdatesAsync();
+    private void OnCheckUpdatesClick(object? sender, RoutedEventArgs e) => UiTask.Run(() => OnCheckUpdatesClickAsync(sender), "Checking for updates");
 
-    private async void OnPasswordClick(object? sender, RoutedEventArgs e)
+    private async Task OnCheckUpdatesClickAsync(object? sender) => await ViewModel.CheckForUpdatesAsync();
+
+    private void OnPasswordClick(object? sender, RoutedEventArgs e) => UiTask.Run(() => OnPasswordClickAsync(sender), "Changing the lock password");
+
+    private async Task OnPasswordClickAsync(object? sender)
     {
         var password = ViewModel.HasLockPassword
             ? await PasswordPrompt.ChangeAsync(this, ViewModel.VerifyLockPassword)
@@ -95,13 +99,17 @@ public sealed partial class SettingsPage : UserControl
         if (password is not null) await ViewModel.SetLockPasswordAsync(password);
     }
 
-    private async void OnRemovePasswordClick(object? sender, RoutedEventArgs e)
+    private void OnRemovePasswordClick(object? sender, RoutedEventArgs e) => UiTask.Run(() => OnRemovePasswordClickAsync(sender), "Removing the lock password");
+
+    private async Task OnRemovePasswordClickAsync(object? sender)
     {
         if (await PasswordPrompt.ConfirmRemoveAsync(this, ViewModel.VerifyLockPassword))
             await ViewModel.RemoveLockPasswordAsync();
     }
 
-    private async void OnCategoryActionClick(object? sender, RoutedEventArgs e)
+    private void OnCategoryActionClick(object? sender, RoutedEventArgs e) => UiTask.Run(() => OnCategoryActionClickAsync(sender), "A category action");
+
+    private async Task OnCategoryActionClickAsync(object? sender)
     {
         if (sender is not Button { DataContext: CategoryRow row } button) return;
 
@@ -160,7 +168,9 @@ public sealed partial class SettingsPage : UserControl
             await ViewModel.DeleteCategoryAsync(row.Id);
     }
 
-    private async void OnExportClick(object? sender, RoutedEventArgs e)
+    private void OnExportClick(object? sender, RoutedEventArgs e) => UiTask.Run(() => OnExportClickAsync(sender), "Exporting");
+
+    private async Task OnExportClickAsync(object? sender)
     {
         if (ViewModel.HasLockPassword && !await PasswordPrompt.VerifyAsync(this, ViewModel.VerifyLockPassword)) return;
         if (TopLevel.GetTopLevel(this)?.StorageProvider is not { CanSave: true } storage) return;
