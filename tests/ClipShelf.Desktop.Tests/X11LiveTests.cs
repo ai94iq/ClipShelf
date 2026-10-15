@@ -63,6 +63,30 @@ public sealed class X11LiveTests
         Assert.Equal(1, presses);
     }
 
+    // On X11 the active window's process names the copy. Under Wayland the active X window is not
+    // where a copy came from (in WSLg it was ClipShelf's own History window), so the name stays
+    // blank. The test plays the window manager: _NET_ACTIVE_WINDOW points at a window of this process.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void The_source_app_is_the_active_windows_process_except_under_wayland(bool wayland)
+    {
+        SkipWithoutX();
+        var other = XOpenDisplay(IntPtr.Zero);
+        var root = XDefaultRootWindow(other);
+        var window = XCreateSimpleWindow(other, root, 0, 0, 1, 1, 0, 0, 0);
+        nint pid = Environment.ProcessId;
+        XChangeProperty(other, window, XInternAtom(other, "_NET_WM_PID", 0), XInternAtom(other, "CARDINAL", 0), 32, 0, ref pid, 1);
+        nint active = window;
+        XChangeProperty(other, root, XInternAtom(other, "_NET_ACTIVE_WINDOW", 0), XInternAtom(other, "WINDOW", 0), 32, 0, ref active, 1);
+        XSync(other, 0);
+
+        var name = new X11Desktop(new X11Connection(), wayland).Name();
+        XCloseDisplay(other);
+
+        Assert.Equal(wayland ? null : System.Diagnostics.Process.GetCurrentProcess().ProcessName, name);
+    }
+
     // A held key repeats presses with no release in between (detectable auto-repeat); XTest cannot
     // produce that, so the repeats are fed straight to the handler.
     [Fact]
@@ -119,6 +143,7 @@ public sealed class X11LiveTests
     [DllImport(X11)] private static extern int XSetSelectionOwner(IntPtr display, IntPtr selection, IntPtr owner, IntPtr time);
     [DllImport(X11)] private static extern int XFlush(IntPtr display);
     [DllImport(X11)] private static extern int XSync(IntPtr display, int discard);
+    [DllImport(X11)] private static extern int XChangeProperty(IntPtr display, IntPtr window, IntPtr property, IntPtr type, int format, int mode, ref nint data, int count);
     [DllImport(X11)] private static extern byte XKeysymToKeycode(IntPtr display, IntPtr keysym);
     [DllImport(X11)] private static extern int XGrabKey(IntPtr display, int keycode, uint modifiers, IntPtr window, int ownerEvents, int pointerMode, int keyboardMode);
     [DllImport("libXtst.so.6")] private static extern int XTestFakeKeyEvent(IntPtr display, uint keycode, int isPress, nuint delay);
