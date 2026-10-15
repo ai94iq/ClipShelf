@@ -119,7 +119,7 @@ Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and
 
 ## Installing on macOS
 
-Download `Copyloft-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/Copyloft/releases) and drag Copyloft to Applications.
+Download `Copyloft-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/Copyloft/releases) and drag Copyloft to Applications. Coming from ClipShelf (0.4.1 or older), delete `ClipShelf.app` from Applications afterwards; Copyloft takes over its history on the first start.
 
 The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for Copyloft, or run `xattr -dr com.apple.quarantine /Applications/Copyloft.app` once.
 
