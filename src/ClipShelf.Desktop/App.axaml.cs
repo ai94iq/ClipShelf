@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using ClipShelf.Core.Services;
 using ClipShelf.Desktop.Hosting;
+using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Shell;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -72,6 +73,14 @@ public sealed partial class App : Application
             };
             shell.ShowTray();
             _host = host;
+
+            // Without a tray (GNOME without the AppIndicator extension) the app would start
+            // invisible; History opens instead, and the hotkey or --toggle reach the flyout.
+            if (_pendingCommand is null && !TrayHost.IsAvailable())
+            {
+                Log.Warning("No tray host on this desktop; opening History at launch");
+                _pendingCommand = StartupCommand.History;
+            }
 
             ExecuteCommand(_pendingCommand);
             _pendingCommand = null;
