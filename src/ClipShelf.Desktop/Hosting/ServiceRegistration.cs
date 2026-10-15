@@ -16,6 +16,9 @@ public static class ServiceRegistration
         services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
+        services.AddSingleton<ClipboardService>();
+        services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<ClipboardService>());
+        services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<ClipboardService>());
 
         if (!OperatingSystem.IsWindows())
             throw new PlatformNotSupportedException("ClipShelf runs on Windows until the Linux phase.");
@@ -26,9 +29,7 @@ public static class ServiceRegistration
     private static IServiceCollection AddWindows(this IServiceCollection services)
     {
         services.AddSingleton<IKeyStore, DpapiKeyStore>();
-        services.AddSingleton<ClipboardService>();
-        services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<ClipboardService>());
-        services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<ClipboardService>());
+        services.AddSingleton<IClipboardBackend, Win32ClipboardBackend>();
         services.AddSingleton<IGlobalHotkey, GlobalHotkey>();
         services.AddSingleton<IPasteBack, KeyboardPaste>();
         services.AddSingleton<IForegroundApp, ForegroundApp>();
