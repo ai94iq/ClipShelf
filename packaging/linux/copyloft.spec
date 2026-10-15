@@ -11,6 +11,9 @@ License:        MIT
 URL:            https://github.com/ai94iq/Copyloft
 AutoReqProv:    no
 Requires:       libX11, libICE, libSM, libXtst, libXfixes, fontconfig, libsecret, libicu, openssl-libs, dbus-tools
+# The app was ClipShelf up to 0.4.1; installing Copyloft removes that package.
+Obsoletes:      clipshelf <= 0.4.1
+Provides:       clipshelf = %{version}
 
 %description
 Copyloft keeps a searchable history of what you copy, encrypted on disk, and pastes it back.

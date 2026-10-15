@@ -36,6 +36,8 @@ Architecture: amd64
 Maintainer: Copyloft <https://github.com/ai94iq/Copyloft>
 Depends: libx11-6, libice6, libsm6, libxtst6, libxfixes3, libfontconfig1, libsecret-1-0,
  libicu72 | libicu74 | libicu76 | libicu77 | libicu78, libssl3 | libssl3t64, dbus-bin | dbus
+Conflicts: clipshelf
+Replaces: clipshelf
 Section: utils
 Priority: optional
 Homepage: https://github.com/ai94iq/Copyloft
