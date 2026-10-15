@@ -133,7 +133,8 @@ ClipShelf lives in the menu bar. The shortcut is Cmd+Shift+V. To paste a picked 
 | `test.bat` | Run all tests |
 | `package.bat` | Test, build and create the MSI in `artifacts\installer` |
 | `clean.bat` | Remove all build output |
-| `test.sh` | Linux: run all tests (the X11 tests need a display; CI uses `xvfb-run`) |
+| `build.sh`, `run.sh`, `clean.sh` | Linux and macOS twins of the .bat scripts (`build.sh` publishes for this machine's OS and CPU) |
+| `test.sh` | Linux and macOS: run all tests (the X11 tests need a display; CI uses `xvfb-run`) |
 | `package.sh` | Linux: tarball, `.deb` and `.rpm` in `artifacts/linux` (needs `dpkg-deb` and `rpmbuild`) |
 | `package-macos.sh` | macOS: `ClipShelf.app` and a `.dmg` per architecture in `artifacts/macos` |
 
