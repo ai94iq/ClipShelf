@@ -21,7 +21,7 @@ public sealed class WelcomeWindowTests
     {
         var window = new WelcomeWindow(Settings());
 
-        Assert.Contains("Ctrl+Alt+V", window.FindControl<TextBlock>("HotkeyText")!.Text);
+        Assert.Contains(HotkeyText.Display(new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x56)), window.FindControl<TextBlock>("HotkeyText")!.Text);
     });
 
     // GNOME without the AppIndicator extension: there is no tray icon to point at.
