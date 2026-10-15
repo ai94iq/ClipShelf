@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=ClipShelf
+Comment=Clipboard history
+Exec=clipshelf --history
+Icon=clipshelf
+Terminal=false
+Categories=Utility;
+StartupWMClass=ClipShelf

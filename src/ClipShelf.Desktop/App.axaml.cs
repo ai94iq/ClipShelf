@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using ClipShelf.Core.Services;
 using ClipShelf.Desktop.Hosting;
+using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Shell;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -73,13 +74,23 @@ public sealed partial class App : Application
             shell.ShowTray();
             _host = host;
 
+            // Without a tray (GNOME without the AppIndicator extension) the app would start
+            // invisible; History opens instead, and the hotkey or --toggle reach the flyout.
+            var hasTray = TrayHost.IsAvailable();
+            if (_pendingCommand is null && !hasTray)
+            {
+                Log.Warning("No tray host on this desktop; opening History at launch");
+                _pendingCommand = StartupCommand.History;
+            }
+
             ExecuteCommand(_pendingCommand);
             _pendingCommand = null;
 
             // First run: a small window explains the hotkey and the tray, then never again.
             WelcomeWindow.ShowOnFirstRun(
                 host.Services.GetRequiredService<SettingsService>(),
-                () => new WelcomeWindow(host.Services.GetRequiredService<SettingsService>()));
+                () => new WelcomeWindow(
+                    host.Services.GetRequiredService<SettingsService>(), hasTray, globalHotkey: !DesktopSession.IsWayland));
 
             // Rewrites the startup entry with the current path, so a moved install keeps working.
             host.Services.GetRequiredService<IStartupRegistration>().Apply(launch.Settings.RunAtStartup);

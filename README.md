@@ -2,7 +2,23 @@
 
 [![CI](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml/badge.svg)](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml)
 
-ClipShelf is a Windows clipboard-history app that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
+ClipShelf is a clipboard-history app for Windows and Linux that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
+
+## Contents
+
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Performance](#performance)
+- [Requirements](#requirements)
+- [Installing on Linux](#installing-on-linux)
+- [Scripts](#scripts)
+- [Project structure](#project-structure)
+- [Data locations](#data-locations)
+- [Localization](#localization)
+- [Contributing](#contributing)
+- [Releases](#releases)
+- [Built with](#built-with)
+- [License](#license)
 
 ## Screenshots
 
@@ -79,7 +95,24 @@ Load-tested through the real encrypted storage pipeline — details and numbers 
 ## Requirements
 
 - Windows 10 version 1809 or later, or Windows 11 (x64)
+- Linux x64 with an X11 or Wayland session (XWayland); the packages list their libraries
 - For development: the .NET 10 SDK version pinned in `global.json`
+
+## Installing on Linux
+
+Download from the [releases](https://github.com/ai94iq/ClipShelf/releases):
+
+- Debian and Ubuntu: `sudo apt install ./clipshelf_<version>_amd64.deb`
+- Fedora and openSUSE: `sudo dnf install ./clipshelf-<version>-1.x86_64.rpm`
+- Anything else: unpack `clipshelf-<version>-linux-x64.tar.gz` and run `ClipShelf` from it
+
+The packages install to `/opt/clipshelf` with a `clipshelf` command and a menu entry.
+
+Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and [ADR 0007](docs/decisions/0007-linux-platform.md)):
+
+- Wayland sessions: the shortcut only works while ClipShelf has focus, so bind a system shortcut to `clipshelf --toggle`; a picked clip is copied and you press Ctrl+V yourself.
+- GNOME shows the tray icon only with the AppIndicator extension; without a tray, History opens at launch.
+- Without a keyring service the database key is kept in a file only your user can read.
 
 ## Scripts
 
@@ -90,32 +123,35 @@ Load-tested through the real encrypted storage pipeline — details and numbers 
 | `test.bat` | Run all tests |
 | `package.bat` | Test, build and create the MSI in `artifacts\installer` |
 | `clean.bat` | Remove all build output |
+| `test.sh` | Linux: run all tests (the X11 tests need a display; CI uses `xvfb-run`) |
+| `package.sh` | Linux: tarball, `.deb` and `.rpm` in `artifacts/linux` (needs `dpkg-deb` and `rpmbuild`) |
 
 Pass `--no-pause` to skip the final key press (used by automation).
 
-A second launch never starts a second copy: `ClipShelf.exe --toggle` toggles the flyout in the running instance and `ClipShelf.exe --history` opens its history window.
+A second launch never starts a second copy: `ClipShelf.exe --toggle` (`clipshelf --toggle` on Linux) toggles the flyout in the running instance and `--history` opens its history window.
 
 ## Project structure
 
 | Project | Responsibility |
 |---|---|
-| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows platform layer, and app startup |
+| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows and Linux platform layers, and app startup |
 | `src/ClipShelf.Presentation` | View models, portable services and the platform interfaces (net10.0) |
 | `src/ClipShelf.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
 | `src/ClipShelf.Data` | SQLite + Dapper repositories and numbered SQL migrations |
 | `tests/*` | xUnit v3 tests per project |
 | `installer` | WiX v6 MSI |
+| `packaging/linux` | Desktop entry, icon and RPM spec for the Linux packages |
 
 Details: [docs/architecture.md](docs/architecture.md).
 
 ## Data locations
 
-All user data is in `%LOCALAPPDATA%\ClipShelf\`:
+All user data is in `%LOCALAPPDATA%\ClipShelf\` on Windows and `~/.local/share/ClipShelf/` on Linux:
 
 | Path | Contents |
 |---|---|
 | `data.db` | Local SQLite clipboard-history database (SQLCipher-encrypted) |
-| `key.bin` | The database key, protected with Windows DPAPI for the current user |
+| `key.bin` | The database key, protected with Windows DPAPI for the current user; on Linux a marker for the key in the system keyring, or the key itself (readable only by your user) without one |
 | `backups\` | Automatic backups (newest 14) |
 | `logs\` | Daily log files (newest 14) |
 | `settings.json` | User settings |
@@ -130,7 +166,7 @@ English is the primary language; Arabic ships as a satellite and is selectable i
 
 - Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `desktop`, `presentation`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
 - Commit body: what changed and why, wrapped at 72 characters.
-- CI runs `test.bat` on every push to `main` and every pull request, and publishes a GitHub release with the MSI when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
+- CI runs `test.bat` on Windows and `test.sh` on Ubuntu on every push to `main` and every pull request, and publishes a GitHub release with the MSI and the Linux packages when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
 - Before committing, `build.bat` and `test.bat` must pass, and the affected docs must be updated.
 - Decisions: [docs/decisions](docs/decisions).
 

@@ -17,7 +17,7 @@ public sealed class DateFormatter : IDateFormatter
         };
     }
 
-    private static int Year(DateTime value) => CultureInfo.CurrentCulture.Calendar.GetYear(value);
+    private static int Year(DateTime value) => CultureInfo.CurrentCulture.DateTimeFormat.Calendar.GetYear(value);
 
     public string FormatSince(DateTimeOffset valueUtc)
     {

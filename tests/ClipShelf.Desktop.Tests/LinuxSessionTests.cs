@@ -1,0 +1,58 @@
+using ClipShelf.Desktop.Platform.Linux;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace ClipShelf.Desktop.Tests;
+
+public sealed class LinuxSessionTests : IDisposable
+{
+    private readonly string _dir = Directory.CreateTempSubdirectory("clipshelf-autostart").FullName;
+    private string EntryPath => Path.Combine(_dir, "autostart", "clipshelf.desktop");
+
+    public void Dispose() => Directory.Delete(_dir, recursive: true);
+
+    private AutostartRegistration Autostart(string exe) =>
+        new(NullLogger<AutostartRegistration>.Instance, _dir, () => exe);
+
+    [Fact]
+    public void Enabling_writes_an_autostart_entry_that_runs_this_executable()
+    {
+        Autostart("/opt/clip shelf/ClipShelf").Apply(true);
+
+        var lines = File.ReadAllLines(EntryPath);
+        Assert.Equal("[Desktop Entry]", lines[0]);
+        Assert.Contains("Type=Application", lines);
+        Assert.Contains("Exec=\"/opt/clip shelf/ClipShelf\"", lines);
+    }
+
+    // Desktop Entry spec: inside quotes ", `, $ and \ are backslash-escaped, and the string rule
+    // doubles every backslash again; % is doubled for the field-code rule.
+    [Fact]
+    public void Exec_escapes_what_the_desktop_entry_spec_reserves()
+    {
+        Assert.Equal("\"/a\\\\\"b\\\\`c\\\\$d\\\\\\\\e%%f\"", AutostartRegistration.Quote("/a\"b`c$d\\e%f"));
+    }
+
+    [Fact]
+    public void Disabling_removes_the_entry_and_tolerates_a_missing_one()
+    {
+        var autostart = Autostart("/usr/bin/clipshelf");
+        autostart.Apply(true);
+
+        autostart.Apply(false);
+        autostart.Apply(false);
+
+        Assert.False(File.Exists(EntryPath));
+    }
+
+    [Fact]
+    public void Termination_raises_ending_before_the_process_exits()
+    {
+        var order = new List<string>();
+        var session = new LinuxSessionEnd(code => order.Add($"exit {code}"));
+        session.Ending += (_, _) => order.Add("ending");
+
+        session.OnTerminate();
+
+        Assert.Equal(["ending", "exit 0"], order);
+    }
+}

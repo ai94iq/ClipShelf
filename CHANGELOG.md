@@ -5,6 +5,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## [Unreleased]
 
 ### Added
+- Linux: ClipShelf runs on Linux (X11, and Wayland through XWayland) and ships as a tarball, a `.deb` and an `.rpm`. The database key goes to the system keyring, or to a file only your user can read without one; the app starts at sign-in through an XDG autostart entry and clears history on logout when asked (ADR 0007).
+- Linux, Wayland: a picked clip is copied with a hint to press Ctrl+V, and Settings and the welcome window explain binding a system shortcut to `clipshelf --toggle`.
+- Linux desktops without a tray (GNOME without the AppIndicator extension) open History at launch, and the welcome window says how to reach the app.
 - Accent color: follow the Windows accent or pick one of seven presets in Settings → Appearance. Primary actions, selection, focus and toggles use it (a restart applies the change).
 - Arabic UI: pick English or العربية in Settings → Appearance → Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
 - Browse the full history beyond the first page: the window loads older clips as you scroll, and the footer shows the total count instead of just the loaded page.
@@ -23,6 +26,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - View models and services moved into a shared `ClipShelf.Presentation` project (no behavior change), and the single-instance check now uses a named pipe that also carries the launch commands.
 
 ### Fixed
+- An approximate year ("c. 1447") now uses the same calendar as the dates around it, even when the culture's default calendar differs from the one in use.
 - The Light theme's surfaces keep their layer relationships again (secondary a step darker, popups and the undo bar a clear step lighter than the canvas), so dialogs and the clear confirmation read apart instead of blending into the background.
 - The clear confirmation dims with the framework's dark smoke and sits on a white dialog surface, instead of a light veil that washed the whole window out.
 - Hover states follow the design rules again: controls keep their built-in neutral hover, and the accent stays on selection, focus, toggles and primary actions.

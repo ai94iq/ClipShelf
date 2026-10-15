@@ -53,6 +53,8 @@
   <data name="Export_Csv" xml:space="preserve"><value>CSV</value></data>
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
   <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Flyout_PasteHint" xml:space="preserve"><value>Copied, press Ctrl+V to paste</value></data>
+  <data name="Settings_HotkeyWayland" xml:space="preserve"><value>On Wayland, keys pressed in other apps do not reach ClipShelf. Bind a shortcut in your system settings to the command: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>1 clip</value></data>
@@ -180,6 +182,7 @@
   <data name="Welcome_Hotkey" xml:space="preserve"><value>Press {0} anywhere to open the flyout, then pick a clip to paste it into the app you came from.</value></data>
   <data name="Welcome_Ok" xml:space="preserve"><value>Got it</value></data>
   <data name="Welcome_Tray" xml:space="preserve"><value>ClipShelf keeps running in the notification area — open Settings or exit from its tray icon.</value></data>
+  <data name="Welcome_NoTray" xml:space="preserve"><value>This desktop shows no tray icon, so ClipShelf opens History when it starts. Reach it later with the command clipshelf --history; on GNOME, the AppIndicator extension adds the tray icon.</value></data>
   <data name="Window_Minimize" xml:space="preserve"><value>Minimize</value></data>
   <data name="Window_Maximize" xml:space="preserve"><value>Maximize</value></data>
   <data name="Window_Close" xml:space="preserve"><value>Close</value></data>

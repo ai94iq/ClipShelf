@@ -1,65 +1,55 @@
 using ClipShelf.Core.Services;
-using System.Runtime.Versioning;
 
-namespace ClipShelf.Desktop.Platform.Windows;
+namespace ClipShelf.Desktop.Platform;
 
 // Turns clipboard changes into history entries and writes items back. Writes made by this app are
-// counted so the resulting clipboard-changed message does not get captured as a new item.
-[SupportedOSPlatform("windows")]
+// counted so the resulting clipboard change does not get captured as a new item.
 public sealed class ClipboardService : IClipboardMonitor, IDisposable
 {
+    private readonly IClipboardBackend _backend;
     private readonly ClipCaptureService _capture;
     private readonly IClipRepository _repository;
     private readonly SettingsService _settings;
     private readonly IForegroundApp _foregroundApp;
     private readonly ILogger<ClipboardService> _log;
-    private readonly ClipboardWatcher _watcher = new();
     private int _selfWrites;
 
     public ClipboardService(
+        IClipboardBackend backend,
         ClipCaptureService capture,
         IClipRepository repository,
         SettingsService settings,
         IForegroundApp foregroundApp,
         ILogger<ClipboardService> log)
     {
+        _backend = backend;
         _capture = capture;
         _repository = repository;
         _settings = settings;
         _foregroundApp = foregroundApp;
         _log = log;
-        _watcher.Changed += OnClipboardChanged;
+        _backend.Changed += OnClipboardChanged;
     }
 
-    public event EventHandler? Changed;
+    // The capture started by the latest change, for tests.
+    internal Task Pending { get; private set; } = Task.CompletedTask;
 
-    public string? ReadText() => Win32Clipboard.TryReadText();
+    public void WriteText(string text) => _ = WriteAsync(() => _backend.WriteTextAsync(text), "text");
 
-    public byte[]? ReadImage() => Win32Clipboard.TryReadImage();
-
-    public void WriteText(string text)
-    {
-        _selfWrites++;
-        if (Win32Clipboard.TryWriteText(text)) return;
-
-        _selfWrites--;
-        _log.LogWarning("Writing text to the clipboard failed");
-    }
-
-    public async Task WriteImageAsync(byte[] png)
-    {
-        _selfWrites++;
-        var written = await Task.Run(() =>
-            ImageClipCodec.ToDib(png) is { } dib && Win32Clipboard.TryWriteImage(dib));
-        if (written) return;
-
-        _selfWrites--;
-        _log.LogWarning("Writing an image to the clipboard failed");
-    }
+    public Task WriteImageAsync(byte[] png) => WriteAsync(() => _backend.WriteImageAsync(png), "an image");
 
     public void Dispose()
     {
-        _watcher.Dispose();
+        _backend.Changed -= OnClipboardChanged;
+        _backend.Dispose();
+    }
+
+    private async Task WriteAsync(Func<Task<bool>> write, string what)
+    {
+        _selfWrites++;
+        if (await write()) return;
+        _selfWrites--;
+        _log.LogWarning("Writing {What} to the clipboard failed", what);
     }
 
     private void OnClipboardChanged(object? sender, EventArgs e)
@@ -70,12 +60,8 @@ public sealed class ClipboardService : IClipboardMonitor, IDisposable
             return;
         }
 
-        Changed?.Invoke(this, EventArgs.Empty);
-
-        // The source app is read now, while the copy is fresh; the text read can sleep on retries,
-        // so it runs off the UI thread.
-        var appName = _foregroundApp.Name();
-        _ = CaptureAsync(appName);
+        // The source app is read now, while the copy is fresh.
+        Pending = CaptureAsync(_foregroundApp.Name());
     }
 
     private async Task CaptureAsync(string? appName)
@@ -83,14 +69,13 @@ public sealed class ClipboardService : IClipboardMonitor, IDisposable
         try
         {
             // An image copy wins over any text formats the same copy may carry.
-            var dib = await Task.Run(() => Win32Clipboard.HasImage() ? Win32Clipboard.TryReadImage() : null);
-            if (dib is not null)
+            if (await _backend.ReadImagePngAsync() is { } png)
             {
-                await CaptureImageAsync(dib, appName);
+                await CaptureImageAsync(png, appName);
                 return;
             }
 
-            var text = await Task.Run(Win32Clipboard.TryReadText);
+            var text = await _backend.ReadTextAsync();
             if (text is null) return;
 
             await _capture.CaptureAsync(
@@ -109,16 +94,9 @@ public sealed class ClipboardService : IClipboardMonitor, IDisposable
         }
     }
 
-    private async Task CaptureImageAsync(byte[] dib, string? appName)
+    private async Task CaptureImageAsync(byte[] png, string? appName)
     {
-        // Decoding runs on a worker thread: the imaging calls must never touch the UI thread.
-        var png = await Task.Run(() => ImageClipCodec.ToPng(dib));
-        if (png is null)
-        {
-            _log.LogWarning("An image copy could not be decoded ({Bytes} bytes); it was not saved", dib.Length);
-            return;
-        }
-
+        // Imaging runs on a worker thread: it must never touch the UI thread.
         var thumbnail = await Task.Run(() => ImageClipCodec.Thumbnail(png)) ?? png;
         await _capture.CaptureImageAsync(
             png,
@@ -127,7 +105,6 @@ public sealed class ClipboardService : IClipboardMonitor, IDisposable
             DateTimeOffset.UtcNow,
             _settings.Current.MaxItems,
             CancellationToken.None);
-
         await PruneByAgeAsync();
     }
 

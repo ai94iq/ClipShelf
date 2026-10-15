@@ -1,13 +1,5 @@
 namespace ClipShelf.Presentation.Platform;
 
-// The clipboard surface a head provides: change notifications plus reading and writing text and
-// images. IClipboardWriter is the subset the view models use.
-public interface IClipboardMonitor : IClipboardWriter
-{
-    event EventHandler? Changed;
-
-    string? ReadText();
-
-    // Platform-native image payload (a DIB block on Windows); the head decodes it.
-    byte[]? ReadImage();
-}
+// The clipboard a head provides: once resolved it captures every copy into the history, and it
+// writes items back. IClipboardWriter is the subset the view models use.
+public interface IClipboardMonitor : IClipboardWriter;
