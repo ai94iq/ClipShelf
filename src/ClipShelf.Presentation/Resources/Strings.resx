@@ -53,6 +53,8 @@
   <data name="Export_Csv" xml:space="preserve"><value>CSV</value></data>
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
   <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Flyout_PasteHint" xml:space="preserve"><value>Copied, press Ctrl+V to paste</value></data>
+  <data name="Settings_HotkeyWayland" xml:space="preserve"><value>On Wayland, keys pressed in other apps do not reach ClipShelf. Bind a shortcut in your system settings to the command: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>1 clip</value></data>

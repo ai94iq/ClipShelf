@@ -18,9 +18,11 @@ public sealed class FlyoutListTests
         Dispatcher.UIThread.RunJobs();
     }
 
-    private static FlyoutTestKit OpenWith(params string[] clips)
+    private static FlyoutTestKit OpenWith(params string[] clips) => OpenWith(canPaste: true, clips);
+
+    private static FlyoutTestKit OpenWith(bool canPaste, params string[] clips)
     {
-        var kit = new FlyoutTestKit();
+        var kit = new FlyoutTestKit(canPaste);
         foreach (var clip in clips) kit.AddClip(clip);
         kit.Window.ShowFlyout();
         Dispatcher.UIThread.RunJobs();
@@ -51,6 +53,21 @@ public sealed class FlyoutListTests
         Assert.True(await dialog.WaitAsync(TimeSpan.FromSeconds(5)));
         _ = kit.PasteBack.DidNotReceiveWithAnyArgs().IntoAsync(default);
         Assert.True(kit.Window.IsOpen);
+    });
+
+    // Wayland: no keystroke can reach other apps, so the pick is copied and a hint says how to paste.
+    [Fact]
+    public Task Where_paste_back_is_impossible_the_pick_is_copied_with_a_hint() => Ui.Run(() =>
+    {
+        var kit = OpenWith(canPaste: false, "first");
+
+        Press(kit, Key.Enter);
+
+        kit.Clipboard.Received().WriteText("first");
+        _ = kit.PasteBack.DidNotReceiveWithAnyArgs().IntoAsync(default);
+        Assert.False(kit.Window.IsOpen);
+        Assert.True(kit.Window.Hint?.IsVisible);
+        Assert.Contains("Ctrl+V", kit.Window.Hint!.Text);
     });
 
     [Fact]

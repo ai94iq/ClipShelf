@@ -113,12 +113,23 @@ public sealed partial class FlyoutWindow : Window
         Hide();
     }
 
-    // The pick went to the clipboard; close and paste into the window the user came from.
+    internal PasteHint? Hint { get; private set; }
+
+    // The pick went to the clipboard; close and paste into the window the user came from, or,
+    // where no keystroke can reach it, say how to paste.
     private void PasteBack()
     {
         var target = _previousWindow;
+        var position = Position;
         HideFlyout();
-        _ = _pasteBack.IntoAsync(target);
+        if (_pasteBack.CanPaste)
+        {
+            _ = _pasteBack.IntoAsync(target);
+            return;
+        }
+
+        Hint ??= new PasteHint();
+        Hint.ShowAt(position);
     }
 
     // Arrows move the selection, Enter picks it, Ctrl+1..9 pick a row, Esc steps back.

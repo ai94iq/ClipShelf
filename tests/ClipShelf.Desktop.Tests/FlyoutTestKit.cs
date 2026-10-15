@@ -60,7 +60,11 @@ internal sealed class FlyoutTestKit : ViewModelKit
     public ManualTime Time { get; } = new();
     public FlyoutWindow Window { get; }
 
-    public FlyoutTestKit() => Window = new FlyoutWindow(ViewModel, Platform, PasteBack, Time);
+    public FlyoutTestKit(bool canPaste = true)
+    {
+        PasteBack.CanPaste.Returns(canPaste);
+        Window = new FlyoutWindow(ViewModel, Platform, PasteBack, Time);
+    }
 }
 
 internal sealed class FakeFlyoutPlatform : IFlyoutPlatform

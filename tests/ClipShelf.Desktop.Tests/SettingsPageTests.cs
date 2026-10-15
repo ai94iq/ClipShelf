@@ -31,6 +31,19 @@ public sealed class SettingsPageTests
         Assert.False(kit.Page.FindControl<Control>("NoMatches")!.IsVisible);
     });
 
+    // On Wayland the hotkey only works while a ClipShelf window has focus; the note says how to
+    // bind a system shortcut instead. Elsewhere it stays out of the way.
+    [Fact]
+    public Task The_wayland_hotkey_note_shows_only_in_a_wayland_session() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit();
+        Host(kit.Page);
+
+        var note = kit.Page.FindControl<Control>("WaylandHotkeyNote")!;
+        Assert.Equal(ClipShelf.Desktop.Platform.DesktopSession.IsWayland, note.IsVisible);
+        Assert.Contains("clipshelf --toggle", ClipShelf.Presentation.Localization.Tr.Get("Settings_HotkeyWayland"));
+    });
+
     [Fact]
     public Task A_filter_keeps_only_the_matching_groups() => Ui.Run(() =>
     {

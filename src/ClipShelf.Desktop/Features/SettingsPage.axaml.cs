@@ -23,6 +23,7 @@ public sealed partial class SettingsPage : UserControl
         _shell = shell;
         InitializeComponent();
         DataContext = viewModel;
+        WaylandHotkeyNote.IsVisible = DesktopSession.IsWayland;
 
         // Tunnel: the button must not turn Space or Enter into a click while recording.
         HotkeyButton.Click += (_, _) => StartRecording();

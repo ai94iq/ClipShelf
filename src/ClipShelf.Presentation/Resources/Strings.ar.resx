@@ -53,6 +53,8 @@
   <data name="Export_Csv" xml:space="preserve"><value>CSV</value></data>
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
   <data name="History_Copied" xml:space="preserve"><value>تم النسخ</value></data>
+  <data name="Flyout_PasteHint" xml:space="preserve"><value>تم النسخ، اضغط Ctrl+V للصق</value></data>
+  <data name="Settings_HotkeyWayland" xml:space="preserve"><value>في Wayland لا تصل المفاتيح المضغوطة في التطبيقات الأخرى إلى ClipShelf. اربط اختصارًا في إعدادات النظام بالأمر: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} عناصر</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} عنصرًا</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>عنصر واحد</value></data>

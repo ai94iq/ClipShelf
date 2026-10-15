@@ -45,6 +45,8 @@ public sealed class X11Desktop(X11Connection x) : IForegroundApp, IFlyoutPlatfor
         if (previous != IntPtr.Zero) Wait(() => ActiveWindow() == own && Activate(previous));
     }
 
+    public bool CanPaste => !DesktopSession.IsWayland;
+
     public async Task IntoAsync(IntPtr targetWindow)
     {
         if (targetWindow == IntPtr.Zero) return;
