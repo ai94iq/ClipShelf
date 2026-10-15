@@ -89,3 +89,34 @@ jobs:
           winget install --id Microsoft.WingetCreate -e --accept-source-agreements --accept-package-agreements
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
           wingetcreate submit --prtitle "New version: ai94iq.ClipShelf version $version" --token $env:WINGET_TOKEN packaging\winget
+
+  # The Windows job creates the release; this one adds the Linux packages to it.
+  release-linux:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Install packaging tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq rpm
+
+      - name: Package
+        run: ./package.sh
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" artifacts/linux/*.tar.gz artifacts/linux/*.deb artifacts/linux/*.rpm --clobber
