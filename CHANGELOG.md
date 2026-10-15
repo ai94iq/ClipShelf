@@ -4,7 +4,11 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-15
+
 ### Added
+- macOS: while the History or Settings window is open, ClipShelf shows its own menu next to the Apple menu (Open clipboard history, Settings with Cmd+,, Hide, Quit) and a Dock icon, like any app; closed, it lives only in the menu bar again.
+- A start that fails now says why in a small window instead of closing silently: a denied or locked keyring or Keychain asks you to unlock it or allow access, and the window names the log folder.
 - Linux: ClipShelf runs on Linux (X11, and Wayland through XWayland) and ships as a tarball, a `.deb` and an `.rpm`. The database key goes to the system keyring, or to a file only your user can read without one; the app starts at sign-in through an XDG autostart entry and clears history on logout when asked (ADR 0007).
 - Linux, Wayland: a picked clip is copied with a hint to press Ctrl+V, and Settings and the welcome window explain binding a system shortcut to `clipshelf --toggle`.
 - Linux desktops without a tray (GNOME without the AppIndicator extension) open History at launch, and the welcome window says how to reach the app.
@@ -28,6 +32,10 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - View models and services moved into a shared `ClipShelf.Presentation` project (no behavior change), and the single-instance check now uses a named pipe that also carries the launch commands.
 
 ### Fixed
+- macOS: starting while the display sleeps (a locked screen) no longer crashes at launch; ClipShelf waits for the display, and any crash is now written to the log.
+- macOS: the window keeps the system's own traffic-light buttons with no app name or icon in the title bar, and Settings hides the Windows-only backdrop choice and names the Mac modifier keys.
+- The Settings search sits centered in the title bar, and text in search boxes is vertically centered.
+- Subtext sits evenly under its title everywhere (History header, Settings cards, clip rows, empty states), a disabled search box is a light fill instead of a dark block, and the History footer buttons share one height.
 - An approximate year ("c. 1447") now uses the same calendar as the dates around it, even when the culture's default calendar differs from the one in use.
 - The Light theme's surfaces keep their layer relationships again (secondary a step darker, popups and the undo bar a clear step lighter than the canvas), so dialogs and the clear confirmation read apart instead of blending into the background.
 - The clear confirmation dims with the framework's dark smoke and sits on a white dialog surface, instead of a light veil that washed the whole window out.
