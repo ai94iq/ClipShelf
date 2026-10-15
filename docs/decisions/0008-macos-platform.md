@@ -17,7 +17,9 @@ notarize with.
   pick is copied with a hint, and macOS is asked once (AXIsProcessTrustedWithOptions).
 - Key: the login Keychain behind the same KeyringKeyStore rules as Linux.
 - Run at login: a per-user LaunchAgent. Session end: SIGTERM and Avalonia's ShutdownRequested.
-- A menu-bar app: no Dock icon (LSUIElement, ShowInDock off).
+- A menu-bar app: no Dock icon at launch (ShowInDock off). While the main window is open it
+  becomes a regular app (Dock icon, its own menu next to the Apple menu) and goes back when the
+  window closes. The bundle sets no LSUIElement: with it, macOS ignored the policy switch.
 - Single instance: the socket file is a short hashed path, since macOS caps socket paths at 104
   characters and its per-user temp directory is long.
 - Packages: an ad-hoc-signed ClipShelf.app and a .dmg per architecture (arm64, x64), minimum

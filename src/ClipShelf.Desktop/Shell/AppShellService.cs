@@ -82,6 +82,8 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
                     window.WindowState == WindowState.Minimized &&
                     _settings.Current.LockOnMinimize)
                     _locks.Reset();
+                if (e.Property == Visual.IsVisibleProperty && OperatingSystem.IsMacOS())
+                    Platform.MacOS.MacAppPresence.Set(regular: window.IsVisible);
             };
             return window;
         }
@@ -131,9 +133,16 @@ public sealed class AppShellService : IDisposable, IHotkeyRegistration
 
     public void Exit()
     {
+        PrepareExit();
+        ExitRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    // Also run when the OS ends the app (Quit in the macOS app menu, Cmd+Q, logout), so the
+    // hidden main window lets the shutdown through instead of cancelling it.
+    public void PrepareExit()
+    {
         if (_settings.Current.LockOnExit) _locks.Reset();
         Lifetime.IsExiting = true;           // windows close for real from here on
-        ExitRequested?.Invoke(this, EventArgs.Empty);
     }
 
     // Created on the UI thread once the app is running. Avalonia 12.1.3+ only gives a tray icon

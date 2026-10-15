@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -26,6 +27,28 @@ public sealed partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         AppFonts.Apply(this, Culture.IsRtl);     // Culture is set in Program, before Avalonia starts
+
+        // The app menu macOS shows next to the Apple menu while the main window is open
+        // (MacAppPresence); set before startup, or Avalonia keeps its default "About Avalonia".
+        if (OperatingSystem.IsMacOS())
+        {
+            NativeMenu.SetMenu(this,
+            [
+                MenuItem("Tray_OpenHistory", shell => shell.ShowHistory()),
+                MenuItem("Tray_Settings", shell => shell.ShowSettings(), "Meta+OemComma"),
+            ]);
+        }
+    }
+
+    private NativeMenuItem MenuItem(string textKey, Action<AppShellService> action, string? gesture = null)
+    {
+        var item = new NativeMenuItem(Tr.Get(textKey));
+        if (gesture is not null) item.Gesture = Avalonia.Input.KeyGesture.Parse(gesture);
+        item.Click += (_, _) =>
+        {
+            if (_host is not null) action(_host.Services.GetRequiredService<AppShellService>());
+        };
+        return item;
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -66,12 +89,16 @@ public sealed partial class App : Application
             // Tray-first: nothing opens at startup.
             var shell = host.Services.GetRequiredService<AppShellService>();
             shell.ExitRequested += (_, _) => Exit(desktop);
+            desktop.ShutdownRequested += (_, _) => shell.PrepareExit();
             shell.RestartRequested += (_, _) =>
             {
                 RestartOnExit = true;
                 shell.Exit();
             };
             shell.ShowTray();
+            // Without LSUIElement, ShowInDock off did not hold: reopened at login, the app sat in
+            // the Dock with no window. The main window switches it to regular while open.
+            if (OperatingSystem.IsMacOS()) Platform.MacOS.MacAppPresence.Set(regular: false);
             _host = host;
 
             // Without a tray (GNOME without the AppIndicator extension) the app would start
