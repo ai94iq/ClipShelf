@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Copyloft.Presentation</RootNamespace>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <SatelliteResourceLanguages>ar</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.Async" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Copyloft.Presentation.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Copyloft.Core\Copyloft.Core.csproj" />
+    <ProjectReference Include="..\Copyloft.Data\Copyloft.Data.csproj" />
+  </ItemGroup>
+</Project>

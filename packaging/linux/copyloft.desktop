@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Copyloft
+Comment=Clipboard history
+Exec=copyloft --history
+Icon=copyloft
+Terminal=false
+Categories=Utility;
+StartupWMClass=Copyloft

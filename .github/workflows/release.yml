@@ -72,7 +72,7 @@ jobs:
           foreach ($file in Get-ChildItem packaging\winget -Filter '*.yaml') {
             $text = Get-Content -Raw $file.FullName
             $text = $text -replace '(?m)^PackageVersion: .*$', "PackageVersion: $version"
-            $text = $text -replace 'https://github\.com/ai94iq/Copyloft/releases/download/v[\d.]+/ClipShelf-Setup-[\d.]+\.msi', "https://github.com/ai94iq/Copyloft/releases/download/v$version/ClipShelf-Setup-$version.msi"
+            $text = $text -replace 'https://github\.com/ai94iq/Copyloft/releases/download/v[\d.]+/Copyloft-Setup-[\d.]+\.msi', "https://github.com/ai94iq/Copyloft/releases/download/v$version/Copyloft-Setup-$version.msi"
             $text = $text -replace '(?m)^    InstallerSha256: .*$', "    InstallerSha256: $hash"
             $text = $text -replace '(?m)^ProductCode: .*$', "ProductCode: `"$code`""
             $text = $text -replace 'https://github\.com/ai94iq/Copyloft/releases/tag/v[\d.]+', "https://github.com/ai94iq/Copyloft/releases/tag/v$version"
@@ -88,7 +88,7 @@ jobs:
         run: |
           winget install --id Microsoft.WingetCreate -e --accept-source-agreements --accept-package-agreements
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          wingetcreate submit --prtitle "New version: ai94iq.ClipShelf version $version" --token $env:WINGET_TOKEN packaging\winget
+          wingetcreate submit --prtitle "New version: ai94iq.Copyloft version $version" --token $env:WINGET_TOKEN packaging\winget
 
   # The Windows job creates the release; this one adds the Linux packages to it.
   release-linux:

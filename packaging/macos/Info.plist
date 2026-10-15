@@ -7,11 +7,11 @@
   <key>CFBundleDisplayName</key>
   <string>Copyloft</string>
   <key>CFBundleIdentifier</key>
-  <string>io.github.ai94iq.clipshelf</string>
+  <string>io.github.ai94iq.copyloft</string>
   <key>CFBundleExecutable</key>
-  <string>ClipShelf</string>
+  <string>Copyloft</string>
   <key>CFBundleIconFile</key>
-  <string>clipshelf</string>
+  <string>copyloft</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>

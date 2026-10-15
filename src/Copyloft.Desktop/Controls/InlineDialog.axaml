@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:Copyloft.Desktop.Localization"
+             x:Class="Copyloft.Desktop.Controls.InlineDialog">
+  <!-- A dialog drawn inside its window: a scrim over the window, a card in the middle. -->
+  <Panel>
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Opacity="0.6" />
+    <Border Width="320" Padding="20" CornerRadius="8"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+            BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1"
+            BoxShadow="{DynamicResource CopyloftCardShadow}">
+      <StackPanel Spacing="16">
+        <TextBlock x:Name="TitleText" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <StackPanel x:Name="ContentHost" Spacing="8">
+        </StackPanel>
+        <TextBlock x:Name="ErrorText" TextWrapping="Wrap" IsVisible="False" Margin="0,-8,0,0"
+                   Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <Button x:Name="PrimaryButton" Classes="accent" MinWidth="80" />
+          <Button x:Name="CancelButton" MinWidth="80" Content="{l:Tr Key=Common_Cancel}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Panel>
+</UserControl>

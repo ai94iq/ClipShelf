@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Copyloft.Core/Copyloft.Core.csproj" />
+    <Project Path="src/Copyloft.Data/Copyloft.Data.csproj" />
+    <Project Path="src/Copyloft.Desktop/Copyloft.Desktop.csproj" />
+    <Project Path="src/Copyloft.Presentation/Copyloft.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Copyloft.Core.Tests/Copyloft.Core.Tests.csproj" />
+    <Project Path="tests/Copyloft.Data.Tests/Copyloft.Data.Tests.csproj" />
+    <Project Path="tests/Copyloft.Desktop.Tests/Copyloft.Desktop.Tests.csproj" />
+    <Project Path="tests/Copyloft.Presentation.Tests/Copyloft.Presentation.Tests.csproj" />
+  </Folder>
+</Solution>

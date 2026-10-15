@@ -5,10 +5,10 @@ set "RESULT=0"
 set "OUT=artifacts\publish\win-x64"
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
-dotnet publish "src\ClipShelf.Desktop\ClipShelf.Desktop.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "%OUT%" -v q -nologo
+dotnet publish "src\Copyloft.Desktop\Copyloft.Desktop.csproj" -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true -o "%OUT%" -v q -nologo
 if errorlevel 1 goto :fail
 
-echo [build] OK: %OUT%\ClipShelf.exe
+echo [build] OK: %OUT%\Copyloft.exe
 goto :end
 
 :fail

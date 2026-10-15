@@ -14,6 +14,6 @@ esac
 RID=$os-$arch
 OUT=artifacts/publish/$RID
 rm -rf "$OUT"
-dotnet publish src/ClipShelf.Desktop/ClipShelf.Desktop.csproj -c Release -r "$RID" --self-contained true \
+dotnet publish src/Copyloft.Desktop/Copyloft.Desktop.csproj -c Release -r "$RID" --self-contained true \
   -p:PublishReadyToRun=true -o "$OUT" -v q -nologo
-echo "[build] OK: $OUT/ClipShelf"
+echo "[build] OK: $OUT/Copyloft"

@@ -7,7 +7,7 @@ call test.bat --no-pause
 if errorlevel 1 goto :fail
 call build.bat --no-pause
 if errorlevel 1 goto :fail
-dotnet build "installer\ClipShelf.Installer.wixproj" -c Release -o "artifacts\installer" -v q -nologo
+dotnet build "installer\Copyloft.Installer.wixproj" -c Release -o "artifacts\installer" -v q -nologo
 if errorlevel 1 goto :fail
 
 echo [package] OK: artifacts\installer

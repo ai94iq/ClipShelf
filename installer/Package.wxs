@@ -12,23 +12,23 @@
     <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="!(loc.DowngradeError)" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <Icon Id="ClipShelf.exe" SourceFile="..\src\ClipShelf.Desktop\Assets\app.ico" />
-    <Property Id="ARPPRODUCTICON" Value="ClipShelf.exe" />
+    <Icon Id="Copyloft.exe" SourceFile="..\src\Copyloft.Desktop\Assets\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="Copyloft.exe" />
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
     <WixVariable Id="WixUIBannerBmp" Value="Banner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="Dialog.bmp" />
 
-    <!-- Finish page: run ClipShelf when the checked option is left in place. -->
+    <!-- Finish page: run Copyloft when the checked option is left in place. -->
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchProduct)" />
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
 
     <UI>
-      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchClipShelf"
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchCopyloft"
                Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
     </UI>
 
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="ClipShelf" />
+      <Directory Id="INSTALLFOLDER" Name="Copyloft" />
     </StandardDirectory>
 
     <Feature Id="Main" Title="!(loc.ProductName)" Level="1">
@@ -42,21 +42,21 @@
     <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
       <!-- Everything from the publish folder except the exe, which needs a known Id for the shortcut -->
       <Files Include="$(var.PublishDir)\**">
-        <Exclude Files="$(var.PublishDir)\ClipShelf.exe" />
+        <Exclude Files="$(var.PublishDir)\Copyloft.exe" />
       </Files>
       <Component Id="AppExe">
-        <File Id="AppExeFile" Source="$(var.PublishDir)\ClipShelf.exe" KeyPath="yes" />
+        <File Id="AppExeFile" Source="$(var.PublishDir)\Copyloft.exe" KeyPath="yes" />
         <!-- Advertised shortcuts in the exe's component: per-machine safe and ICE-clean. -->
         <Shortcut Id="AppShortcut"
                   Advertise="yes"
                   Directory="ProgramMenuFolder"
                   Name="!(loc.ProductName)"
-                  Icon="ClipShelf.exe" />
+                  Icon="Copyloft.exe" />
         <Shortcut Id="DesktopShortcutShortcut"
                   Advertise="yes"
                   Directory="DesktopFolder"
                   Name="!(loc.ProductName)"
-                  Icon="ClipShelf.exe" />
+                  Icon="Copyloft.exe" />
       </Component>
     </ComponentGroup>
 
@@ -65,6 +65,6 @@
     <StandardDirectory Id="DesktopFolder" />
 
     <!-- Type 2 custom action: launches the installed exe from the finish page. -->
-    <CustomAction Id="LaunchClipShelf" FileRef="AppExeFile" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
+    <CustomAction Id="LaunchCopyloft" FileRef="AppExeFile" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
   </Fragment>
 </Wix>

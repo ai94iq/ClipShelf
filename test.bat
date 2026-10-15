@@ -4,7 +4,7 @@ cd /d "%~dp0"
 set "RESULT=0"
 
 rem MTP mode (global.json): extra flags are forwarded to the test host, so keep it minimal.
-dotnet test --solution "ClipShelf.slnx" -c Release
+dotnet test --solution "Copyloft.slnx" -c Release
 if errorlevel 1 goto :fail
 
 echo [test] OK

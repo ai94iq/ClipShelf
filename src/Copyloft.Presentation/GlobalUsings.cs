@@ -1,0 +1,16 @@
+global using System.Globalization;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Copyloft.Core.Abstractions;
+global using Copyloft.Core.Models;
+global using Copyloft.Core.Text;
+global using Copyloft.Data;
+global using Copyloft.Presentation.Common;
+global using Copyloft.Presentation.Hosting;
+global using Copyloft.Presentation.Localization;
+global using Copyloft.Presentation.Services;
+global using Copyloft.Presentation.Features.ClipboardPanel;
+global using Copyloft.Presentation.Features.Settings;
+global using Copyloft.Presentation.Platform;
