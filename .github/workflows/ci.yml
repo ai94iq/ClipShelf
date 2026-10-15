@@ -58,6 +58,8 @@ jobs:
         run: |
           xvfb-run -a ./test.sh > test.log 2>&1 && exit 0
           tail -5 test.log
-          details=$(grep -E -A8 '^failed' test.log | head -60 | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
-          echo "::error title=Test failures::${details:-no failed lines; see the log}"
+          # The failed tests, or the end of the log when the run died before reporting any.
+          { grep -E -A8 '^failed' test.log || tail -40 test.log; } | head -80 > failures.txt
+          details=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' failures.txt)
+          echo "::error title=Test failures::$details"
           exit 1
