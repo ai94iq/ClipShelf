@@ -2,7 +2,30 @@
 
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow [SemVer](https://semver.org/).
 
+## Contents
+
+- [Unreleased](#unreleased)
+- [0.4.0 - 2026-10-15](#040---2026-10-15)
+- [0.3.3 - 2026-10-03](#033---2026-10-03)
+- [0.3.2 - 2026-10-02](#032---2026-10-02)
+- [0.3.1 - 2026-10-02](#031---2026-10-02)
+- [0.3.0 - 2026-10-02](#030---2026-10-02)
+- [0.2.0 - 2026-10-02](#020---2026-10-02)
+
 ## [Unreleased]
+
+### Changed
+- History's actions are icons with tooltips beside the search (Select, Clear all, and in select mode Copy and Cancel), as in the flyout.
+- Row actions (pin, category, delete) and the flyout's footer icons use the accent color; on dark themes accent text and icons use a lighter shade so they stay readable.
+- The selected accent swatch wears a ring with a clear gap instead of a check.
+- Mica Alt is no longer offered (it looked the same as Mica); a saved Mica Alt shows as Mica.
+
+### Fixed
+- Hints, descriptions, counts and status lines are easier to read, most of all in Arabic, where they looked half transparent.
+- Card and group edges show in the Dark theme, and the backdrop (Mica or Acrylic) now shows through the dark cards.
+- Clip text keeps a gap from the row icons, and the History scroll bar no longer covers the delete icon.
+- Settings buttons fit their rows with the label centered, and a successful export says so in green.
+- The app icon in the title bar is sharp on scaled displays.
 
 ## [0.4.0] - 2026-10-15
 

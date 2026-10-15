@@ -1,6 +1,7 @@
 # Release checklist
 
-1. Move CHANGELOG `Unreleased` entries under the new version heading with today's date.
+1. Move CHANGELOG `Unreleased` entries under the new version heading with today's date, and add
+   that heading to the CHANGELOG `Contents` list.
 2. Bump `Version` in `Directory.Build.props` (MAJOR.MINOR.PATCH, always higher than the last shipped MSI).
 3. Run `package.bat` locally and test the MSI on Windows 10 22H2 and on Windows 11, as a standard user:
    fresh install, upgrade from the previous MSI, launch, uninstall (user data must remain), downgrade
