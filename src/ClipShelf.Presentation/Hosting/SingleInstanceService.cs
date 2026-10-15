@@ -30,9 +30,18 @@ public sealed class SingleInstanceService : IDisposable
 
     // Off Windows the pipe is a Unix domain socket that another process can re-bind, so an
     // exclusive lock file (flock, released by the kernel when the process dies) is the claim.
-    internal static string LockPath(string name) => Path.Combine(
-        Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR") is { Length: > 0 } runtime ? runtime : Path.GetTempPath(),
-        name + ".lock");
+    internal static string LockPath(string name) => Endpoint(name) + ".lock";
+
+    // The pipe's address. Off Windows it is a socket file, and macOS caps those paths at 104
+    // characters while its per-user TMPDIR is long, so the file gets a short name hashed from the
+    // full one, in the per-user runtime directory where there is one.
+    internal static string Endpoint(string name)
+    {
+        if (OperatingSystem.IsWindows()) return name;
+        var directory = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR") is { Length: > 0 } runtime ? runtime : Path.GetTempPath();
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(name)))[..16];
+        return Path.Combine(directory, "clipshelf-" + hash.ToLowerInvariant());
+    }
 
     // False when another instance already owns the name.
     public bool TryClaim()
@@ -42,7 +51,7 @@ public sealed class SingleInstanceService : IDisposable
             if (!OperatingSystem.IsWindows())
                 _lock = new FileStream(LockPath(_name), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             _server = new NamedPipeServerStream(
-                _name, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                Endpoint(_name), PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -65,7 +74,7 @@ public sealed class SingleInstanceService : IDisposable
             try
             {
                 using var client = new NamedPipeClientStream(
-                    ".", name, PipeDirection.Out, PipeOptions.Asynchronous);
+                    ".", Endpoint(name), PipeDirection.Out, PipeOptions.Asynchronous);
                 await client.ConnectAsync(50, cancellationToken);
                 using var writer = new StreamWriter(client, new UTF8Encoding(false)) { AutoFlush = true };
                 await writer.WriteLineAsync(command);

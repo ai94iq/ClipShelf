@@ -34,6 +34,21 @@ public sealed class SingleInstanceServiceTests
         Assert.Equal("ClipShelf.SingleInstance." + Environment.UserName, SingleInstanceService.DefaultName);
     }
 
+    // macOS caps a Unix socket path at 104 characters and its per-user TMPDIR is long, so the
+    // default CoreFxPipe_<name> path overflowed there; the endpoint is a short hashed path instead.
+    [Fact]
+    public void Off_windows_the_endpoint_fits_a_unix_socket_path()
+    {
+        Assert.SkipWhen(OperatingSystem.IsWindows(), "Windows pipes are not files");
+        var name = "ClipShelf.SingleInstance." + new string('u', 64);
+
+        var endpoint = SingleInstanceService.Endpoint(name);
+
+        Assert.True(Path.IsPathRooted(endpoint));
+        Assert.True(endpoint.Length <= 104, endpoint);
+        Assert.NotEqual(endpoint, SingleInstanceService.Endpoint(name + "x"));
+    }
+
     // Off Windows the pipe is a Unix socket another process can simply re-bind, so the claim is
     // the lock file; holding it here stands in for a running instance in another process.
     [Fact]
