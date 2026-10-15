@@ -50,6 +50,9 @@
       <!-- A faint white wash, so the layer reads over Mica as well as over the canvas. -->
       <SolidColorBrush x:Key="ClipShelfLayerBrush" Color="#0DFFFFFF" />
       <SolidColorBrush x:Key="ClipShelfCaptionCloseBrush" Color="#C42B1C" />
+      <!-- Fluent's dark transient border is near black, so card and group edges vanished on the
+           dark canvas; a faint white edge, as WinUI's dark CardStrokeColor reads. -->
+      <SolidColorBrush x:Key="SystemControlTransientBorderBrush" Color="#1FFFFFFF" />
       <SolidColorBrush x:Key="ButtonBackground" Color="#0FFFFFFF" />
       <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#15FFFFFF" />
       <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#08FFFFFF" />

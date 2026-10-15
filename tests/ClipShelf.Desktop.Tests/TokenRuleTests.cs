@@ -53,6 +53,23 @@ public sealed class TokenRuleTests
         Assert.Empty(offenders);
     }
 
+    private static Color ColorOf(string key, ThemeVariant theme)
+    {
+        Assert.True(Application.Current!.TryGetResource(key, theme, out var value), $"{key} missing");
+        return Assert.IsType<ISolidColorBrush>(value, exactMatch: false).Color;
+    }
+
+    // Fluent's dark transient border is near black, so card and group edges vanished on a dark
+    // canvas (seen on Windows). Dark gets a faint white edge; Black keeps its gray one.
+    [Fact]
+    public Task Card_edges_show_in_dark_and_black() => Ui.Run(() =>
+    {
+        var dark = ColorOf("SystemControlTransientBorderBrush", ThemeVariant.Dark);
+        Assert.Equal((255, 255, 255), (dark.R, dark.G, dark.B));
+        Assert.InRange(dark.A, 0x18, 0x30);
+        Assert.Equal(Color.Parse("#3A3A3A"), ColorOf("SystemControlTransientBorderBrush", ThemeService.Black));
+    });
+
     // BaseMedium is 60% ink: hints and counts read as half transparent, worst in Arabic's thin
     // strokes (seen on Windows). Text takes BaseMediumHigh; icons may still use BaseMedium.
     [Fact]

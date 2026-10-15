@@ -25,6 +25,8 @@ surface follow the WinUI app it replaced (in git history before the swap, ADR 00
   combo boxes and text boxes onto WinUI 3's ControlFillColor and ControlStrokeColor values, so
   controls match main; a disabled text box takes ControlFillColorDisabled (Fluent's disabled
   gray read as a dark block), and focus stays Fluent's.
+- Dark overrides `SystemControlTransientBorderBrush` with a faint white edge (#1FFFFFFF):
+  Fluent's is near black, so card, group and divider edges vanished on the dark canvas.
 - Full black is its own variant (`ThemeService.Black`) inheriting Dark; only the entries above
   differ, plus a visible `SystemControlTransientBorderBrush` (#3A3A3A) so black cards keep
   their edge on the black canvas. Its dictionary is keyed with `x:Static`, since the variant type converter rejects
