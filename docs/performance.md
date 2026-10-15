@@ -1,8 +1,8 @@
 # Performance
 
 How ClipShelf behaves as the clipboard history grows. The numbers come from a load harness that
-drives the real storage path — SQLCipher-encrypted SQLite through the Dapper repositories,
-including the trim that runs on every copy — with warm pooled connections on a Windows 11 x64
+drives the real storage path (SQLCipher-encrypted SQLite through the Dapper repositories,
+including the trim that runs on every copy) with warm pooled connections on a Windows 11 x64
 machine (.NET 10). Each size starts from a fresh encrypted database, so the rows are independent.
 
 Times are per operation in milliseconds unless noted. "Flyout page" is the 50-newest query the
@@ -23,19 +23,19 @@ flyout issues on open. "Search" is a substring scan; a hit and a miss cost the s
 
 ¹ First query of a fresh database (JIT and page warm-up); the steady state is about 0.5 ms.
 
-- **Insert** is flat at about 0.2 ms per copy — 10,000 clips in roughly 2 seconds.
+- **Insert** is flat at about 0.2 ms per copy: 10,000 clips in roughly 2 seconds.
 - **The flyout page** is a keyset query on `IX_Clip_CreatedAtUtc` and stays under a millisecond;
   the first query after opening a cold database pays a few milliseconds of page reads.
 - **Search** grows linearly with the history; at the Settings maximum (1,000 clips) it stays
   within a few milliseconds.
 - **Storage** is about 0.43 KB per text clip, encrypted.
-- **The trim** was the one operation that grew with the whole history — it ran on every copy.
+- **The trim** was the one operation that grew with the whole history, and it ran on every copy.
   It now uses the partial index `IX_Clip_Prune`, which covers only the clips the limit applies
   to (unpinned and uncategorized), so its cost tracks the limit, not the archive.
 
 ## One million clips
 
-Two runs on fresh encrypted databases with a 1,000-item limit — before and after the trim fix:
+Two runs on fresh encrypted databases with a 1,000-item limit, before and after the trim fix:
 
 | Metric | Before | After |
 |---|---|---|
@@ -54,8 +54,8 @@ Two runs on fresh encrypted databases with a 1,000-item limit — before and aft
 
 The per-copy trim and the lock failures shared one cause: the old `NOT IN` trim scanned the whole
 table on every copy, held the write lock for seconds and made concurrent captures collide. The
-partial index `IX_Clip_Prune` serves the trim now, so its cost tracks the limit — 1.26 ms per
-copy with a million clips stored — instead of the archive, and the planner confirms the index is
+partial index `IX_Clip_Prune` serves the trim now, so its cost tracks the limit (1.26 ms per
+copy with a million clips stored) instead of the archive, and the planner confirms the index is
 used (`SCAN Clip USING INDEX IX_Clip_Prune`).
 
 Trimming a history that has already grown far past the limit is a one-time bulk delete: 999,001

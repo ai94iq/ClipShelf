@@ -15,8 +15,8 @@ cache layers that did not exist, and the app created an empty folder at startup.
 
 Remove the unused caching layer for now: the helper, the registration, the folder, the
 package reference and the documentation claims. When a feature needs caching,
-reintroduce IMemoryCache with `GetOrLoadAsync` exactly as ADR 0001 specifies — copy the
-helper back from the template or git history — and record the use in the architecture
+reintroduce IMemoryCache with `GetOrLoadAsync` exactly as ADR 0001 specifies (copy the
+helper back from the template or git history) and record the use in the architecture
 doc.
 
 ## Consequences

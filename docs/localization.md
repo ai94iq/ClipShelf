@@ -1,6 +1,6 @@
 # Localization
 
-English is the neutral language in `Strings.resx`; Arabic ships as the satellite in `Strings.ar.resx`. Pick the language in Settings → Appearance → Language (English / العربية); the change applies after a restart (`Culture.Configure` reads it once) and the layout flips to RTL in Arabic. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this.
+English is the neutral language in `Strings.resx`; Arabic ships as the satellite in `Strings.ar.resx`. Pick the language in Settings > Appearance > Language (English / العربية); the change applies after a restart (`Culture.Configure` reads it once) and the layout flips to RTL in Arabic. Both files always have identical keys, sorted alphabetically. `LocalizationTests` enforces this.
 
 ## Key naming
 
@@ -19,5 +19,5 @@ Plurals: `Base_zero`, `Base_one`, `Base_two`, `Base_few`, `Base_many`, `Base_oth
 | Clip | عنصر | One stored clipboard item |
 | Pinned | مثبَّت | Kept when the history is trimmed or cleared |
 | Tray icon | أيقونة شريط المهام | Notification-area icon next to the clock |
-| Hotkey | اختصار لوحة المفاتيح | Global shortcut; Win+Shift+V by default |
+| Hotkey | اختصار لوحة المفاتيح | Global shortcut; Win+Shift+V by default (Cmd+Shift+V on macOS) |
 | History window | نافذة السجل | The full app window that lists every clip |

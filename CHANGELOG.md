@@ -14,8 +14,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Linux desktops without a tray (GNOME without the AppIndicator extension) open History at launch, and the welcome window says how to reach the app.
 - macOS: ClipShelf runs as a menu-bar app on macOS 15 and later (Apple Silicon and Intel) and ships as a .dmg. The key goes to the Keychain, Cmd+Shift+V opens the flyout, picks paste with the Accessibility permission (or are copied with a hint), and a LaunchAgent starts it at login (ADR 0008).
 - Shortcut labels use Apple's names on a Mac (Control, Option, Shift, Cmd), and labels that named Windows now read for every OS.
-- Accent color: follow the Windows accent or pick one of seven presets in Settings → Appearance. Primary actions, selection, focus and toggles use it (a restart applies the change).
-- Arabic UI: pick English or العربية in Settings → Appearance → Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
+- Accent color: follow the Windows accent or pick one of seven presets in Settings > Appearance. Primary actions, selection, focus and toggles use it (a restart applies the change).
+- Arabic UI: pick English or العربية in Settings > Appearance > Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
 - Browse the full history beyond the first page: the window loads older clips as you scroll, and the footer shows the total count instead of just the loaded page.
 - The flyout loads older clips as you scroll too, so the whole history is reachable from the shortcut.
 - Undo a deleted clip: deleting hides the row at once and the delete only lands after a few seconds, with an Undo bar in both windows.
@@ -74,8 +74,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ### Added
 - Rename and delete categories in Settings; deleting a category keeps its clips in the history without a category.
-- The flyout is keyboard-first: ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
-- Settings can check GitHub for a newer release — once per run or on demand — and links straight to the download.
+- The flyout is keyboard-first: the Up and Down arrows move through the clips, Enter pastes the selected one, and Ctrl+1 to Ctrl+9 paste one of the first nine.
+- Settings can check GitHub for a newer release, once per run or on demand, and links straight to the download.
 - A one-time welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
 - Copied images are kept too: rows show a thumbnail and picking one puts the image back on the clipboard; multi-copy and export stay text-only.
 
@@ -101,7 +101,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Select several clips in the list and copy them all at once.
 - Categories: save clips into named groups from the row menu; the full history can filter by category, saved clips survive Clear, the history limit and retention, and exports include their category.
 - Set a password in Settings; it is asked before exporting the history and before opening a locked category.
-- Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return — on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
+- Lock a category to keep its clips hidden from the history, the flyout, search and exports; unlock it with the password, and choose in Settings when locks return: on exit, on minimize or on shutdown/sign-out (a fresh password starts locked).
 - Appearance: the Light theme paints pure white surfaces and there is a new full black theme; translucency stays available through the Background setting.
 
 ### Changed
@@ -112,12 +112,12 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - The app icon is a stacked clipboard on a gradient tile, and the installer artwork uses it.
 - The flyout opens next to the mouse pointer instead of the corner of the screen; with the pointer at the taskbar it still tucks into the corner.
 - Database hardening: temporary storage stays in memory, SQLCipher scrubs freed memory, and a test proves the database, its sidecars and backups contain no readable clip text.
-- Clip rows show readable app names: capitalized, with friendly names for common apps (Chrome, Edge, Word…).
+- Clip rows show readable app names: capitalized, with friendly names for common apps (Chrome, Edge, Word and others).
 
 ### Fixed
 - The minimize, maximize and close buttons and the row action icons stay visible in the light theme: the window frame and caption buttons follow the theme setting, and icons take the theme's secondary color (destructive buttons still tint red on hover).
 - Locking categories (for example on minimize) updates the history filter at once, and picking the locked category again asks for the password; unlocking from the filter keeps the filter applied instead of falling back to the whole list.
-- The flyout no longer flashes black when it opens — it is parked off-screen instead of hidden, so Windows never re-creates its acrylic surface — it closes when you click anywhere outside it, even when it never became the active window, and it hands focus back to the app you came from when it closes.
+- The flyout no longer flashes black when it opens: it is parked off-screen instead of hidden, so Windows never re-creates its acrylic surface; it closes when you click anywhere outside it, even when it never became the active window, and it hands focus back to the app you came from when it closes.
 - Tray single-click now opens the flyout without waiting for double-click detection; clipboard-list updates preserve existing rows and avoid full-list redraws. Reopening also dismisses a stale clear-confirmation overlay.
 - Changing the history size no longer trims on every keystroke or spin click, and the tray icon or shortcut are only re-applied when their own settings change.
 - The history footer reads "1 clip" instead of "1 clips" for a single item.

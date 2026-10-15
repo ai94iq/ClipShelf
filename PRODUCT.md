@@ -8,7 +8,7 @@ adaptive
 
 ## Users
 
-Public desktop users who discover the app through package managers (winget, and later Linux/macOS installs) and keep it running in the tray. Keyboard-curious rather than power users. They copy constantly during other work (writing, browsing, support, snippets) and need something they copied earlier to come back without breaking their flow.
+Public desktop users who discover the app through package managers (winget) and the release downloads for Linux and macOS and keep it running in the tray. Keyboard-curious rather than power users. They copy constantly during other work (writing, browsing, support, snippets) and need something they copied earlier to come back without breaking their flow.
 
 ## Product Purpose
 
@@ -20,7 +20,7 @@ A clipboard shelf that pastes back into the app you came from: the flyout opens 
 
 ## Operating Context
 
-Native desktop application on Windows (first), Linux and macOS (next), one visual identity across all three; platform integration adapts where the OS requires it (tray, shortcuts, permissions). Tray-first: nothing opens at startup. The default shortcut is Win+Shift+V (Cmd+Shift+V on macOS) or a tray click. Arabic with RTL is a shipped locale, selectable in Settings. Used mid-task: the flyout appears while the user is working in another app and closes when they leave.
+Native desktop application on Windows, Linux and macOS, one visual identity across all three; platform integration adapts where the OS requires it (tray, shortcuts, permissions). Tray-first: nothing opens at startup. The default shortcut is Win+Shift+V (Cmd+Shift+V on macOS) or a tray click. Arabic with RTL is a shipped locale, selectable in Settings. Used mid-task: the flyout appears while the user is working in another app and closes when they leave.
 
 ## Capabilities and Constraints
 
@@ -29,8 +29,7 @@ Native desktop application on Windows (first), Linux and macOS (next), one visua
 - Categories with optional password locks; one password guards locks and exports; lock timing (on exit, minimize, shutdown).
 - Export to JSON/CSV; settings search; themes and accent; tray icon options; update check; welcome window on first run.
 - Local-only: no cloud, no sync, no accounts. Sandboxed packages (Flatpak/Snap) are excluded because they block clipboard watching, hotkeys and paste-back.
-- Cross-platform migration in progress: .NET 10 + Avalonia, one UI for all three platforms (spec: docs/superpowers/specs/2026-10-08-cross-platform-migration-design.md). Windows keeps shipping until parity.
-- Open decision: the new visual world itself (designed next); background effects are re-mapped per OS during the migration.
+- One UI for all three platforms on .NET 10 and Avalonia 12 (ADR 0006, 0007, 0008); background effects (Mica, Acrylic) are Windows only.
 
 ## Brand Commitments
 
@@ -41,7 +40,7 @@ Native desktop application on Windows (first), Linux and macOS (next), one visua
 ## Evidence on Hand
 
 - README.md, docs/architecture.md, docs/performance.md and the shipped screenshots in docs/images (the old design; evidence of the subject, not authority over the new world).
-- The design critique in .impeccable/critique/ (2026-10-06, 29/40; four P1 issues are acceptance criteria for the new build).
+- A local design critique (2026-10-06, 29/40, not in the repository; its four P1 issues were acceptance criteria for the Avalonia build).
 - No testimonials, benchmarks or press beyond the repo's own performance notes; future work must not fabricate them.
 
 ## Product Principles

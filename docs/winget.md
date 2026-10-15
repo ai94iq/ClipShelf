@@ -1,7 +1,8 @@
 # Publishing to winget
 
-The manifests for the current release live in `packaging/winget/` (schema 1.6), and the release
-workflow submits them automatically:
+The manifests in `packaging/winget/` (schema 1.6) are templates: the release workflow rewrites
+them on its runner for each tag and submits the result, so the copies in the repository keep an
+older version. The flow:
 
 1. On a `v*` tag, the workflow builds the MSI, publishes the release, then rewrites the three
    manifests on the runner (version, installer URL, SHA256 and product code read from the MSI).
@@ -13,7 +14,7 @@ workflow submits them automatically:
 ## One-time setup
 
 Create a classic GitHub token with the `public_repo` scope and store it as the repository secret
-`WINGET_TOKEN` (Settings → Secrets and variables → Actions → New repository secret). Without the
+`WINGET_TOKEN` (Settings > Secrets and variables > Actions > New repository secret). Without the
 secret the workflow skips the submission and only refreshes the manifests on the runner.
 
 ## Manual submission

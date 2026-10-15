@@ -53,15 +53,15 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - Search the history, pin clips, delete single clips, or clear everything unpinned; a placeholder explains an empty history, an empty search and an empty category.
 
 **The flyout**
-- Open the floating flyout with `Win+Shift+V` or a single tray click; it appears next to the mouse pointer and closes when you click anywhere else.
-- Pick a clip to copy it and paste it into the app you came from; ↑/↓ move through the clips, Enter pastes the selected one, and Ctrl+1…9 paste one of the first nine.
+- Open the floating flyout with `Win+Shift+V` (`Cmd+Shift+V` on a Mac) or a single tray click; it appears next to the mouse pointer and closes when you click anywhere else.
+- Pick a clip to copy it and paste it into the app you came from; the Up and Down arrows move through the clips, Enter pastes the selected one, and Ctrl+1 to Ctrl+9 paste one of the first nine.
 - Select several clips and copy them together as one multi-line text.
 
 **Categories**
 - Save clips into named categories from the folder button on any row; create a category on the spot, and rename or delete them in Settings.
 - Filter the full history by category; categorized clips are kept out of Clear, the history limit and retention.
 - Lock a category to hide its clips from the history, the flyout, search and exports; opening it asks for the password.
-- Choose when locks return — on exit, on minimize, or on shutdown/sign-out.
+- Choose when locks return: on exit, on minimize, or on shutdown or sign-out.
 
 **Export**
 - Export the text history to JSON or CSV from Settings, including each clip's category.
@@ -69,25 +69,26 @@ The installer wizard, with the MIT license, install location and finish-page opt
 
 **Appearance**
 - Themes: System, Light (soft light surfaces), Dark and Full black.
-- Backgrounds where supported: Mica, Acrylic or solid (Mica Alt shows as Mica).
+- Backgrounds on Windows: Mica, Acrylic or solid (Mica Alt shows as Mica).
 
 **Tray and behavior**
 - Filled or outline tray icon, hide the tray icon, and choose whether a tray double-click opens the full history.
-- Record a new global shortcut, run at Windows startup, cap the history size, and set retention (1 day, 7 days, 30 days or forever).
+- Record a new global shortcut, run at startup (sign-in on Linux, login on macOS), cap the history size, and set retention (1 day, 7 days, 30 days or forever).
 - Optionally clear unpinned history when you sign out or shut down; a search box in the title bar finds any setting.
-- Check for a newer release from Settings — ClipShelf looks once per run and links to the download.
+- Check for a newer release from Settings; ClipShelf looks once per run and links to the download.
 - A welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
+- A start that fails (for example a denied keyring or Keychain request) says why in a small window and names the log folder.
 
 **Privacy**
-- The history database is SQLCipher-encrypted with a random key protected by Windows DPAPI for your account.
+- The history database is SQLCipher-encrypted with a random key protected for your account: Windows DPAPI, the Secret Service keyring on Linux, the Keychain on macOS.
 - Temporary storage stays in memory, freed memory is scrubbed, and a test proves the database, its sidecars and backups contain no readable clip text.
-- Start in the notification area and keep history and settings on this PC under `%LOCALAPPDATA%\ClipShelf`.
+- Start in the tray and keep history and settings on this computer (see [Data locations](#data-locations)).
 
-The default shortcut is `Win+Shift+V`; change it in Settings if another app has already registered it.
+The default shortcut is `Win+Shift+V` (`Cmd+Shift+V` on a Mac); change it in Settings if another app has already registered it.
 
 ## Performance
 
-Load-tested through the real encrypted storage pipeline — details and numbers in [docs/performance.md](docs/performance.md):
+Load-tested through the real encrypted storage pipeline; details and numbers in [docs/performance.md](docs/performance.md):
 
 - 10,000 clips insert in about 2 seconds (~0.2 ms per copy), and the flyout's first page stays under a millisecond.
 - Trimming the history to the limit costs a partial-index seek proportional to the limit; a million stored clips no longer slow captures down (7.6 s per copy before the fix, about 1 ms after).
@@ -122,7 +123,9 @@ Download `ClipShelf-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dm
 
 The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for ClipShelf, or run `xattr -dr com.apple.quarantine /Applications/ClipShelf.app` once.
 
-ClipShelf lives in the menu bar. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V. Details: [ADR 0008](docs/decisions/0008-macos-platform.md).
+ClipShelf lives in the menu bar. While its History or Settings window is open it also shows its own menu next to the Apple menu and a Dock icon, like any app. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V.
+
+After an update macOS asks again for the login keychain password and for the Accessibility permission, because each release is signed ad hoc. Details: [docs/known-issues.md](docs/known-issues.md) and [ADR 0008](docs/decisions/0008-macos-platform.md).
 
 ## Scripts
 
@@ -155,7 +158,7 @@ A second launch never starts a second copy: `ClipShelf.exe --toggle` (`clipshelf
 | `packaging/linux` | Desktop entry, icon and RPM spec for the Linux packages |
 | `packaging/macos` | The app bundle's Info.plist |
 
-Details: [docs/architecture.md](docs/architecture.md).
+Details: [docs/architecture.md](docs/architecture.md), the storage in [docs/database.md](docs/database.md), the visual rules in [DESIGN.md](DESIGN.md) and the product brief in [PRODUCT.md](PRODUCT.md).
 
 ## Data locations
 
@@ -169,11 +172,11 @@ All user data is in `%LOCALAPPDATA%\ClipShelf\` on Windows, `~/.local/share/Clip
 | `logs\` | Daily log files (newest 14) |
 | `settings.json` | User settings |
 
-Uninstalling keeps this folder. The history database is encrypted with SQLCipher; the key in `key.bin` is protected for the current Windows user, so keep it together with `data.db` — without it the history cannot be read.
+Uninstalling keeps this folder. The history database is encrypted with SQLCipher; keep `key.bin` (and, on Linux and macOS, the keyring or Keychain entry it points to) together with `data.db`, since without the key the history cannot be read.
 
 ## Localization
 
-English is the primary language; Arabic ships as a satellite and is selectable in Settings → Appearance → Language (a restart applies it). `Strings.resx` (English, neutral) and `Strings.ar.resx` keep matching keys. See [docs/localization.md](docs/localization.md).
+English is the primary language; Arabic ships as a satellite and is selectable in Settings > Appearance > Language (a restart applies it). `Strings.resx` (English, neutral) and `Strings.ar.resx` keep matching keys. See [docs/localization.md](docs/localization.md).
 
 ## Contributing
 
@@ -189,8 +192,8 @@ Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/relea
 
 ## Built with
 
-This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill) — the agent skill that fixed the original stack (.NET 10, SQLite, WiX), the project layout and the UI rules. The UI moved from WinUI 3 to Avalonia 12 in October 2026 so ClipShelf can follow to Linux and macOS.
+This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill), the agent skill that fixed the original stack (.NET 10, SQLite, WiX), the project layout and the UI rules. The UI moved from WinUI 3 to Avalonia 12 in October 2026 so ClipShelf can follow to Linux and macOS.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.Desktop/Assets/Fonts/OFL.txt`).
+MIT; see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.Desktop/Assets/Fonts/OFL.txt`).

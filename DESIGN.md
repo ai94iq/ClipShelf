@@ -1,8 +1,7 @@
 # DESIGN.md
 
 Visual rules for `src/ClipShelf.Desktop` (Avalonia 12). The structure and behavior of every
-surface follow the WinUI app it replaced (in git history before the swap, ADR 0006); see the
-[restart design](docs/superpowers/specs/2026-10-12-avalonia-restart-design.md) for the batch order.
+surface follow the WinUI app it replaced (in git history before the swap, ADR 0006).
 
 ## Tokens
 
@@ -24,7 +23,8 @@ surface follow the WinUI app it replaced (in git history before the swap, ADR 00
 - Avalonia's FluentTheme carries Fluent v1 control fills (buttons 20% black, inputs 40% white
   with a 60% black border). `Exceptions.axaml` maps the rest, hover and press states of buttons,
   combo boxes and text boxes onto WinUI 3's ControlFillColor and ControlStrokeColor values, so
-  controls match main; focus and disabled states stay Fluent's.
+  controls match main; a disabled text box takes ControlFillColorDisabled (Fluent's disabled
+  gray read as a dark block), and focus stays Fluent's.
 - Full black is its own variant (`ThemeService.Black`) inheriting Dark; only the entries above
   differ, plus a visible `SystemControlTransientBorderBrush` (#3A3A3A) so black cards keep
   their edge on the black canvas. Its dictionary is keyed with `x:Static`, since the variant type converter rejects
@@ -56,3 +56,8 @@ caption doubled the title and added a fullscreen button, so the row is ours and 
 the search is `User`). Probed live: Windows answers HTCAPTION, HTMINBUTTON, HTMAXBUTTON (snap
 layouts) and HTCLOSE over those parts. The section sits on `ClipShelfLayerBrush` with a rounded
 leading corner. The welcome window keeps the OS title bar.
+
+On macOS the window keeps the system decorations (`WindowDecorations.Full`) so the traffic lights
+are the system's own; the Windows-style caption buttons and the app name and icon are hidden, since
+a Mac shows the app's name in the menu bar. The Settings search spans the title row and centers on
+the window either way.
