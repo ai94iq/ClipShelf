@@ -30,3 +30,29 @@ jobs:
 
       - name: Test
         run: .\test.bat --no-pause
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      # Xvfb gives the X11 tests a real server (XFixes, XTEST); libsecret-1-0 lets the keyring
+      # binding load (no Secret Service runs, so it reports no keyring).
+      - name: Install test dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libsecret-1-0
+
+      - name: Test
+        run: xvfb-run -a ./test.sh
