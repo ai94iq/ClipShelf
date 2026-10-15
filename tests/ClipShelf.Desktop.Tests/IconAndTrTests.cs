@@ -24,5 +24,5 @@ public sealed class IconAndTrTests
 
     [Fact]
     public void The_tr_extension_returns_the_resource_text() =>
-        Assert.Equal("ClipShelf", new TrExtension { Key = "App_Name" }.ProvideValue(null!));
+        Assert.Equal("Copyloft", new TrExtension { Key = "App_Name" }.ProvideValue(null!));
 }

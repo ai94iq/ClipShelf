@@ -2,7 +2,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
+    <!-- The exe keeps its old name so existing autostart entries and installs still find it. -->
     <AssemblyName>ClipShelf</AssemblyName>
+    <AssemblyTitle>Copyloft</AssemblyTitle>
     <RootNamespace>ClipShelf.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>

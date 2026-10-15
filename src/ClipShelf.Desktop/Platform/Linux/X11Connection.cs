@@ -22,7 +22,7 @@ public sealed class X11Connection
     {
         Display = XOpenDisplay(IntPtr.Zero);
         if (Display == IntPtr.Zero)
-            throw new InvalidOperationException("No X display; ClipShelf on Linux needs X11 or XWayland.");
+            throw new InvalidOperationException("No X display; Copyloft on Linux needs X11 or XWayland.");
         Root = XDefaultRootWindow(Display);
         if (XFixesQueryExtension(Display, out _fixesEventBase, out _) == 0)
             throw new InvalidOperationException("The X server has no XFixes extension.");

@@ -36,7 +36,7 @@ public sealed class AutostartRegistration(
             File.WriteAllText(path, $"""
                 [Desktop Entry]
                 Type=Application
-                Name=ClipShelf
+                Name=Copyloft
                 Exec={Quote(exe)}
                 Icon=clipshelf
                 Terminal=false

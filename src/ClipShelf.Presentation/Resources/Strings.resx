@@ -13,8 +13,8 @@
   <data name="Accent_Teal" xml:space="preserve"><value>Teal</value></data>
   <data name="Accent_Windows" xml:space="preserve"><value>System accent</value></data>
   <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
-  <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
-  <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
+  <data name="App_Name" xml:space="preserve"><value>Copyloft</value></data>
+  <data name="App_Welcome" xml:space="preserve"><value>Welcome to Copyloft</value></data>
   <data name="Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>
   <data name="Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
   <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
@@ -54,8 +54,8 @@
   <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
   <data name="Flyout_PasteHint" xml:space="preserve"><value>Copied, press Ctrl+V to paste</value></data>
   <data name="Flyout_PasteHintMac" xml:space="preserve"><value>Copied, press Cmd+V to paste</value></data>
-  <data name="Welcome_Accessibility" xml:space="preserve"><value>To paste a picked clip for you, ClipShelf needs the Accessibility permission; macOS asks the first time. Without it, picks are copied and you press Cmd+V.</value></data>
-  <data name="Settings_HotkeyWayland" xml:space="preserve"><value>On Wayland, keys pressed in other apps do not reach ClipShelf. Bind a shortcut in your system settings to the command: clipshelf --toggle</value></data>
+  <data name="Welcome_Accessibility" xml:space="preserve"><value>To paste a picked clip for you, Copyloft needs the Accessibility permission; macOS asks the first time. Without it, picks are copied and you press Cmd+V.</value></data>
+  <data name="Settings_HotkeyWayland" xml:space="preserve"><value>On Wayland, keys pressed in other apps do not reach Copyloft. Bind a shortcut in your system settings to the command: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_one" xml:space="preserve"><value>1 clip</value></data>
@@ -124,7 +124,7 @@
   <data name="Settings_ClearOnSignOutHint" xml:space="preserve"><value>Removes unpinned clips when you sign out or shut down.</value></data>
   <data name="Settings_DoubleClickTray" xml:space="preserve"><value>Double-click the tray icon opens the full window</value></data>
   <data name="Settings_Download" xml:space="preserve"><value>Download</value></data>
-  <data name="Settings_ExitApp" xml:space="preserve"><value>Exit ClipShelf</value></data>
+  <data name="Settings_ExitApp" xml:space="preserve"><value>Exit Copyloft</value></data>
   <data name="Settings_ExitHint" xml:space="preserve"><value>Stops clipboard capture and removes the tray icon.</value></data>
   <data name="Settings_Export" xml:space="preserve"><value>Export clips</value></data>
   <data name="Settings_ExportDone" xml:space="preserve"><value>Exported {0}.</value></data>
@@ -138,14 +138,14 @@
   <data name="Settings_HotkeyConflict" xml:space="preserve"><value>This shortcut is already used by another app.</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
   <data name="Settings_HotkeyHintMac" xml:space="preserve"><value>Click the shortcut, then press a key combination with Control, Option, Shift or Cmd. Esc cancels.</value></data>
-  <data name="Settings_HotkeyNoShortcut" xml:space="preserve"><value>ClipShelf has no global shortcut until you pick a working one.</value></data>
+  <data name="Settings_HotkeyNoShortcut" xml:space="preserve"><value>Copyloft has no global shortcut until you pick a working one.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
-  <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>ClipShelf is still using {0}.</value></data>
+  <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>Copyloft is still using {0}.</value></data>
   <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings_LanguageHint" xml:space="preserve"><value>Takes effect after a restart.</value></data>
   <data name="Settings_LockCategory" xml:space="preserve"><value>Lock</value></data>
   <data name="Settings_LockNow" xml:space="preserve"><value>Lock now</value></data>
-  <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit ClipShelf</value></data>
+  <data name="Settings_LockOnExit" xml:space="preserve"><value>I exit Copyloft</value></data>
   <data name="Settings_LockOnMinimize" xml:space="preserve"><value>The window is minimized</value></data>
   <data name="Settings_LockOnShutdown" xml:space="preserve"><value>I shut down or sign out</value></data>
   <data name="Settings_LockPassword" xml:space="preserve"><value>Password</value></data>
@@ -155,7 +155,7 @@
   <data name="Settings_MaxItemsHint" xml:space="preserve"><value>Clips outside a category are removed once the limit is passed; pinned clips are kept.</value></data>
   <data name="Settings_NoMatches" xml:space="preserve"><value>No settings match your search.</value></data>
   <data name="Settings_RenameCategory" xml:space="preserve"><value>Rename…</value></data>
-  <data name="Settings_RestartHint" xml:space="preserve"><value>Restart ClipShelf to apply the change.</value></data>
+  <data name="Settings_RestartHint" xml:space="preserve"><value>Restart Copyloft to apply the change.</value></data>
   <data name="Settings_RestartNow" xml:space="preserve"><value>Restart now</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>
@@ -169,7 +169,7 @@
   <data name="Settings_TrayIcon" xml:space="preserve"><value>Tray icon</value></data>
   <data name="Settings_UnlockCategory" xml:space="preserve"><value>Unlock…</value></data>
   <data name="Settings_UpdateAvailable" xml:space="preserve"><value>Version {0} is available.</value></data>
-  <data name="Settings_UpdateCurrent" xml:space="preserve"><value>ClipShelf {0} is the latest version.</value></data>
+  <data name="Settings_UpdateCurrent" xml:space="preserve"><value>Copyloft {0} is the latest version.</value></data>
   <data name="Settings_UpdateFailed" xml:space="preserve"><value>Couldn't check for updates.</value></data>
   <data name="Settings_Updates" xml:space="preserve"><value>Updates</value></data>
   <data name="Theme_Black" xml:space="preserve"><value>Full black</value></data>
@@ -178,16 +178,16 @@
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>
   <data name="TrayIcon_Filled" xml:space="preserve"><value>Filled</value></data>
   <data name="TrayIcon_Outline" xml:space="preserve"><value>Outline</value></data>
-  <data name="Startup_Failed" xml:space="preserve"><value>ClipShelf could not start.</value></data>
-  <data name="Startup_KeyringDenied" xml:space="preserve"><value>ClipShelf could not read its database key from the system keyring (the Keychain on a Mac). Unlock it or allow access when asked, then start ClipShelf again.</value></data>
+  <data name="Startup_Failed" xml:space="preserve"><value>Copyloft could not start.</value></data>
+  <data name="Startup_KeyringDenied" xml:space="preserve"><value>Copyloft could not read its database key from the system keyring (the Keychain on a Mac). Unlock it or allow access when asked, then start Copyloft again.</value></data>
   <data name="Startup_Log" xml:space="preserve"><value>The log in {0} says why.</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Welcome_Hotkey" xml:space="preserve"><value>Press {0} anywhere to open the flyout, then pick a clip to paste it into the app you came from.</value></data>
   <data name="Welcome_Ok" xml:space="preserve"><value>Got it</value></data>
-  <data name="Welcome_Tray" xml:space="preserve"><value>ClipShelf keeps running in the tray (the menu bar on a Mac); open Settings or exit from its icon.</value></data>
-  <data name="Welcome_NoTray" xml:space="preserve"><value>This desktop shows no tray icon, so ClipShelf opens History when it starts. Reach it later with the command clipshelf --history; on GNOME, the AppIndicator extension adds the tray icon.</value></data>
+  <data name="Welcome_Tray" xml:space="preserve"><value>Copyloft keeps running in the tray (the menu bar on a Mac); open Settings or exit from its icon.</value></data>
+  <data name="Welcome_NoTray" xml:space="preserve"><value>This desktop shows no tray icon, so Copyloft opens History when it starts. Reach it later with the command clipshelf --history; on GNOME, the AppIndicator extension adds the tray icon.</value></data>
   <data name="Window_Minimize" xml:space="preserve"><value>Minimize</value></data>
   <data name="Window_Maximize" xml:space="preserve"><value>Maximize</value></data>
   <data name="Window_Close" xml:space="preserve"><value>Close</value></data>

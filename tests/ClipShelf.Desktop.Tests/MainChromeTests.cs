@@ -85,8 +85,8 @@ public sealed class MainChromeTests
         var window = Shown();
 
         var bar = Assert.Single(WithRole(window, WindowDecorationsElementRole.TitleBar));
-        Assert.Single(window.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "ClipShelf");
-        Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "ClipShelf");
+        Assert.Single(window.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "Copyloft");
+        Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "Copyloft");
     });
 
     [Theory]

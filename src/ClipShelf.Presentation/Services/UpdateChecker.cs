@@ -6,7 +6,7 @@ namespace ClipShelf.Presentation.Services;
 // Reads the newest release tag from the public GitHub releases API.
 public sealed class UpdateChecker : IUpdateChecker
 {
-    private const string LatestReleaseApi = "https://api.github.com/repos/ai94iq/ClipShelf/releases/latest";
+    private const string LatestReleaseApi = "https://api.github.com/repos/ai94iq/Copyloft/releases/latest";
 
     // 15 seconds: the first request pays for DNS and TLS on a cold start.
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
@@ -20,7 +20,7 @@ public sealed class UpdateChecker : IUpdateChecker
     public async Task<string?> NewerVersionAsync(CancellationToken ct)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, LatestReleaseApi);
-        request.Headers.UserAgent.ParseAdd("ClipShelf");
+        request.Headers.UserAgent.ParseAdd("Copyloft");
         using var response = await Http.SendAsync(request, ct);
         response.EnsureSuccessStatusCode();
 

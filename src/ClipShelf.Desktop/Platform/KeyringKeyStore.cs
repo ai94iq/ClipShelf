@@ -21,7 +21,7 @@ public sealed class KeyringKeyStore(ISecretKeyring keyring, ILogger<KeyringKeySt
             if (keyring.TryLookup(out var secret) && secret is not null)
                 return secret;
             throw new KeyringUnavailableException(
-                "The database key is in the system keyring, which did not return it. Unlock the keyring and start ClipShelf again.");
+                "The database key is in the system keyring, which did not return it. Unlock the keyring and start Copyloft again.");
         }
 
         var key = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));

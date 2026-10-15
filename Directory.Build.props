@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Version>0.4.1</Version>
-    <Product>ClipShelf</Product>
+    <Product>Copyloft</Product>
     <Company>Abdulwahb Isam</Company>
     <Copyright>Copyright (c) 2026 Abdulwahb Isam</Copyright>
   </PropertyGroup>

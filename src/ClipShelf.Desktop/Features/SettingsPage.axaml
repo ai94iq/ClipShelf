@@ -389,7 +389,7 @@
             <TextBlock x:Name="UpdateError" Classes="status error" Text="{Binding UpdateStatus}" IsVisible="{Binding ShowUpdateError}" />
             <HyperlinkButton x:Name="DownloadLink" Margin="8,0,8,8"
                              Content="{l:Tr Key=Settings_Download}"
-                             NavigateUri="https://github.com/ai94iq/ClipShelf/releases/latest"
+                             NavigateUri="https://github.com/ai94iq/Copyloft/releases/latest"
                              IsVisible="{Binding UpdateAvailable}" />
           </StackPanel>
         </Border>

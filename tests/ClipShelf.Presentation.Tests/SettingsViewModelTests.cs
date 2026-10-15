@@ -539,7 +539,7 @@ public sealed class SettingsViewModelTests
         var viewModel = Create();
 
         Assert.Matches(
-            @"^ClipShelf-Export-\d{4}-\d{2}-\d{2}-\d{4}$",
+            @"^Copyloft-Export-\d{4}-\d{2}-\d{2}-\d{4}$",
             viewModel.SuggestedExportFileName);
     }
 

@@ -12,5 +12,5 @@ public sealed class AppBootTests
     // macOS shows this name in system prompts (the Keychain asked on behalf of "Avalonia Application").
     [Fact]
     public Task The_app_is_named_for_the_os() => Ui.Run(() =>
-        Assert.Equal("ClipShelf", Application.Current!.Name));
+        Assert.Equal("Copyloft", Application.Current!.Name));
 }

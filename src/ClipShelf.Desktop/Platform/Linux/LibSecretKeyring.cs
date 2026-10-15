@@ -39,7 +39,7 @@ public sealed class LibSecretKeyring(ILogger<LibSecretKeyring> log) : ISecretKey
     {
         var error = IntPtr.Zero;
         var stored = secret_password_storev_sync(
-            schema, attributes, null, "ClipShelf database key", secret, IntPtr.Zero, ref error);
+            schema, attributes, null, "Copyloft database key", secret, IntPtr.Zero, ref error);
         return Report(error, "Saving the database key to the keyring") && stored;
     });
 

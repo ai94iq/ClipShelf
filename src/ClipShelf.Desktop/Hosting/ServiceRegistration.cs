@@ -24,7 +24,7 @@ public static class ServiceRegistration
         if (OperatingSystem.IsWindows()) return services.AddWindows();
         if (OperatingSystem.IsLinux()) return services.AddLinux();
         if (OperatingSystem.IsMacOS()) return services.AddMacOS();
-        throw new PlatformNotSupportedException("ClipShelf runs on Windows, Linux and macOS.");
+        throw new PlatformNotSupportedException("Copyloft runs on Windows, Linux and macOS.");
     }
 
     // X11 (and XWayland); native Wayland sessions get their own services later.

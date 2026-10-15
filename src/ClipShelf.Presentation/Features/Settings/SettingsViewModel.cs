@@ -377,7 +377,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         await RefreshCategoriesAsync();
     }
 
-    // Default name for the save dialog: ClipShelf-Export-2026-10-01-1432.
+    // Default name for the save dialog: Copyloft-Export-2026-10-01-1432.
     public string SuggestedExportFileName =>
         Tr.Format("Settings_ExportFileName",
             Tr.Get("App_Name"),
