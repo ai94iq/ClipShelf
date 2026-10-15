@@ -14,12 +14,12 @@ public sealed class DateFormatterTests
         var original = CultureInfo.CurrentCulture;
         try
         {
-            CultureInfo.CurrentCulture = new CultureInfo("ar-SA");
+            CultureInfo.CurrentCulture = UmAlQuraArabic();
             var formatter = new DateFormatter();
 
             var text = formatter.Format(new DateOnly(2026, 1, 2), DatePrecision.Day);
 
-            Assert.DoesNotContain("2026", text);          // ar-SA defaults to Umm al-Qura, not Gregorian
+            Assert.DoesNotContain("2026", text);
         }
         finally
         {
@@ -57,7 +57,8 @@ public sealed class DateFormatterTests
         {
             Culture.Configure(new AppSettings { Language = "ar-SA" });
 
-            Assert.IsType<UmAlQuraCalendar>(CultureInfo.CurrentCulture.DateTimeFormat.Calendar);
+            // The OS data picks the default: Umm al-Qura on Windows (NLS), Gregorian on Linux (ICU).
+            Assert.IsType(new CultureInfo("ar-SA").Calendar.GetType(), CultureInfo.CurrentCulture.DateTimeFormat.Calendar);
         }
         finally
         {
@@ -74,7 +75,7 @@ public sealed class DateFormatterTests
         var original = CultureInfo.CurrentCulture;
         try
         {
-            CultureInfo.CurrentCulture = new CultureInfo("ar-SA");
+            CultureInfo.CurrentCulture = UmAlQuraArabic();
             var formatter = new DateFormatter();
 
             var text = formatter.Format(new DateOnly(2026, 1, 2), DatePrecision.ApproximateYear);
@@ -85,5 +86,13 @@ public sealed class DateFormatterTests
         {
             CultureInfo.CurrentCulture = original;
         }
+    }
+
+    // Set explicitly: ar-SA's default calendar differs between Windows (NLS) and Linux (ICU).
+    private static CultureInfo UmAlQuraArabic()
+    {
+        var culture = new CultureInfo("ar-SA");
+        culture.DateTimeFormat.Calendar = new UmAlQuraCalendar();
+        return culture;
     }
 }
