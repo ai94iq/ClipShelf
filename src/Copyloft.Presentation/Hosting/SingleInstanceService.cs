@@ -9,12 +9,20 @@ namespace Copyloft.Presentation.Hosting;
 public sealed class SingleInstanceService : IDisposable
 {
     private readonly string _name;
+    private readonly string _prefix;
     private readonly CancellationTokenSource _cts = new();
     private NamedPipeServerStream? _server;
     private FileStream? _lock;
     private bool _disposed;
 
-    public SingleInstanceService(string name) => _name = name;
+    // The prefix names the socket file off Windows; ClipShelf, the app's name up to 0.4.1, used "clipshelf-".
+    public SingleInstanceService(string name, string endpointPrefix = DefaultPrefix)
+    {
+        _name = name;
+        _prefix = endpointPrefix;
+    }
+
+    internal const string DefaultPrefix = "copyloft-";
 
     // Scoped per user and per session: a machine-wide name would let one user's instance block
     // another user's launch, and a per-user-only name would merge two sessions of the same user
@@ -53,17 +61,17 @@ public sealed class SingleInstanceService : IDisposable
 
     // Off Windows the pipe is a Unix domain socket that another process can re-bind, so an
     // exclusive lock file (flock, released by the kernel when the process dies) is the claim.
-    internal static string LockPath(string name) => Endpoint(name) + ".lock";
+    internal static string LockPath(string name, string prefix = DefaultPrefix) => Endpoint(name, prefix) + ".lock";
 
     // The pipe's address. Off Windows it is a socket file, and macOS caps those paths at 104
     // characters while its per-user TMPDIR is long, so the file gets a short name hashed from the
     // full one, in the per-user runtime directory where there is one.
-    internal static string Endpoint(string name)
+    internal static string Endpoint(string name, string prefix = DefaultPrefix)
     {
         if (OperatingSystem.IsWindows()) return name;
         var directory = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR") is { Length: > 0 } runtime ? runtime : Path.GetTempPath();
         var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(name)))[..16];
-        return Path.Combine(directory, "copyloft-" + hash.ToLowerInvariant());
+        return Path.Combine(directory, prefix + hash.ToLowerInvariant());
     }
 
     // False when another instance already owns the name.
@@ -72,9 +80,9 @@ public sealed class SingleInstanceService : IDisposable
         try
         {
             if (!OperatingSystem.IsWindows())
-                _lock = new FileStream(LockPath(_name), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                _lock = new FileStream(LockPath(_name, _prefix), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             _server = new NamedPipeServerStream(
-                Endpoint(_name), PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                Endpoint(_name, _prefix), PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

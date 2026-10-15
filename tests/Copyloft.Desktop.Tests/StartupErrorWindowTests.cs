@@ -21,6 +21,17 @@ public sealed class StartupErrorWindowTests
         Assert.Equal(Tr.Get("Startup_Failed"), StartupErrorWindow.Message(new IOException("disk")));
 
     [Fact]
+    public Task A_running_ClipShelf_asks_to_quit_it_and_names_no_log() => Ui.Run(() =>
+    {
+        var window = new StartupErrorWindow(new LegacyInstanceRunningException());
+        window.Show();
+
+        var texts = window.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
+        Assert.Equal([Tr.Get("Startup_ClipShelfRunning")], texts.Where(t => t != Tr.Get("Common_Ok")));
+        window.Close();
+    });
+
+    [Fact]
     public Task The_window_names_the_log_and_ok_closes_it() => Ui.Run(() =>
     {
         var window = new StartupErrorWindow(new KeyringUnavailableException("denied"));

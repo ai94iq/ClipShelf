@@ -11,9 +11,13 @@ internal static class Program
     public static void Main(string[] args)
     {
         SQLitePCL.Batteries_V2.Init();            // the SQLCipher provider must be set up first
-        var settings = new FileSettingsStore().Load();
+        // A running ClipShelf (the name up to 0.4.1) holds the data folder AppPaths would move over,
+        // so nothing touches AppPaths then: its settings give the language, and startup asks for it
+        // to be quit (App.StartAsync).
+        var clipShelfRunning = LegacyInstance.IsRunning();
+        var settings = new FileSettingsStore(clipShelfRunning ? LegacyInstance.Settings : null).Load();
         Culture.Configure(settings);             // before any window or Tr call
-        AppLogging.Configure();
+        if (!clipShelfRunning) AppLogging.Configure();
         // A crash otherwise ends the process before the async log sink writes anything.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
@@ -34,7 +38,7 @@ internal static class Program
             return;
         }
 
-        App.Launch = new LaunchContext(settings, singleInstance, command);
+        App.Launch = new LaunchContext(settings, singleInstance, command, clipShelfRunning);
         if (OperatingSystem.IsMacOS()) WaitForDisplay();
         try
         {
@@ -94,4 +98,5 @@ internal static class Program
 }
 
 // What Main resolved before Avalonia started; the headless tests run without one.
-internal sealed record LaunchContext(AppSettings Settings, SingleInstanceService SingleInstance, string? Command);
+internal sealed record LaunchContext(
+    AppSettings Settings, SingleInstanceService SingleInstance, string? Command, bool ClipShelfRunning = false);

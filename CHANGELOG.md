@@ -19,6 +19,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - ClipShelf is now Copyloft, because other clipboard apps already use the name ClipShelf. The app, its exe and bundle (`Copyloft.exe`, `Copyloft.app`, the `copyloft` command), the downloads, the data folder, the keychain entry and the winget id (`ai94iq.Copyloft`) all carry the new name, and the repository moved to github.com/ai94iq/Copyloft.
 - Upgrading keeps the history, key and settings: on its first start Copyloft moves the ClipShelf data folder over, reads the database key from the ClipShelf keychain or keyring entry and copies it to its own, and replaces the ClipShelf autostart entry with its own. The MSI keeps the ClipShelf upgrade code, so it replaces a ClipShelf install. On macOS, the new app asks again for the Accessibility permission and for Keychain access.
 - The .deb and .rpm replace an installed clipshelf package. On macOS, `Copyloft.app` sits next to `ClipShelf.app` rather than replacing it, so delete `ClipShelf.app` from Applications after the first Copyloft start.
+- While ClipShelf is still running, Copyloft does not start: it asks for ClipShelf to be quit first, so the two never share one history.
 
 ## [0.4.1] - 2026-10-15
 

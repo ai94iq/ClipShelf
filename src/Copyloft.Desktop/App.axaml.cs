@@ -70,6 +70,8 @@ public sealed partial class App : Application
 
         try
         {
+            if (launch.ClipShelfRunning) throw new LegacyInstanceRunningException();
+
             var builder = Host.CreateApplicationBuilder();
             builder.Services.AddSerilog();        // uses the static Log.Logger
             builder.Services.AddPresentationServices(launch.Settings);

@@ -2,17 +2,20 @@ using System.Text.Json;
 
 namespace Copyloft.Presentation.Hosting;
 
-// settings.json under %LOCALAPPDATA%, written atomically.
-public sealed class FileSettingsStore : ISettingsStore
+// settings.json under %LOCALAPPDATA%, written atomically. Another path reads a different install's
+// settings without touching AppPaths (Program reads ClipShelf's while ClipShelf runs).
+public sealed class FileSettingsStore(string? path = null) : ISettingsStore
 {
+    private string SettingsPath => path ?? AppPaths.Settings;
+
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
     public AppSettings Load()
     {
         try
         {
-            return File.Exists(AppPaths.Settings)
-                ? JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(AppPaths.Settings), Options) ?? new()
+            return File.Exists(SettingsPath)
+                ? JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(SettingsPath), Options) ?? new()
                 : new();
         }
         catch (JsonException)
@@ -23,8 +26,8 @@ public sealed class FileSettingsStore : ISettingsStore
 
     public void Save(AppSettings settings)
     {
-        var temp = AppPaths.Settings + ".tmp";
+        var temp = SettingsPath + ".tmp";
         File.WriteAllText(temp, JsonSerializer.Serialize(settings, Options));
-        File.Move(temp, AppPaths.Settings, overwrite: true);     // atomic replace
+        File.Move(temp, SettingsPath, overwrite: true);     // atomic replace
     }
 }

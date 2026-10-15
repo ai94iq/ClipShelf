@@ -180,6 +180,7 @@
   <data name="TrayIcon_Outline" xml:space="preserve"><value>Outline</value></data>
   <data name="Startup_Failed" xml:space="preserve"><value>Copyloft could not start.</value></data>
   <data name="Startup_KeyringDenied" xml:space="preserve"><value>Copyloft could not read its database key from the system keyring (the Keychain on a Mac). Unlock it or allow access when asked, then start Copyloft again.</value></data>
+  <data name="Startup_ClipShelfRunning" xml:space="preserve"><value>ClipShelf is still running. Quit it from its tray icon (the menu bar on a Mac), then start Copyloft again; Copyloft takes over the ClipShelf history.</value></data>
   <data name="Startup_Log" xml:space="preserve"><value>The log in {0} says why.</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
