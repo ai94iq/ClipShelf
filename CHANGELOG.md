@@ -5,6 +5,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## Contents
 
 - [Unreleased](#unreleased)
+- [0.4.1 - 2026-10-15](#041---2026-10-15)
 - [0.4.0 - 2026-10-15](#040---2026-10-15)
 - [0.3.3 - 2026-10-03](#033---2026-10-03)
 - [0.3.2 - 2026-10-02](#032---2026-10-02)
@@ -13,6 +14,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - [0.2.0 - 2026-10-02](#020---2026-10-02)
 
 ## [Unreleased]
+
+## [0.4.1] - 2026-10-15
 
 ### Changed
 - History's actions are icons with tooltips beside the search (Select, Clear all, and in select mode Copy and Cancel), as in the flyout.
