@@ -24,6 +24,30 @@ public sealed class SingleInstanceServiceTests
         Assert.False(second.TryClaim());
     }
 
+    // Off Windows Process.SessionId is the POSIX session id, different for a terminal and a
+    // launcher; a name built from it let every launch start its own instance.
+    [Fact]
+    public void Off_windows_the_name_is_per_user_only()
+    {
+        Assert.SkipWhen(OperatingSystem.IsWindows(), "Windows scopes the name per session");
+
+        Assert.Equal("ClipShelf.SingleInstance." + Environment.UserName, SingleInstanceService.DefaultName);
+    }
+
+    // Off Windows the pipe is a Unix socket another process can simply re-bind, so the claim is
+    // the lock file; holding it here stands in for a running instance in another process.
+    [Fact]
+    public void ClaimFailsWhileAnotherProcessHoldsTheLock()
+    {
+        Assert.SkipWhen(OperatingSystem.IsWindows(), "the named pipe itself is the claim on Windows");
+        var name = NewName();
+        using var held = new FileStream(
+            SingleInstanceService.LockPath(name), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        using var service = new SingleInstanceService(name);
+
+        Assert.False(service.TryClaim());
+    }
+
     [Fact]
     public async Task SentCommandIsReceived()
     {
@@ -91,6 +115,7 @@ public sealed class SingleInstanceServiceTests
     [Fact]
     public void DefaultName_is_scoped_to_the_session()
     {
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "only Windows sessions scope the name");
         var session = System.Diagnostics.Process.GetCurrentProcess().SessionId;
         Assert.EndsWith(
             "." + session.ToString(CultureInfo.InvariantCulture),

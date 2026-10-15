@@ -11,30 +11,43 @@ public sealed class SingleInstanceService : IDisposable
     private readonly string _name;
     private readonly CancellationTokenSource _cts = new();
     private NamedPipeServerStream? _server;
+    private FileStream? _lock;
     private bool _disposed;
 
     public SingleInstanceService(string name) => _name = name;
 
     // Scoped per user and per session: a machine-wide name would let one user's instance block
     // another user's launch, and a per-user-only name would merge two sessions of the same user
-    // (RDP), where the old mutex kept them apart. The session id is 0 off Windows, where it is
-    // stable for every process of a user.
+    // (RDP), where the old mutex kept them apart. Off Windows the session id is the POSIX one
+    // (getsid), which differs between a terminal and a launcher, so only the user scopes the name.
     public static string DefaultName { get; } =
-        "ClipShelf.SingleInstance." + Environment.UserName + "." +
-        Process.GetCurrentProcess().SessionId.ToString(CultureInfo.InvariantCulture);
+        "ClipShelf.SingleInstance." + Environment.UserName +
+        (OperatingSystem.IsWindows()
+            ? "." + Process.GetCurrentProcess().SessionId.ToString(CultureInfo.InvariantCulture)
+            : "");
 
     public event EventHandler<string>? CommandReceived;
+
+    // Off Windows the pipe is a Unix domain socket that another process can re-bind, so an
+    // exclusive lock file (flock, released by the kernel when the process dies) is the claim.
+    internal static string LockPath(string name) => Path.Combine(
+        Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR") is { Length: > 0 } runtime ? runtime : Path.GetTempPath(),
+        name + ".lock");
 
     // False when another instance already owns the name.
     public bool TryClaim()
     {
         try
         {
+            if (!OperatingSystem.IsWindows())
+                _lock = new FileStream(LockPath(_name), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             _server = new NamedPipeServerStream(
                 _name, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            _lock?.Dispose();
+            _lock = null;
             return false;
         }
 
@@ -88,6 +101,7 @@ public sealed class SingleInstanceService : IDisposable
         _disposed = true;
         _cts.Cancel();
         _server?.Dispose();
+        _lock?.Dispose();
         _cts.Dispose();
     }
 

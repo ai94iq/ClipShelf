@@ -13,6 +13,9 @@
     <PackageReference Include="Serilog.Sinks.File" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="ClipShelf.Presentation.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ClipShelf.Core\ClipShelf.Core.csproj" />
     <ProjectReference Include="..\ClipShelf.Data\ClipShelf.Data.csproj" />
   </ItemGroup>
