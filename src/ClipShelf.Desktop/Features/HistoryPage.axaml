@@ -21,16 +21,14 @@
     <Style Selector="ListBoxItem:disabled /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
     </Style>
-    <!-- Footer buttons share one height, labels centered (on macOS the label sat high). -->
-    <Style Selector="Border#Footer Button">
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="12,0" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <!-- Clear all is a bare glyph: no fill at rest or disabled (Fluent's disabled fill drew a
-         gray block), the list wash on hover, faded while there is nothing to clear. -->
+    <!-- The page actions are bare glyphs beside the search, as in the flyout: no fill at rest or
+         disabled (Fluent's disabled fill drew a gray block), the list wash on hover, faded while
+         they cannot act. -->
     <Style Selector="Button.glyph">
-      <Setter Property="Width" Value="32" />
+      <Setter Property="Width" Value="36" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Margin" Value="4,0,0,0" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="Background" Value="Transparent" />
@@ -60,7 +58,8 @@
     </StackPanel>
 
     <!-- Search and the category filter -->
-    <Grid Grid.Row="1" Margin="0,12,0,6" ColumnDefinitions="*,Auto">
+    <!-- Search, the category filter and the page actions -->
+    <Grid Grid.Row="1" Margin="0,12,0,6" ColumnDefinitions="*,Auto,Auto">
       <TextBox x:Name="SearchBox" Height="36" VerticalContentAlignment="Center"
                IsEnabled="{Binding CanSearch}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
@@ -72,6 +71,31 @@
                 ItemsSource="{Binding CategoryFilterOptions}"
                 SelectedItem="{Binding SelectedCategoryFilter}"
                 DisplayMemberBinding="{ReflectionBinding Label}" />
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="4,0,0,0">
+        <Button x:Name="SelectButton" Classes="glyph"
+                ToolTip.Tip="{l:Tr Key=Selection_Select}" AutomationProperties.Name="{l:Tr Key=Selection_Select}"
+                Command="{Binding ToggleSelectionCommand}"
+                IsEnabled="{Binding HasItems}" IsVisible="{Binding ShowSelectButton}">
+          <controls:AppIcon Kind="Checkmark" />
+        </Button>
+        <Button x:Name="CopySelectedButton" Classes="glyph"
+                ToolTip.Tip="{l:Tr Key=Selection_Copy}" AutomationProperties.Name="{l:Tr Key=Selection_Copy}"
+                Command="{Binding CopySelectedCommand}"
+                IsEnabled="{Binding CanCopySelection}" IsVisible="{Binding IsSelecting}">
+          <controls:AppIcon Kind="Copy" />
+        </Button>
+        <Button x:Name="CancelSelectButton" Classes="glyph"
+                ToolTip.Tip="{l:Tr Key=Common_Cancel}" AutomationProperties.Name="{l:Tr Key=Common_Cancel}"
+                Command="{Binding ToggleSelectionCommand}" IsVisible="{Binding IsSelecting}">
+          <controls:AppIcon Kind="Dismiss" />
+        </Button>
+        <Button x:Name="ClearAllButton" Classes="glyph"
+                ToolTip.Tip="{l:Tr Key=Panel_ClearAll}" AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
+                Command="{Binding RequestClearCommand}"
+                IsEnabled="{Binding HasItems}" IsVisible="{Binding ShowSelectButton}">
+          <controls:AppIcon Kind="Delete" />
+        </Button>
+      </StackPanel>
     </Grid>
 
     <!-- Grouped history (Pinned, then Recent) on a card, with its load states -->
@@ -132,31 +156,16 @@
       </Grid>
     </Border>
 
-    <!-- Footer: the true total or the copy notice, select mode, clear all -->
+    <!-- Footer: the true total or the copy notice -->
     <Border x:Name="Footer" Grid.Row="3" BorderThickness="0,1,0,0" Padding="0,8,0,0"
             BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
-      <Grid ColumnDefinitions="*,Auto">
+      <Grid>
         <TextBlock x:Name="FooterText" Text="{Binding FooterText}" VerticalAlignment="Center"
                    Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
                    IsVisible="{Binding ShowFooterText}" />
         <TextBlock x:Name="CopyNotice" Text="{Binding CopyNotice}" VerticalAlignment="Center"
                    Foreground="{DynamicResource SystemControlForegroundAccentBrush}"
                    IsVisible="{Binding IsShowingCopyNotice}" />
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-          <Button Content="{l:Tr Key=Selection_Select}" Command="{Binding ToggleSelectionCommand}"
-                  IsVisible="{Binding ShowSelectButton}" />
-          <Button Content="{l:Tr Key=Common_Cancel}" Command="{Binding ToggleSelectionCommand}"
-                  IsVisible="{Binding IsSelecting}" />
-          <Button Content="{l:Tr Key=Selection_Copy}" Command="{Binding CopySelectedCommand}"
-                  IsEnabled="{Binding CanCopySelection}" IsVisible="{Binding IsSelecting}" />
-          <Button x:Name="ClearAllButton" Classes="glyph"
-                  ToolTip.Tip="{l:Tr Key=Panel_ClearAll}"
-                  AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
-                  Command="{Binding RequestClearCommand}"
-                  IsEnabled="{Binding HasItems}" IsVisible="{Binding ShowSelectButton}">
-            <controls:AppIcon Kind="Delete" />
-          </Button>
-        </StackPanel>
       </Grid>
     </Border>
 

@@ -7,6 +7,8 @@ using ClipShelf.Core.Models;
 using ClipShelf.Desktop.Features;
 using ClipShelf.Presentation.Features.ClipboardPanel;
 using NSubstitute;
+using ClipShelf.Presentation.Localization;
+using Avalonia;
 
 namespace ClipShelf.Desktop.Tests;
 
@@ -68,20 +70,58 @@ public sealed class HistoryPageTests
         Assert.Equal("Copied", notice.Text);
     });
 
-    // Seen on macOS: Select's label sat high and the disabled clear button was a short gray block.
+    // The owner's call: History's actions are icons with tooltips beside the search, as in the
+    // flyout, instead of a full Select button next to a bare trash icon in the footer.
+    private static Button Action(Hosted hosted, string name) => hosted.Page.FindControl<Button>(name)!;
+
+    [Theory]
+    [InlineData("SelectButton", "Checkmark", "Selection_Select")]
+    [InlineData("ClearAllButton", "Delete", "Panel_ClearAll")]
+    public Task History_actions_are_icons_beside_the_search(string name, string icon, string textKey) => Ui.Run(async () =>
+    {
+        var hosted = await Open(Clips("one"));
+        hosted.Window.UpdateLayout();
+        var button = Action(hosted, name);
+        var search = hosted.Page.FindControl<TextBox>("SearchBox")!;
+
+        Assert.Contains("glyph", button.Classes);
+        Assert.Equal(icon, button.GetVisualDescendants().OfType<ClipShelf.Desktop.Controls.AppIcon>().Single().Kind.ToString());
+        Assert.Equal(Tr.Get(textKey), ToolTip.GetTip(button));
+        Assert.Equal(Tr.Get(textKey), Avalonia.Automation.AutomationProperties.GetName(button));
+        var top = (Func<Visual, double>)(v => v.TranslatePoint(new Point(0, 0), hosted.Page)!.Value.Y);
+        Assert.InRange(top(button) - top(search), -2, 2);
+        Assert.Empty(hosted.Page.FindControl<Border>("Footer")!.GetVisualDescendants().OfType<Button>());
+    });
+
+    [Theory]
+    [InlineData("CopySelectedButton", "Copy", "Selection_Copy")]
+    [InlineData("CancelSelectButton", "Dismiss", "Common_Cancel")]
+    public Task Select_mode_actions_are_icons_too(string name, string icon, string textKey) => Ui.Run(async () =>
+    {
+        var hosted = await Open(Clips("one"));
+        hosted.Kit.ViewModel.ToggleSelectionCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+        var button = Action(hosted, name);
+
+        Assert.True(button.IsVisible);
+        Assert.Contains("glyph", button.Classes);
+        Assert.Equal(icon, button.GetVisualDescendants().OfType<ClipShelf.Desktop.Controls.AppIcon>().Single().Kind.ToString());
+        Assert.Equal(Tr.Get(textKey), ToolTip.GetTip(button));
+    });
+
+    // Seen on macOS: a disabled action drew Fluent's gray block.
     [Fact]
-    public Task The_footer_buttons_line_up_and_an_empty_history_draws_no_gray_block() => Ui.Run(async () =>
+    public Task An_empty_history_fades_its_actions_without_a_gray_block() => Ui.Run(async () =>
     {
         var hosted = await Open(new ViewModelKit());
         hosted.Window.UpdateLayout();
 
-        var clear = hosted.Page.FindControl<Button>("ClearAllButton")!;
-        var select = hosted.Page.GetVisualDescendants().OfType<Button>()
-            .Single(b => b.IsVisible && b != clear && b.FindAncestorOfType<Border>()?.Name == "Footer");
-        Assert.False(clear.IsEnabled);
-        Assert.Equal(select.Bounds.Height, clear.Bounds.Height);
-        var fill = clear.GetVisualDescendants().OfType<Avalonia.Controls.Presenters.ContentPresenter>().First().Background;
-        Assert.True(fill is null || fill is Avalonia.Media.ISolidColorBrush { Color.A: 0 }, "disabled clear has no fill");
+        foreach (var button in new[] { Action(hosted, "SelectButton"), Action(hosted, "ClearAllButton") })
+        {
+            Assert.False(button.IsEffectivelyEnabled);
+            var fill = button.GetVisualDescendants().OfType<Avalonia.Controls.Presenters.ContentPresenter>().First().Background;
+            Assert.True(fill is null || fill is Avalonia.Media.ISolidColorBrush { Color.A: 0 }, $"{button.Name} has no fill");
+        }
     });
 
     [Fact]
