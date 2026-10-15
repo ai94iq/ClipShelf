@@ -46,7 +46,9 @@
       <BoxShadows x:Key="ClipShelfCardShadow">0 4 16 -4 #66000000</BoxShadows>
       <!-- Windows 11 dark layers: the base surface, and cards a step lighter. -->
       <SolidColorBrush x:Key="ClipShelfCanvasBrush" Color="#202020" />
-      <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#2B2B2B" />
+      <!-- WinUI's dark CardBackgroundFillColorDefault, a 5% white wash: it reads #2B2B2B over the
+           opaque canvas and lets Mica or Acrylic through (solid cards hid the backdrop). -->
+      <SolidColorBrush x:Key="ClipShelfCardBrush" Color="#0DFFFFFF" />
       <!-- A faint white wash, so the layer reads over Mica as well as over the canvas. -->
       <SolidColorBrush x:Key="ClipShelfLayerBrush" Color="#0DFFFFFF" />
       <SolidColorBrush x:Key="ClipShelfCaptionCloseBrush" Color="#C42B1C" />

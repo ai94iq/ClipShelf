@@ -94,6 +94,19 @@ public sealed class SettingsViewModelTests
         Assert.Equal(BackdropKind.Mica, viewModel.SelectedBackdrop.Value);
     }
 
+    // Avalonia has one Mica (probed: the window's DWM system backdrop type stays 0), so Mica Alt
+    // looked identical; it is no longer offered, and a saved one shows as Mica.
+    [Fact]
+    public void Mica_Alt_is_not_offered_and_a_saved_one_shows_as_Mica()
+    {
+        _service.Update(_service.Current with { Backdrop = BackdropKind.MicaAlt });
+
+        var viewModel = Create();
+
+        Assert.DoesNotContain(viewModel.BackdropOptions, o => o.Value == BackdropKind.MicaAlt);
+        Assert.Equal(BackdropKind.Mica, viewModel.SelectedBackdrop.Value);
+    }
+
     [Fact]
     public void Changing_the_hotkey_saves_it()
     {

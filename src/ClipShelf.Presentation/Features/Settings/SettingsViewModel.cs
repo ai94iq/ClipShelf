@@ -61,7 +61,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         SelectedTheme = ThemeOptions.FirstOrDefault(o => o.Value == settings.Current.Theme)
             ?? ThemeOptions.First(o => o.Value == AppTheme.Light);
-        SelectedBackdrop = BackdropOptions.First(o => o.Value == settings.Current.Backdrop);
+        // Mica Alt is no longer offered (Avalonia has one Mica); a saved one shows as Mica.
+        var backdrop = settings.Current.Backdrop == BackdropKind.MicaAlt ? BackdropKind.Mica : settings.Current.Backdrop;
+        SelectedBackdrop = BackdropOptions.First(o => o.Value == backdrop);
         SelectedTrayIcon = TrayIconOptions.First(o => o.Value == settings.Current.TrayIcon);
         SelectedLanguage = LanguageOptions.FirstOrDefault(o => o.Value == settings.Current.Language) ?? LanguageOptions[0];
         AccentOptions = BuildAccentOptions();
@@ -98,7 +100,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<Option<BackdropKind>> BackdropOptions { get; } =
     [
         new(BackdropKind.Mica, Tr.Get("Backdrop_Mica")),
-        new(BackdropKind.MicaAlt, Tr.Get("Backdrop_MicaAlt")),
         new(BackdropKind.Acrylic, Tr.Get("Backdrop_Acrylic")),
         new(BackdropKind.None, Tr.Get("Backdrop_None")),
     ];

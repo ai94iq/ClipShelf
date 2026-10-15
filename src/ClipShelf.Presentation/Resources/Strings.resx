@@ -17,7 +17,6 @@
   <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
   <data name="Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>
   <data name="Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
-  <data name="Backdrop_MicaAlt" xml:space="preserve"><value>Mica Alt</value></data>
   <data name="Backdrop_None" xml:space="preserve"><value>None</value></data>
   <data name="Category_Create" xml:space="preserve"><value>Create</value></data>
   <data name="Category_DeleteConfirm" xml:space="preserve"><value>Delete "{0}"? Its clips stay in the history and lose their category.</value></data>

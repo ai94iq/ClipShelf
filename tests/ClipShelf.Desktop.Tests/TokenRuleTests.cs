@@ -70,6 +70,21 @@ public sealed class TokenRuleTests
         Assert.Equal(Color.Parse("#3A3A3A"), ColorOf("SystemControlTransientBorderBrush", ThemeService.Black));
     });
 
+    // Solid dark cards hid the backdrop, so Mica and Acrylic looked the same (seen on Windows).
+    // Dark cards are WinUI's 5% white wash: over the opaque canvas they still read #2B2B2B.
+    [Fact]
+    public Task Dark_cards_let_the_backdrop_through_and_look_the_same_when_opaque() => Ui.Run(() =>
+    {
+        var card = ColorOf("ClipShelfCardBrush", ThemeVariant.Dark);
+        var canvas = ColorOf("ClipShelfCanvasBrush", ThemeVariant.Dark);
+        Assert.InRange(card.A, 1, 0x1F);
+        byte Over(byte top, byte bottom) => (byte)Math.Round(top * card.A / 255.0 + bottom * (1 - card.A / 255.0));
+        var composite = Color.FromRgb(Over(card.R, canvas.R), Over(card.G, canvas.G), Over(card.B, canvas.B));
+        Assert.InRange(composite.R, 0x2A, 0x2C);
+        Assert.Equal(255, ColorOf("ClipShelfCardBrush", ThemeVariant.Light).A);
+        Assert.Equal(255, ColorOf("ClipShelfCardBrush", ThemeService.Black).A);
+    });
+
     // BaseMedium is 60% ink: hints and counts read as half transparent, worst in Arabic's thin
     // strokes (seen on Windows). Text takes BaseMediumHigh; icons may still use BaseMedium.
     [Fact]

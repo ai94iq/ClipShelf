@@ -18,7 +18,7 @@ surface follow the WinUI app it replaced (in git history before the swap, ADR 00
 | `ClipShelfCanvasBrush` | window surface (main window, welcome) | Fluent's window and cards share one color; main's layers: Light #E6E6E6, Dark #202020, Black #000000 |
 | `ClipShelfLayerBrush` | the content layer under the title bar | main's LayerFillColorDefault: Light #EFEFEF, Dark a 5% white wash (reads over Mica), Black #000000 |
 | `ClipShelfCaptionCloseBrush` | close button hover | Fluent has no caption buttons, so no close red (#C42B1C) |
-| `ClipShelfCardBrush` | settings groups, history list, flyout | the card layer over the canvas: Light #FFFFFF, Dark #2B2B2B, Black #000000 |
+| `ClipShelfCardBrush` | settings groups, history list, flyout | the card layer over the canvas: Light #FFFFFF, Dark a 5% white wash (#0DFFFFFF, reads #2B2B2B over the canvas and lets the backdrop through), Black #000000 |
 
 - Avalonia's FluentTheme carries Fluent v1 control fills (buttons 20% black, inputs 40% white
   with a 60% black border). `Exceptions.axaml` maps the rest, hover and press states of buttons,

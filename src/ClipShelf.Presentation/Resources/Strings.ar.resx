@@ -17,7 +17,6 @@
   <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
   <data name="Backdrop_Acrylic" xml:space="preserve"><value>أكريليك</value></data>
   <data name="Backdrop_Mica" xml:space="preserve"><value>ميكا</value></data>
-  <data name="Backdrop_MicaAlt" xml:space="preserve"><value>ميكا بديل</value></data>
   <data name="Backdrop_None" xml:space="preserve"><value>بلا</value></data>
   <data name="Category_Create" xml:space="preserve"><value>إنشاء</value></data>
   <data name="Category_DeleteConfirm" xml:space="preserve"><value>حذف "{0}"؟ ستبقى عناصره في السجل وتفقد تصنيفها.</value></data>

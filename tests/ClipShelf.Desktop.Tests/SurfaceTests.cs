@@ -23,7 +23,7 @@ public sealed class SurfaceTests
 
     [Theory]
     [InlineData("Light", "#E6E6E6", "#FFFFFF")]
-    [InlineData("Dark", "#202020", "#2B2B2B")]
+    [InlineData("Dark", "#202020", "#0DFFFFFF")]   // a white wash; reads #2B2B2B over the canvas
     [InlineData("Black", "#000000", "#000000")]
     public Task Canvas_and_card_follow_the_theme(string variant, string canvas, string card) => Ui.Run(() =>
     {
@@ -52,7 +52,7 @@ public sealed class SurfaceTests
         Dispatcher.UIThread.RunJobs();
 
         var group = kit.Page.FindControl<StackPanel>("TrayGroup")!.Children.OfType<Border>().Single();
-        Assert.Equal(Color.Parse("#2B2B2B"), Assert.IsType<ISolidColorBrush>(group.Background, exactMatch: false).Color);
+        Assert.Equal(Color.Parse("#0DFFFFFF"), Assert.IsType<ISolidColorBrush>(group.Background, exactMatch: false).Color);
     });
 
     // Full black cards sit on a black canvas: only their edge tells them apart, so it must show.
