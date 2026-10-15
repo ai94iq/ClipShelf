@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml/badge.svg)](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml)
 
-ClipShelf is a clipboard-history app for Windows and Linux that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
+ClipShelf is a clipboard-history app for Windows, Linux and macOS that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
 
 ## Contents
 
@@ -11,6 +11,7 @@ ClipShelf is a clipboard-history app for Windows and Linux that keeps recently c
 - [Performance](#performance)
 - [Requirements](#requirements)
 - [Installing on Linux](#installing-on-linux)
+- [Installing on macOS](#installing-on-macos)
 - [Scripts](#scripts)
 - [Project structure](#project-structure)
 - [Data locations](#data-locations)
@@ -96,6 +97,7 @@ Load-tested through the real encrypted storage pipeline — details and numbers 
 
 - Windows 10 version 1809 or later, or Windows 11 (x64)
 - Linux x64 with an X11 or Wayland session (XWayland); the packages list their libraries
+- macOS 15 or later, Apple Silicon or Intel
 - For development: the .NET 10 SDK version pinned in `global.json`
 
 ## Installing on Linux
@@ -114,6 +116,14 @@ Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and
 - GNOME shows the tray icon only with the AppIndicator extension; without a tray, History opens at launch.
 - Without a keyring service the database key is kept in a file only your user can read.
 
+## Installing on macOS
+
+Download `ClipShelf-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/ClipShelf/releases) and drag ClipShelf to Applications.
+
+The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for ClipShelf, or run `xattr -dr com.apple.quarantine /Applications/ClipShelf.app` once.
+
+ClipShelf lives in the menu bar. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V. Details: [ADR 0008](docs/decisions/0008-macos-platform.md).
+
 ## Scripts
 
 | Script | Purpose |
@@ -125,6 +135,7 @@ Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and
 | `clean.bat` | Remove all build output |
 | `test.sh` | Linux: run all tests (the X11 tests need a display; CI uses `xvfb-run`) |
 | `package.sh` | Linux: tarball, `.deb` and `.rpm` in `artifacts/linux` (needs `dpkg-deb` and `rpmbuild`) |
+| `package-macos.sh` | macOS: `ClipShelf.app` and a `.dmg` per architecture in `artifacts/macos` |
 
 Pass `--no-pause` to skip the final key press (used by automation).
 
@@ -134,24 +145,25 @@ A second launch never starts a second copy: `ClipShelf.exe --toggle` (`clipshelf
 
 | Project | Responsibility |
 |---|---|
-| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows and Linux platform layers, and app startup |
+| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows, Linux and macOS platform layers, and app startup |
 | `src/ClipShelf.Presentation` | View models, portable services and the platform interfaces (net10.0) |
 | `src/ClipShelf.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
 | `src/ClipShelf.Data` | SQLite + Dapper repositories and numbered SQL migrations |
 | `tests/*` | xUnit v3 tests per project |
 | `installer` | WiX v6 MSI |
 | `packaging/linux` | Desktop entry, icon and RPM spec for the Linux packages |
+| `packaging/macos` | The app bundle's Info.plist |
 
 Details: [docs/architecture.md](docs/architecture.md).
 
 ## Data locations
 
-All user data is in `%LOCALAPPDATA%\ClipShelf\` on Windows and `~/.local/share/ClipShelf/` on Linux:
+All user data is in `%LOCALAPPDATA%\ClipShelf\` on Windows, `~/.local/share/ClipShelf/` on Linux and `~/Library/Application Support/ClipShelf/` on macOS:
 
 | Path | Contents |
 |---|---|
 | `data.db` | Local SQLite clipboard-history database (SQLCipher-encrypted) |
-| `key.bin` | The database key, protected with Windows DPAPI for the current user; on Linux a marker for the key in the system keyring, or the key itself (readable only by your user) without one |
+| `key.bin` | The database key, protected with Windows DPAPI for the current user; on Linux and macOS a marker for the key in the system keyring or Keychain, or the key itself (readable only by your user) without one |
 | `backups\` | Automatic backups (newest 14) |
 | `logs\` | Daily log files (newest 14) |
 | `settings.json` | User settings |
@@ -166,7 +178,7 @@ English is the primary language; Arabic ships as a satellite and is selectable i
 
 - Commit title: `<project>: <type>: <short title>`, 60 characters at most, imperative, English. Projects: `desktop`, `presentation`, `core`, `data`, `tests`, `installer`, `docs`, `repo`. Types: `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `build`, `chore`, `i18n`, `style`.
 - Commit body: what changed and why, wrapped at 72 characters.
-- CI runs `test.bat` on Windows and `test.sh` on Ubuntu on every push to `main` and every pull request, and publishes a GitHub release with the MSI and the Linux packages when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
+- CI runs `test.bat` on Windows and `test.sh` on Ubuntu and macOS (where it also builds the app bundle) on every push and pull request, and publishes a GitHub release with the MSI, the Linux packages and the macOS disk images when a `vX.Y.Z` tag (matching `Version` in `Directory.Build.props`) is pushed.
 - Before committing, `build.bat` and `test.bat` must pass, and the affected docs must be updated.
 - Decisions: [docs/decisions](docs/decisions).
 

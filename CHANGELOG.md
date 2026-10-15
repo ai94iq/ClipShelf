@@ -8,6 +8,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Linux: ClipShelf runs on Linux (X11, and Wayland through XWayland) and ships as a tarball, a `.deb` and an `.rpm`. The database key goes to the system keyring, or to a file only your user can read without one; the app starts at sign-in through an XDG autostart entry and clears history on logout when asked (ADR 0007).
 - Linux, Wayland: a picked clip is copied with a hint to press Ctrl+V, and Settings and the welcome window explain binding a system shortcut to `clipshelf --toggle`.
 - Linux desktops without a tray (GNOME without the AppIndicator extension) open History at launch, and the welcome window says how to reach the app.
+- macOS: ClipShelf runs as a menu-bar app on macOS 15 and later (Apple Silicon and Intel) and ships as a .dmg. The key goes to the Keychain, Cmd+Shift+V opens the flyout, picks paste with the Accessibility permission (or are copied with a hint), and a LaunchAgent starts it at login (ADR 0008).
+- Shortcut labels use Apple's names on a Mac (Control, Option, Shift, Cmd), and labels that named Windows now read for every OS.
 - Accent color: follow the Windows accent or pick one of seven presets in Settings → Appearance. Primary actions, selection, focus and toggles use it (a restart applies the change).
 - Arabic UI: pick English or العربية in Settings → Appearance → Language; the Arabic satellite, RTL layout and Arabic plural forms arrive with it (a restart applies the change).
 - Browse the full history beyond the first page: the window loads older clips as you scroll, and the footer shows the total count instead of just the loaded page.
