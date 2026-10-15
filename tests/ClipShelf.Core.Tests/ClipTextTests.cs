@@ -10,6 +10,12 @@ public sealed class ClipTextTests
     public void IsUsable_rejects_blank_text(string? text, bool expected) =>
         Assert.Equal(expected, ClipText.IsUsable(text));
 
+    // WSLg's clipboard bridge offers a copied bitmap as UTF8_STRING: "BM", size bytes, zeros. Real
+    // text never carries U+0000, so binary posing as text is not captured.
+    [Fact]
+    public void IsUsable_rejects_binary_posing_as_text() =>
+        Assert.False(ClipText.IsUsable("BMf6\0\0\0\0\0\06\0\0\0(\0\0\0"));
+
     [Fact]
     public void IsUsable_rejects_text_over_the_limit() =>
         Assert.False(ClipText.IsUsable(new string('a', ClipText.MaxLength + 1)));

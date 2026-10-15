@@ -6,15 +6,17 @@ namespace ClipShelf.Desktop.Shell;
 // desktops without a tray or a global hotkey (Wayland), how to reach it instead.
 public sealed partial class WelcomeWindow : Window
 {
-    public WelcomeWindow(SettingsService settings, bool hasTray = true, bool globalHotkey = true)
+    public WelcomeWindow(SettingsService settings, bool hasTray = true, bool globalHotkey = true, bool explainAccessibility = false)
     {
         InitializeComponent();
         WindowSurface.Attach(this, "ClipShelfCanvasBrush");
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
         HotkeyText.Text = globalHotkey
-            ? Tr.Format("Welcome_Hotkey", ClipShelf.Core.Input.HotkeyText.Format(settings.Current.Hotkey))
+            ? Tr.Format("Welcome_Hotkey", ClipShelf.Core.Input.HotkeyText.Display(settings.Current.Hotkey))
             : Tr.Get("Settings_HotkeyWayland");
         TrayText.Text = Tr.Get(hasTray ? "Welcome_Tray" : "Welcome_NoTray");
+        AccessibilityText.Text = Tr.Get("Welcome_Accessibility");
+        AccessibilityText.IsVisible = explainAccessibility;
         OkButton.Click += (_, _) => Close();
     }
 

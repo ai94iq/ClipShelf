@@ -1,3 +1,4 @@
+using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Platform.Linux;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -48,7 +49,7 @@ public sealed class LinuxSessionTests : IDisposable
     public void Termination_raises_ending_before_the_process_exits()
     {
         var order = new List<string>();
-        var session = new LinuxSessionEnd(code => order.Add($"exit {code}"));
+        var session = new PosixSessionEnd(code => order.Add($"exit {code}"));
         session.Ending += (_, _) => order.Add("ending");
 
         session.OnTerminate();

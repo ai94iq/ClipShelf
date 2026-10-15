@@ -66,7 +66,10 @@ public sealed class HotkeyRecorderTests
 
         Assert.Equal(new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Shift, 0x4B), kit.Settings.Current.Hotkey);
         Assert.False(kit.Page.FindControl<Control>("HotkeyPrompt")!.IsVisible);
-        Assert.Equal("Ctrl+Shift+K", kit.Page.FindControl<TextBlock>("HotkeyText")!.Text);
+        Assert.Equal(
+            ClipShelf.Core.Input.HotkeyText.Display(new ClipShelf.Core.Input.HotkeyGesture(
+                ClipShelf.Core.Input.HotkeyModifiers.Control | ClipShelf.Core.Input.HotkeyModifiers.Shift, 0x4B)),
+            kit.Page.FindControl<TextBlock>("HotkeyText")!.Text);
     });
 
     [Fact]

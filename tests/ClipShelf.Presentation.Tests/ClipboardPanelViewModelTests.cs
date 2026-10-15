@@ -149,7 +149,7 @@ public sealed class ClipboardPanelViewModelTests
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two") });
         var vm = Create();
-        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(30);
+        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(500);   // longer than a slow runner's pause
         await vm.RefreshAsync();
 
         await vm.DeleteAsync(vm.Items[0]);
@@ -169,12 +169,12 @@ public sealed class ClipboardPanelViewModelTests
         _repository.GetRecentAsync(null, 50, Arg.Any<CancellationToken>())
             .Returns(new List<ClipListItem> { Item(1, "one"), Item(2, "two"), Item(3, "three") });
         var vm = Create();
-        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(40);
+        vm.DeleteUndoWindow = TimeSpan.FromMilliseconds(500);   // undo must land inside it
         await vm.RefreshAsync();
         await vm.DeleteAsync(vm.Items[1]);
 
         vm.UndoDeleteCommand.Execute(null);
-        await Task.Delay(120, TestContext.Current.CancellationToken);
+        await Task.Delay(700, TestContext.Current.CancellationToken);   // past the window
 
         Assert.Equal(new long[] { 1, 2, 3 }, vm.Items.Select(item => item.Id));
         Assert.False(vm.HasPendingDelete);

@@ -21,7 +21,7 @@ public sealed class WelcomeWindowTests
     {
         var window = new WelcomeWindow(Settings());
 
-        Assert.Contains("Ctrl+Alt+V", window.FindControl<TextBlock>("HotkeyText")!.Text);
+        Assert.Contains(HotkeyText.Display(new HotkeyGesture(HotkeyModifiers.Control | HotkeyModifiers.Alt, 0x56)), window.FindControl<TextBlock>("HotkeyText")!.Text);
     });
 
     // GNOME without the AppIndicator extension: there is no tray icon to point at.
@@ -42,6 +42,18 @@ public sealed class WelcomeWindowTests
         var text = new WelcomeWindow(Settings(), globalHotkey: false).FindControl<TextBlock>("HotkeyText")!.Text;
 
         Assert.Contains("clipshelf --toggle", text);
+    });
+
+    // macOS: pasting for the user needs the Accessibility permission, which macOS asks for once.
+    [Fact]
+    public Task On_a_mac_the_welcome_explains_the_accessibility_prompt() => Ui.Run(() =>
+    {
+        var plain = new WelcomeWindow(Settings()).FindControl<TextBlock>("AccessibilityText")!;
+        var mac = new WelcomeWindow(Settings(), explainAccessibility: true).FindControl<TextBlock>("AccessibilityText")!;
+
+        Assert.False(plain.IsVisible);
+        Assert.True(mac.IsVisible);
+        Assert.Contains("Accessibility", mac.Text);
     });
 
     [Fact]

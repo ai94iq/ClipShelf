@@ -64,3 +64,38 @@ jobs:
           details=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' failures.txt)
           echo "::error title=Test failures::$details"
           exit 1
+
+  # No Mac to test on locally: this job is where the macOS interop runs (Keychain, pasteboard,
+  # Carbon hotkey, frontmost app).
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Test
+        run: |
+          ./test.sh > test.log 2>&1 && exit 0
+          tail -5 test.log
+          sed -i '' $'s/\x1b\\[[0-9;]*m//g' test.log
+          { grep -E -A8 '^failed' test.log || tail -40 test.log; } | head -80 > failures.txt
+          details=$(sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\r//g' -e 's/\n/%0A/g' failures.txt)
+          echo "::error title=Test failures::$details"
+          exit 1
+
+      # The spec's macOS acceptance: the bundle is produced and structurally valid (plist, ad-hoc
+      # signature, executable), for Apple Silicon and Intel.
+      - name: Package
+        run: ./package-macos.sh

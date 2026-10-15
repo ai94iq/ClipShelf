@@ -14,6 +14,23 @@ public static class HotkeyText
         return string.Join('+', parts);
     }
 
+    // The label shown to the user: Windows names, or Apple's names and order on a Mac. Storage keeps
+    // Format, so settings.json reads the same on every OS.
+    public static string Display(HotkeyGesture gesture) => Display(gesture, OperatingSystem.IsMacOS());
+
+    public static string Display(HotkeyGesture gesture, bool mac)
+    {
+        if (!mac) return Format(gesture);
+
+        var parts = new List<string>(5);
+        if (gesture.Modifiers.HasFlag(HotkeyModifiers.Control)) parts.Add("Control");
+        if (gesture.Modifiers.HasFlag(HotkeyModifiers.Alt)) parts.Add("Option");
+        if (gesture.Modifiers.HasFlag(HotkeyModifiers.Shift)) parts.Add("Shift");
+        if (gesture.Modifiers.HasFlag(HotkeyModifiers.Win)) parts.Add("Cmd");
+        parts.Add(KeyName(gesture.VirtualKey));
+        return string.Join('+', parts);
+    }
+
     public static bool TryParse(string? text, out HotkeyGesture? gesture)
     {
         gesture = null;

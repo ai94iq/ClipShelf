@@ -34,6 +34,21 @@ public sealed class SingleInstanceServiceTests
         Assert.Equal("ClipShelf.SingleInstance." + Environment.UserName, SingleInstanceService.DefaultName);
     }
 
+    // macOS caps a Unix socket path at 104 characters and its per-user TMPDIR is long, so the
+    // default CoreFxPipe_<name> path overflowed there; the endpoint is a short hashed path instead.
+    [Fact]
+    public void Off_windows_the_endpoint_fits_a_unix_socket_path()
+    {
+        Assert.SkipWhen(OperatingSystem.IsWindows(), "Windows pipes are not files");
+        var name = "ClipShelf.SingleInstance." + new string('u', 64);
+
+        var endpoint = SingleInstanceService.Endpoint(name);
+
+        Assert.True(Path.IsPathRooted(endpoint));
+        Assert.True(endpoint.Length <= 104, endpoint);
+        Assert.NotEqual(endpoint, SingleInstanceService.Endpoint(name + "x"));
+    }
+
     // Off Windows the pipe is a Unix socket another process can simply re-bind, so the claim is
     // the lock file; holding it here stands in for a running instance in another process.
     [Fact]
@@ -60,6 +75,26 @@ public sealed class SingleInstanceServiceTests
 
         Assert.True(await SingleInstanceService.TrySendAsync(
             name, "--toggle", TestContext.Current.CancellationToken));
+        var completed = await Task.WhenAny(
+            received.Task, Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
+        Assert.Same(received.Task, completed);
+        Assert.Equal("--toggle", await received.Task);
+    }
+
+    // The app claims the name in Main but listens only once Avalonia has started; a second launch
+    // in between must not lose its command.
+    [Fact]
+    public async Task A_command_sent_before_anyone_listens_is_delivered_on_subscribe()
+    {
+        var name = NewName();
+        using var service = new SingleInstanceService(name);
+        Assert.True(service.TryClaim());
+        Assert.True(await SingleInstanceService.TrySendAsync(name, "--toggle", TestContext.Current.CancellationToken));
+        await Task.Delay(300, TestContext.Current.CancellationToken);   // the server has read it by now
+
+        var received = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        service.CommandReceived += (_, command) => received.TrySetResult(command);
+
         var completed = await Task.WhenAny(
             received.Task, Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
         Assert.Same(received.Task, completed);

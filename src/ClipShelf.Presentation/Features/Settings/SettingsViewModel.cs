@@ -458,7 +458,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         string.IsNullOrWhiteSpace(filter) ||
         keys.Any(key => Tr.Get(key).Contains(filter.Trim(), StringComparison.OrdinalIgnoreCase));
 
-    public string HotkeyDisplay => HotkeyText.Format(Hotkey);
+    public string HotkeyDisplay => HotkeyText.Display(Hotkey);
 
     // Hotkey conflict warning: shown when the chosen shortcut could not be registered.
     [ObservableProperty]
@@ -535,7 +535,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         HotkeyConflictDetail = conflict
             ? registered is null
                 ? Tr.Get("Settings_HotkeyNoShortcut")
-                : Tr.Format("Settings_HotkeyStillUsing", HotkeyText.Format(registered))
+                : Tr.Format("Settings_HotkeyStillUsing", HotkeyText.Display(registered))
             : null;
         HotkeyAlternatives = conflict ? BuildHotkeyAlternatives(registered) : [];
     }
@@ -550,7 +550,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ];
         return candidates
             .Where(candidate => candidate != Hotkey && candidate != registered)
-            .Select(candidate => new Option<HotkeyGesture>(candidate, HotkeyText.Format(candidate)))
+            .Select(candidate => new Option<HotkeyGesture>(candidate, HotkeyText.Display(candidate)))
             .ToList();
     }
 

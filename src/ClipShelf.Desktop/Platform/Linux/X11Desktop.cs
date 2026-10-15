@@ -9,13 +9,17 @@ namespace ClipShelf.Desktop.Platform.Linux;
 // The EWMH side of X11: the active window and its process (_NET_ACTIVE_WINDOW, _NET_WM_PID),
 // activating a window through the window manager, the pointer, and Ctrl+V through XTest.
 [SupportedOSPlatform("linux")]
-public sealed class X11Desktop(X11Connection x) : IForegroundApp, IFlyoutPlatform, IPasteBack
+public sealed class X11Desktop(X11Connection x, bool? wayland = null) : IForegroundApp, IFlyoutPlatform, IPasteBack
 {
     private const int DelayMs = 60;
+    private readonly bool _wayland = wayland ?? DesktopSession.IsWayland;
     private const uint KeysymControl = 0xFFE3, KeysymV = 0x76;
 
+    // Under Wayland the active X window is at best another X client (often ClipShelf's own
+    // History window), never the Wayland app the copy came from, so the name stays blank.
     public string? Name()
     {
+        if (_wayland) return null;
         var pid = Wait(() => Cardinal(ActiveWindow(), "_NET_WM_PID"));
         if (pid is not > 0) return null;
         try
@@ -45,7 +49,7 @@ public sealed class X11Desktop(X11Connection x) : IForegroundApp, IFlyoutPlatfor
         if (previous != IntPtr.Zero) Wait(() => ActiveWindow() == own && Activate(previous));
     }
 
-    public bool CanPaste => !DesktopSession.IsWayland;
+    public bool CanPaste => !_wayland;
 
     public async Task IntoAsync(IntPtr targetWindow)
     {

@@ -117,7 +117,7 @@ public sealed class SettingsViewModelTests
 
         var viewModel = Create();
 
-        Assert.Equal("Ctrl+Shift+A", viewModel.HotkeyDisplay);
+        Assert.Equal(ClipShelf.Core.Input.HotkeyText.Display(new ClipShelf.Core.Input.HotkeyGesture(ClipShelf.Core.Input.HotkeyModifiers.Control | ClipShelf.Core.Input.HotkeyModifiers.Shift, 0x41)), viewModel.HotkeyDisplay);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public sealed class SettingsViewModelTests
         Assert.True(viewModel.HasHotkeyWarning);
         Assert.Equal(Tr.Get("Settings_HotkeyConflict"), viewModel.HotkeyConflictTitle);
         Assert.Equal(
-            Tr.Format("Settings_HotkeyStillUsing", "Win+Shift+V"),
+            Tr.Format("Settings_HotkeyStillUsing", ClipShelf.Core.Input.HotkeyText.Display(new ClipShelf.Core.Input.HotkeyGesture(ClipShelf.Core.Input.HotkeyModifiers.Win | ClipShelf.Core.Input.HotkeyModifiers.Shift, 0x56))),
             viewModel.HotkeyConflictDetail);
     }
 
@@ -385,7 +385,7 @@ public sealed class SettingsViewModelTests
     public void Filtering_matches_the_description_text_too()
     {
         var viewModel = Create();
-        viewModel.Filter = "notification area";
+        viewModel.Filter = "starts hidden";
 
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 2));
     }

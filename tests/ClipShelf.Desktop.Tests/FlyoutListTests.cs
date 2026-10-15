@@ -67,7 +67,7 @@ public sealed class FlyoutListTests
         _ = kit.PasteBack.DidNotReceiveWithAnyArgs().IntoAsync(default);
         Assert.False(kit.Window.IsOpen);
         Assert.True(kit.Window.Hint?.IsVisible);
-        Assert.Contains("Ctrl+V", kit.Window.Hint!.Text);
+        Assert.Contains(OperatingSystem.IsMacOS() ? "Cmd+V" : "Ctrl+V", kit.Window.Hint!.Text);
     });
 
     [Fact]

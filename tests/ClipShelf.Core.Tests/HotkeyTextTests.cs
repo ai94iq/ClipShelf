@@ -4,6 +4,20 @@ namespace ClipShelf.Core.Tests;
 
 public sealed class HotkeyTextTests
 {
+    // On a Mac the labels follow Apple's names and order; what settings.json stores does not change.
+    [Fact]
+    public void Display_on_a_mac_uses_apples_names_and_order() =>
+        Assert.Equal("Control+Option+Shift+Cmd+V",
+            HotkeyText.Display(new HotkeyGesture(HotkeyModifiers.Win | HotkeyModifiers.Control | HotkeyModifiers.Alt | HotkeyModifiers.Shift, 0x56), mac: true));
+
+    [Fact]
+    public void Display_elsewhere_matches_format()
+    {
+        var gesture = new HotkeyGesture(HotkeyModifiers.Win | HotkeyModifiers.Shift, 0x56);
+
+        Assert.Equal(HotkeyText.Format(gesture), HotkeyText.Display(gesture, mac: false));
+    }
+
     [Fact]
     public void Format_uses_windows_order_and_the_ctrl_name() =>
         Assert.Equal("Win+Ctrl+Shift+V",

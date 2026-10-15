@@ -11,7 +11,7 @@
   <data name="Accent_Purple" xml:space="preserve"><value>Purple</value></data>
   <data name="Accent_Rose" xml:space="preserve"><value>Rose</value></data>
   <data name="Accent_Teal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Accent_Windows" xml:space="preserve"><value>Windows accent</value></data>
+  <data name="Accent_Windows" xml:space="preserve"><value>System accent</value></data>
   <data name="App_AlreadyRunning" xml:space="preserve"><value>The app is already running.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>Welcome to ClipShelf</value></data>
@@ -54,6 +54,8 @@
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
   <data name="History_Copied" xml:space="preserve"><value>Copied</value></data>
   <data name="Flyout_PasteHint" xml:space="preserve"><value>Copied, press Ctrl+V to paste</value></data>
+  <data name="Flyout_PasteHintMac" xml:space="preserve"><value>Copied, press Cmd+V to paste</value></data>
+  <data name="Welcome_Accessibility" xml:space="preserve"><value>To paste a picked clip for you, ClipShelf needs the Accessibility permission; macOS asks the first time. Without it, picks are copied and you press Cmd+V.</value></data>
   <data name="Settings_HotkeyWayland" xml:space="preserve"><value>On Wayland, keys pressed in other apps do not reach ClipShelf. Bind a shortcut in your system settings to the command: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} clips</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} clips</value></data>
@@ -157,8 +159,8 @@
   <data name="Settings_RestartNow" xml:space="preserve"><value>Restart now</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>Keep clips for</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>Pinned clips and clips in a category are never removed.</value></data>
-  <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at Windows startup</value></data>
-  <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the notification area.</value></data>
+  <data name="Settings_RunAtStartup" xml:space="preserve"><value>Run at startup</value></data>
+  <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>Starts hidden in the tray.</value></data>
   <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>Search settings</value></data>
   <data name="Settings_SetPassword" xml:space="preserve"><value>Set password…</value></data>
   <data name="Settings_ShowTrayIcon" xml:space="preserve"><value>Show the tray icon</value></data>
@@ -181,7 +183,7 @@
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Welcome_Hotkey" xml:space="preserve"><value>Press {0} anywhere to open the flyout, then pick a clip to paste it into the app you came from.</value></data>
   <data name="Welcome_Ok" xml:space="preserve"><value>Got it</value></data>
-  <data name="Welcome_Tray" xml:space="preserve"><value>ClipShelf keeps running in the notification area — open Settings or exit from its tray icon.</value></data>
+  <data name="Welcome_Tray" xml:space="preserve"><value>ClipShelf keeps running in the tray (the menu bar on a Mac); open Settings or exit from its icon.</value></data>
   <data name="Welcome_NoTray" xml:space="preserve"><value>This desktop shows no tray icon, so ClipShelf opens History when it starts. Reach it later with the command clipshelf --history; on GNOME, the AppIndicator extension adds the tray icon.</value></data>
   <data name="Window_Minimize" xml:space="preserve"><value>Minimize</value></data>
   <data name="Window_Maximize" xml:space="preserve"><value>Maximize</value></data>

@@ -71,6 +71,7 @@ internal static class Program
                 ],
                 RenderingMode = [Win32RenderingMode.AngleEgl, Win32RenderingMode.Software],
             })
+            .With(new MacOSPlatformOptions { ShowInDock = false })     // a menu-bar app, like the tray on Windows
             .LogToTrace();
 }
 
