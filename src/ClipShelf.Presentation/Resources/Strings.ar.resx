@@ -179,6 +179,9 @@
   <data name="Theme_System" xml:space="preserve"><value>حسب النظام</value></data>
   <data name="TrayIcon_Filled" xml:space="preserve"><value>ممتلئة</value></data>
   <data name="TrayIcon_Outline" xml:space="preserve"><value>محدّدة</value></data>
+  <data name="Startup_Failed" xml:space="preserve"><value>تعذّر بدء تشغيل ClipShelf.</value></data>
+  <data name="Startup_KeyringDenied" xml:space="preserve"><value>تعذّر على ClipShelf قراءة مفتاح قاعدة البيانات من سلسلة مفاتيح النظام (Keychain في Mac). افتح قفلها أو اسمح بالوصول عند السؤال، ثم شغّل ClipShelf مرة أخرى.</value></data>
+  <data name="Startup_Log" xml:space="preserve"><value>يوضّح السجل في {0} السبب.</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>خروج</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>فتح سجل الحافظة</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>الإعدادات</value></data>

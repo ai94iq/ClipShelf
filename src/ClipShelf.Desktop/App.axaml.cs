@@ -109,7 +109,17 @@ public sealed partial class App : Application
         catch (Exception ex)
         {
             Log.Fatal(ex, "Startup failed");
-            Exit(desktop);
+            try
+            {
+                var error = new StartupErrorWindow(ex);
+                error.Closed += (_, _) => Exit(desktop);
+                error.Show();
+            }
+            catch (Exception shown)
+            {
+                Log.Error(shown, "Showing the startup error failed");
+                Exit(desktop);
+            }
         }
     }
 

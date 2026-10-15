@@ -179,6 +179,9 @@
   <data name="Theme_System" xml:space="preserve"><value>Use system setting</value></data>
   <data name="TrayIcon_Filled" xml:space="preserve"><value>Filled</value></data>
   <data name="TrayIcon_Outline" xml:space="preserve"><value>Outline</value></data>
+  <data name="Startup_Failed" xml:space="preserve"><value>ClipShelf could not start.</value></data>
+  <data name="Startup_KeyringDenied" xml:space="preserve"><value>ClipShelf could not read its database key from the system keyring (the Keychain on a Mac). Unlock it or allow access when asked, then start ClipShelf again.</value></data>
+  <data name="Startup_Log" xml:space="preserve"><value>The log in {0} says why.</value></data>
   <data name="Tray_Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray_OpenHistory" xml:space="preserve"><value>Open clipboard history</value></data>
   <data name="Tray_Settings" xml:space="preserve"><value>Settings</value></data>

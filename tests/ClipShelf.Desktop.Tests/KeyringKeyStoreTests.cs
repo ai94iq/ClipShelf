@@ -45,8 +45,8 @@ public sealed class KeyringKeyStoreTests : IDisposable
     {
         File.WriteAllText(KeyPath, KeyringKeyStore.KeyringMarker);
 
-        Assert.Throws<InvalidOperationException>(() => Store(new FakeKeyring { Available = false }).LoadOrCreate(KeyPath));
-        Assert.Throws<InvalidOperationException>(() => Store(new FakeKeyring()).LoadOrCreate(KeyPath));
+        Assert.Throws<KeyringUnavailableException>(() => Store(new FakeKeyring { Available = false }).LoadOrCreate(KeyPath));
+        Assert.Throws<KeyringUnavailableException>(() => Store(new FakeKeyring()).LoadOrCreate(KeyPath));
         Assert.Equal(KeyringKeyStore.KeyringMarker, File.ReadAllText(KeyPath));
     }
 

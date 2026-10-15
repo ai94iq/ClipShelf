@@ -20,7 +20,7 @@ public sealed class KeyringKeyStore(ISecretKeyring keyring, ILogger<KeyringKeySt
                 return stored;
             if (keyring.TryLookup(out var secret) && secret is not null)
                 return secret;
-            throw new InvalidOperationException(
+            throw new KeyringUnavailableException(
                 "The database key is in the system keyring, which did not return it. Unlock the keyring and start ClipShelf again.");
         }
 
@@ -41,3 +41,6 @@ public sealed class KeyringKeyStore(ISecretKeyring keyring, ILogger<KeyringKeySt
         return key;
     }
 }
+
+// Locked, or the user denied the request; startup says so instead of only logging it.
+public sealed class KeyringUnavailableException(string message) : InvalidOperationException(message);
