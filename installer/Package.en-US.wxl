@@ -1,7 +1,7 @@
 <!-- English package strings; the app ships English only -->
 <WixLocalization Culture="en-US" xmlns="http://wixtoolset.org/schemas/v4/wxl">
-  <String Id="ProductName" Value="ClipShelf" />
+  <String Id="ProductName" Value="Copyloft" />
   <String Id="Manufacturer" Value="Abdulwahb Isam" />
-  <String Id="DowngradeError" Value="A newer version of ClipShelf is already installed." />
-  <String Id="LaunchProduct" Value="Run ClipShelf" />
+  <String Id="DowngradeError" Value="A newer version of Copyloft is already installed." />
+  <String Id="LaunchProduct" Value="Run Copyloft" />
 </WixLocalization>

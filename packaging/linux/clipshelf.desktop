@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=ClipShelf
+Name=Copyloft
 Comment=Clipboard history
 Exec=clipshelf --history
 Icon=clipshelf

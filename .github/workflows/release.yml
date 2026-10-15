@@ -72,10 +72,10 @@ jobs:
           foreach ($file in Get-ChildItem packaging\winget -Filter '*.yaml') {
             $text = Get-Content -Raw $file.FullName
             $text = $text -replace '(?m)^PackageVersion: .*$', "PackageVersion: $version"
-            $text = $text -replace 'https://github\.com/ai94iq/ClipShelf/releases/download/v[\d.]+/ClipShelf-Setup-[\d.]+\.msi', "https://github.com/ai94iq/ClipShelf/releases/download/v$version/ClipShelf-Setup-$version.msi"
+            $text = $text -replace 'https://github\.com/ai94iq/Copyloft/releases/download/v[\d.]+/ClipShelf-Setup-[\d.]+\.msi', "https://github.com/ai94iq/Copyloft/releases/download/v$version/ClipShelf-Setup-$version.msi"
             $text = $text -replace '(?m)^    InstallerSha256: .*$', "    InstallerSha256: $hash"
             $text = $text -replace '(?m)^ProductCode: .*$', "ProductCode: `"$code`""
-            $text = $text -replace 'https://github\.com/ai94iq/ClipShelf/releases/tag/v[\d.]+', "https://github.com/ai94iq/ClipShelf/releases/tag/v$version"
+            $text = $text -replace 'https://github\.com/ai94iq/Copyloft/releases/tag/v[\d.]+', "https://github.com/ai94iq/Copyloft/releases/tag/v$version"
             Set-Content $file.FullName $text -NoNewline
           }
 

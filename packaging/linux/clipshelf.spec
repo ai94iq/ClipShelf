@@ -8,12 +8,12 @@ Version:        %{version}
 Release:        1
 Summary:        Clipboard history
 License:        MIT
-URL:            https://github.com/ai94iq/ClipShelf
+URL:            https://github.com/ai94iq/Copyloft
 AutoReqProv:    no
 Requires:       libX11, libICE, libSM, libXtst, libXfixes, fontconfig, libsecret, libicu, openssl-libs, dbus-tools
 
 %description
-ClipShelf keeps a searchable history of what you copy, encrypted on disk, and pastes it back.
+Copyloft keeps a searchable history of what you copy, encrypted on disk, and pastes it back.
 
 %install
 cp -a %{stage}/. %{buildroot}/

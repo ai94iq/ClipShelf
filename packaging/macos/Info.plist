@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleName</key>
-  <string>ClipShelf</string>
+  <string>Copyloft</string>
   <key>CFBundleDisplayName</key>
-  <string>ClipShelf</string>
+  <string>Copyloft</string>
   <key>CFBundleIdentifier</key>
   <string>io.github.ai94iq.clipshelf</string>
   <key>CFBundleExecutable</key>

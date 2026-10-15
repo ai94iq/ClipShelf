@@ -7,7 +7,7 @@ UpgradeBehavior: install
 ProductCode: "{C5726FE1-32FB-416A-9B76-A97041B7619E}"
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/ai94iq/ClipShelf/releases/download/v0.3.0/ClipShelf-Setup-0.3.0.msi
+    InstallerUrl: https://github.com/ai94iq/Copyloft/releases/download/v0.3.0/ClipShelf-Setup-0.3.0.msi
     InstallerSha256: 56593F76CD5FA4EA074B1621B855BA9183D1624850F5268D29155A1C3617D0EB
 ManifestType: installer
 ManifestVersion: 1.6.0
