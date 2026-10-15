@@ -42,21 +42,26 @@ public sealed class MacLiveTests
         }
     }
 
+    // The watcher's DispatcherTimer binds Avalonia's UI thread, so it is built on the headless
+    // session's UI thread; built on a test thread first, it would leave the session without one.
     [Fact]
-    public void A_copy_moves_the_pasteboard_change_count()
+    public Task A_copy_moves_the_pasteboard_change_count()
     {
         SkipOffMac();
-        using var watcher = new PasteboardWatcher();
-        var before = watcher.ChangeCount();
-
-        using (var copy = Process.Start(new ProcessStartInfo("pbcopy") { RedirectStandardInput = true })!)
+        return Ui.Run(() =>
         {
-            copy.StandardInput.Write("Copyloft test");
-            copy.StandardInput.Close();
-            copy.WaitForExit();
-        }
+            using var watcher = new PasteboardWatcher();
+            var before = watcher.ChangeCount();
 
-        Assert.NotEqual(before, watcher.ChangeCount());
+            using (var copy = Process.Start(new ProcessStartInfo("pbcopy") { RedirectStandardInput = true })!)
+            {
+                copy.StandardInput.Write("Copyloft test");
+                copy.StandardInput.Close();
+                copy.WaitForExit();
+            }
+
+            Assert.NotEqual(before, watcher.ChangeCount());
+        });
     }
 
     [Fact]
