@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 concurrency:
@@ -54,5 +53,11 @@ jobs:
       - name: Install test dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libsecret-1-0
 
+      # Job logs need a signed-in reader; an annotation is public, so failures are echoed as one.
       - name: Test
-        run: xvfb-run -a ./test.sh
+        run: |
+          xvfb-run -a ./test.sh > test.log 2>&1 && exit 0
+          tail -5 test.log
+          details=$(grep -E -A8 '^failed' test.log | head -60 | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
+          echo "::error title=Test failures::${details:-no failed lines; see the log}"
+          exit 1
