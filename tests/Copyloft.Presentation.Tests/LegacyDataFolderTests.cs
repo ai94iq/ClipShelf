@@ -2,7 +2,7 @@ using Copyloft.Presentation.Hosting;
 
 namespace Copyloft.Presentation.Tests;
 
-public sealed class AppPathsTests : IDisposable
+public sealed class LegacyDataFolderTests : IDisposable
 {
     private readonly string _parent = Directory.CreateTempSubdirectory("copyloft-paths").FullName;
 
@@ -17,7 +17,7 @@ public sealed class AppPathsTests : IDisposable
         Directory.CreateDirectory(Legacy);
         File.WriteAllText(Path.Combine(Legacy, "key.bin"), "key");
 
-        Assert.Equal(Root, AppPaths.MoveLegacyRoot(Root));
+        Assert.Equal(Root, LegacyDataFolder.MoveTo(Root));
         Assert.False(Directory.Exists(Legacy));
         Assert.Equal("key", File.ReadAllText(Path.Combine(Root, "key.bin")));
     }
@@ -28,14 +28,14 @@ public sealed class AppPathsTests : IDisposable
         Directory.CreateDirectory(Root);
         Directory.CreateDirectory(Legacy);
 
-        Assert.Equal(Root, AppPaths.MoveLegacyRoot(Root));
+        Assert.Equal(Root, LegacyDataFolder.MoveTo(Root));
         Assert.True(Directory.Exists(Legacy));
     }
 
     [Fact]
     public void Without_a_ClipShelf_folder_the_Copyloft_folder_is_used()
     {
-        Assert.Equal(Root, AppPaths.MoveLegacyRoot(Root));
+        Assert.Equal(Root, LegacyDataFolder.MoveTo(Root));
         Assert.False(Directory.Exists(Root));
     }
 
@@ -46,6 +46,6 @@ public sealed class AppPathsTests : IDisposable
         Directory.CreateDirectory(Legacy);
         using var open = File.Open(Path.Combine(Legacy, "data.db"), FileMode.Create, FileAccess.ReadWrite, FileShare.None);
 
-        Assert.Equal(Legacy, AppPaths.MoveLegacyRoot(Root));
+        Assert.Equal(Legacy, LegacyDataFolder.MoveTo(Root));
     }
 }
