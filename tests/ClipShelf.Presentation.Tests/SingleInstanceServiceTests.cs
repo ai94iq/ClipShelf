@@ -81,6 +81,26 @@ public sealed class SingleInstanceServiceTests
         Assert.Equal("--toggle", await received.Task);
     }
 
+    // The app claims the name in Main but listens only once Avalonia has started; a second launch
+    // in between must not lose its command.
+    [Fact]
+    public async Task A_command_sent_before_anyone_listens_is_delivered_on_subscribe()
+    {
+        var name = NewName();
+        using var service = new SingleInstanceService(name);
+        Assert.True(service.TryClaim());
+        Assert.True(await SingleInstanceService.TrySendAsync(name, "--toggle", TestContext.Current.CancellationToken));
+        await Task.Delay(300, TestContext.Current.CancellationToken);   // the server has read it by now
+
+        var received = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        service.CommandReceived += (_, command) => received.TrySetResult(command);
+
+        var completed = await Task.WhenAny(
+            received.Task, Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
+        Assert.Same(received.Task, completed);
+        Assert.Equal("--toggle", await received.Task);
+    }
+
     [Fact]
     public async Task SendRetriesUntilServerAppears()
     {

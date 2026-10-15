@@ -26,7 +26,30 @@ public sealed class SingleInstanceService : IDisposable
             ? "." + Process.GetCurrentProcess().SessionId.ToString(CultureInfo.InvariantCulture)
             : "");
 
-    public event EventHandler<string>? CommandReceived;
+    private readonly Lock _gate = new();
+    private readonly Queue<string> _undelivered = new();
+    private EventHandler<string>? _commandReceived;
+
+    // Raised on a worker thread. Commands that arrive before anyone listens (the app claims the
+    // name in Main but subscribes once Avalonia has started) are kept and delivered on subscribe.
+    public event EventHandler<string>? CommandReceived
+    {
+        add
+        {
+            string[] pending;
+            lock (_gate)
+            {
+                _commandReceived += value;
+                pending = [.. _undelivered];
+                _undelivered.Clear();
+            }
+            foreach (var command in pending) value?.Invoke(this, command);
+        }
+        remove
+        {
+            lock (_gate) _commandReceived -= value;
+        }
+    }
 
     // Off Windows the pipe is a Unix domain socket that another process can re-bind, so an
     // exclusive lock file (flock, released by the kernel when the process dies) is the claim.
@@ -114,6 +137,17 @@ public sealed class SingleInstanceService : IDisposable
         _cts.Dispose();
     }
 
+    private void Deliver(string command)
+    {
+        EventHandler<string>? handlers;
+        lock (_gate)
+        {
+            handlers = _commandReceived;
+            if (handlers is null) _undelivered.Enqueue(command);
+        }
+        handlers?.Invoke(this, command);
+    }
+
     private async Task AcceptLoopAsync()
     {
         while (!_cts.IsCancellationRequested)
@@ -126,7 +160,7 @@ public sealed class SingleInstanceService : IDisposable
                 {
                     var command = await reader.ReadLineAsync(_cts.Token);
                     if (!string.IsNullOrEmpty(command))
-                        CommandReceived?.Invoke(this, command);
+                        Deliver(command);
                 }
 
                 _server.Disconnect();
