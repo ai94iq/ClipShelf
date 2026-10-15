@@ -40,8 +40,18 @@ internal static class MacNative
         public uint Id;
     }
 
-    // [Class selector], [object selector] and friends.
-    internal static IntPtr Class(string name) => objc_getClass(name);
+    private const string AppKit = "/System/Library/Frameworks/AppKit.framework/AppKit";
+
+    // [Class selector], [object selector] and friends. objc_getClass finds AppKit classes
+    // (NSPasteboard, NSWorkspace) only once AppKit is loaded; the app gets it from Avalonia's native
+    // backend, so it is loaded here too, or callers that run first (tests) get nil.
+    internal static IntPtr Class(string name)
+    {
+        _ = AppKitLoaded.Value;
+        return objc_getClass(name);
+    }
+
+    private static readonly Lazy<bool> AppKitLoaded = new(() => NativeLibrary.TryLoad(AppKit, out _));
 
     internal static IntPtr Selector(string name) => sel_registerName(name);
 
