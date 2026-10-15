@@ -12,7 +12,7 @@
       <Setter Property="Template">
         <ControlTemplate>
           <Grid ColumnDefinitions="*,Auto" Margin="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
-            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="2">
+            <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="4">
               <TextBlock Text="{TemplateBinding Header}" TextWrapping="Wrap" />
               <TextBlock Text="{TemplateBinding Description}" TextWrapping="Wrap" FontSize="12"
                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"

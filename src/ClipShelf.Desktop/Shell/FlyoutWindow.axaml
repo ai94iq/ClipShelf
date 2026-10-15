@@ -74,15 +74,17 @@
       <!-- Load states over the list -->
       <ProgressBar Grid.Row="1" IsIndeterminate="True" VerticalAlignment="Top" Margin="12,0"
                    IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Loading}" />
-      <StackPanel x:Name="EmptyState" Grid.Row="1" Spacing="10" MaxWidth="280"
+      <StackPanel x:Name="EmptyState" Grid.Row="1" Spacing="12" MaxWidth="280"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Empty}">
         <controls:AppIcon Kind="Clipboard" Width="32" Height="32" HorizontalAlignment="Center" Opacity="0.7"
                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-        <TextBlock x:Name="EmptyTitle" Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
-                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-        <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
-                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <StackPanel Spacing="4">
+          <TextBlock x:Name="EmptyTitle" Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+          <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        </StackPanel>
       </StackPanel>
       <StackPanel x:Name="ErrorState" Grid.Row="1" Spacing="12"
                   HorizontalAlignment="Center" VerticalAlignment="Center"

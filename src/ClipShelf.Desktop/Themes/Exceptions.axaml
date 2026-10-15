@@ -20,7 +20,8 @@
       <SolidColorBrush x:Key="ClipShelfCaptionCloseBrush" Color="#C42B1C" />
       <!-- Fluent here is v1: buttons 20% black, inputs 40% white with a 60% black border, heavier
            than main's WinUI 3 controls. Rest, hover and press take WinUI 3's ControlFillColor
-           and ControlStrokeColor values; focus and disabled stay Fluent's. -->
+           and ControlStrokeColor values; focus stays Fluent's. A disabled input takes
+           ControlFillColorDisabled: Fluent's disabled gray read as a dark block (seen on macOS). -->
       <SolidColorBrush x:Key="ButtonBackground" Color="#B3FFFFFF" />
       <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#80F9F9F9" />
       <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#4DF9F9F9" />
@@ -37,6 +38,8 @@
       <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#80F9F9F9" />
       <SolidColorBrush x:Key="TextControlBorderBrush" Color="#29000000" />
       <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#29000000" />
+      <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="#4DF9F9F9" />
+      <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#0F000000" />
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
       <SolidColorBrush x:Key="ClipShelfAccentSubtleBrush" Color="{DynamicResource SystemAccentColor}" Opacity="0.25" />
@@ -63,6 +66,8 @@
       <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#15FFFFFF" />
       <SolidColorBrush x:Key="TextControlBorderBrush" Color="#28FFFFFF" />
       <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#28FFFFFF" />
+      <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="#0BFFFFFF" />
+      <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#12FFFFFF" />
     </ResourceDictionary>
     <!-- Full black: black throughout, for OLED screens; the borders keep the layers apart.
          Everything not listed here comes from Dark. -->

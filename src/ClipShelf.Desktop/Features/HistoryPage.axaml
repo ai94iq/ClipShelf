@@ -21,11 +21,39 @@
     <Style Selector="ListBoxItem:disabled /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
     </Style>
+    <!-- Footer buttons share one height, labels centered (on macOS the label sat high). -->
+    <Style Selector="Border#Footer Button">
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <!-- Clear all is a bare glyph: no fill at rest or disabled (Fluent's disabled fill drew a
+         gray block), the list wash on hover, faded while there is nothing to clear. -->
+    <Style Selector="Button.glyph">
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Button.glyph:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.glyph:disabled">
+      <Setter Property="Opacity" Value="0.4" />
+    </Style>
+    <Style Selector="Button.glyph:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+    </Style>
+    <Style Selector="Button.glyph PathIcon">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="Auto,Auto,*,Auto">
     <!-- Header -->
-    <StackPanel Grid.Row="0" Margin="0,0,0,0">
+    <StackPanel Grid.Row="0" Spacing="6">
       <TextBlock Text="{l:Tr Key=History_Title}" FontSize="28" FontWeight="SemiBold" />
       <TextBlock Text="{l:Tr Key=History_Description}"
                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
@@ -33,7 +61,7 @@
 
     <!-- Search and the category filter -->
     <Grid Grid.Row="1" Margin="0,12,0,6" ColumnDefinitions="*,Auto">
-      <TextBox x:Name="SearchBox" Height="36"
+      <TextBox x:Name="SearchBox" Height="36" VerticalContentAlignment="Center"
                IsEnabled="{Binding CanSearch}"
                PlaceholderText="{l:Tr Key=Panel_SearchPlaceholder}"
                AutomationProperties.Name="{l:Tr Key=Panel_SearchPlaceholder}"
@@ -72,15 +100,17 @@
 
     <ProgressBar Grid.Row="2" IsIndeterminate="True" VerticalAlignment="Top"
                  IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Loading}" />
-    <StackPanel Grid.Row="2" Spacing="10" MaxWidth="280"
+    <StackPanel Grid.Row="2" Spacing="12" MaxWidth="280"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Empty}">
       <controls:AppIcon Kind="Clipboard" Width="32" Height="32" HorizontalAlignment="Center" Opacity="0.7"
                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-      <TextBlock Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
-                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-      <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
-                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      <StackPanel Spacing="4">
+        <TextBlock Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      </StackPanel>
     </StackPanel>
     <StackPanel Grid.Row="2" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center"
                 IsVisible="{Binding State, Converter={x:Static controls:LoadStateIs.Instance}, ConverterParameter=Error}">
@@ -102,7 +132,7 @@
     </Border>
 
     <!-- Footer: the true total or the copy notice, select mode, clear all -->
-    <Border Grid.Row="3" BorderThickness="0,1,0,0" Padding="0,8,0,0"
+    <Border x:Name="Footer" Grid.Row="3" BorderThickness="0,1,0,0" Padding="0,8,0,0"
             BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
       <Grid ColumnDefinitions="*,Auto">
         <TextBlock x:Name="FooterText" Text="{Binding FooterText}" VerticalAlignment="Center"
@@ -118,12 +148,12 @@
                   IsVisible="{Binding IsSelecting}" />
           <Button Content="{l:Tr Key=Selection_Copy}" Command="{Binding CopySelectedCommand}"
                   IsEnabled="{Binding CanCopySelection}" IsVisible="{Binding IsSelecting}" />
-          <Button Background="Transparent" BorderThickness="0" Width="32" Padding="0"
+          <Button x:Name="ClearAllButton" Classes="glyph"
                   ToolTip.Tip="{l:Tr Key=Panel_ClearAll}"
                   AutomationProperties.Name="{l:Tr Key=Panel_ClearAll}"
                   Command="{Binding RequestClearCommand}"
                   IsEnabled="{Binding HasItems}" IsVisible="{Binding ShowSelectButton}">
-            <controls:AppIcon Kind="Delete" Width="16" Height="16" />
+            <controls:AppIcon Kind="Delete" />
           </Button>
         </StackPanel>
       </Grid>

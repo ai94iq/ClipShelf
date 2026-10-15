@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClipShelf.Core.Models;
 using ClipShelf.Desktop.Features;
 using ClipShelf.Presentation.Features.ClipboardPanel;
@@ -65,6 +66,22 @@ public sealed class HistoryPageTests
         var notice = hosted.Page.FindControl<TextBlock>("CopyNotice")!;
         Assert.True(notice.IsVisible);
         Assert.Equal("Copied", notice.Text);
+    });
+
+    // Seen on macOS: Select's label sat high and the disabled clear button was a short gray block.
+    [Fact]
+    public Task The_footer_buttons_line_up_and_an_empty_history_draws_no_gray_block() => Ui.Run(async () =>
+    {
+        var hosted = await Open(new ViewModelKit());
+        hosted.Window.UpdateLayout();
+
+        var clear = hosted.Page.FindControl<Button>("ClearAllButton")!;
+        var select = hosted.Page.GetVisualDescendants().OfType<Button>()
+            .Single(b => b.IsVisible && b != clear && b.FindAncestorOfType<Border>()?.Name == "Footer");
+        Assert.False(clear.IsEnabled);
+        Assert.Equal(select.Bounds.Height, clear.Bounds.Height);
+        var fill = clear.GetVisualDescendants().OfType<Avalonia.Controls.Presenters.ContentPresenter>().First().Background;
+        Assert.True(fill is null || fill is Avalonia.Media.ISolidColorBrush { Color.A: 0 }, "disabled clear has no fill");
     });
 
     [Fact]
