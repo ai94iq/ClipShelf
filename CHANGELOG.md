@@ -5,6 +5,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## Contents
 
 - [Unreleased](#unreleased)
+- [0.5.0 - 2026-10-16](#050---2026-10-16)
 - [0.4.1 - 2026-10-15](#041---2026-10-15)
 - [0.4.0 - 2026-10-15](#040---2026-10-15)
 - [0.3.3 - 2026-10-03](#033---2026-10-03)
@@ -14,6 +15,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - [0.2.0 - 2026-10-02](#020---2026-10-02)
 
 ## [Unreleased]
+
+## [0.5.0] - 2026-10-16
 
 ### Changed
 - ClipShelf is now Copyloft, because other clipboard apps already use the name ClipShelf. The app, its exe and bundle (`Copyloft.exe`, `Copyloft.app`, the `copyloft` command), the downloads, the data folder, the keychain entry and the winget id (`ai94iq.Copyloft`) all carry the new name, and the repository moved to github.com/ai94iq/Copyloft.
