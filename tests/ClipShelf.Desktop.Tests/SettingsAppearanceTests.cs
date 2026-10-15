@@ -24,12 +24,6 @@ public sealed class SettingsAppearanceTests
     public Task A_preset_swatch_shows_its_color() => Ui.Run(() =>
         Assert.Equal(Color.Parse("#0F766E"), Assert.IsType<SolidColorBrush>(Convert("#0F766E")).Color));
 
-    [Theory]
-    [InlineData("#1E3A8A", "#FFFFFFFF")]   // navy takes a white check
-    [InlineData("#FDE68A", "#FF000000")]   // pale yellow takes a black check
-    public Task The_check_reads_on_its_swatch(string hex, string check) => Ui.Run(() =>
-        Assert.Equal(Color.Parse(check), Assert.IsType<SolidColorBrush>(Convert(hex, "Check")).Color));
-
     [Fact]
     public Task The_system_swatch_shows_the_platform_accent() => Ui.Run(() =>
         Assert.IsType<SolidColorBrush>(Convert(null)));

@@ -64,8 +64,8 @@
     <Style Selector="TextBlock.status.error">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
     </Style>
-    <!-- Accent swatches: plain colored circles with radio semantics. The selected one carries a
-         ring and a check; hover and keyboard focus draw their own rings. -->
+    <!-- Accent swatches: plain colored circles with radio semantics. The selected one wears a ring
+         4 px clear of its color (no check); hover and keyboard focus draw their own rings. -->
     <Style Selector="RadioButton.swatch">
       <Setter Property="Width" Value="40" />
       <Setter Property="Height" Value="40" />
@@ -75,13 +75,11 @@
           <Panel Background="Transparent">
             <Ellipse x:Name="FocusRing" Width="40" Height="40" StrokeThickness="2" Opacity="0"
                      Stroke="{DynamicResource SystemControlFocusVisualPrimaryBrush}" />
-            <Ellipse x:Name="HoverRing" Width="34" Height="34" StrokeThickness="2" Opacity="0"
+            <Ellipse x:Name="HoverRing" Width="36" Height="36" StrokeThickness="2" Opacity="0"
                      Stroke="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
-            <Ellipse x:Name="SelectionRing" Width="28" Height="28" StrokeThickness="2" Opacity="0"
+            <Ellipse x:Name="SelectionRing" Width="32" Height="32" StrokeThickness="2" Opacity="0"
                      Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}" />
             <Ellipse Width="20" Height="20" Fill="{TemplateBinding Background}" />
-            <controls:AppIcon x:Name="Check" Kind="Checkmark" Width="12" Height="12" Opacity="0"
-                              Foreground="{TemplateBinding Foreground}" />
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -100,9 +98,6 @@
       <Setter Property="Opacity" Value="1" />
     </Style>
     <Style Selector="RadioButton.swatch:checked /template/ Ellipse#SelectionRing">
-      <Setter Property="Opacity" Value="1" />
-    </Style>
-    <Style Selector="RadioButton.swatch:checked /template/ PathIcon#Check">
       <Setter Property="Opacity" Value="1" />
     </Style>
   </UserControl.Styles>
@@ -128,7 +123,7 @@
               <ItemsControl x:Name="AccentSwatches" ItemsSource="{Binding AccentOptions}">
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" Spacing="4" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" />
                   </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -136,7 +131,6 @@
                   <DataTemplate x:DataType="settings:AccentOption">
                     <RadioButton Classes="swatch" GroupName="Accent"
                                  Background="{Binding Value, Converter={x:Static controls:AccentSwatchConverter.Instance}}"
-                                 Foreground="{Binding Value, Converter={x:Static controls:AccentSwatchConverter.Instance}, ConverterParameter=Check}"
                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                  IsCheckedChanged="OnAccentCheckedChanged"
                                  ToolTip.Tip="{Binding Label}"

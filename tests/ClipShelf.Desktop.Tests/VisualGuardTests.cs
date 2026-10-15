@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClipShelf.Desktop.Controls;
@@ -62,16 +64,25 @@ public sealed class VisualGuardTests
         Assert.Equal((20, 20), (icon.Bounds.Width, icon.Bounds.Height));
     });
 
+    // The owner's call: the chosen accent wears a ring only, centered on its color with a clear
+    // gap (the ring touched the color and the check read badly on it).
     [Fact]
-    public Task The_selected_swatch_shows_its_check() => Ui.Run(() =>
+    public Task The_selected_swatch_wears_a_centered_ring_clear_of_its_color() => Ui.Run(() =>
     {
         var kit = new SettingsKit(new ClipShelf.Presentation.Hosting.AppSettings { Accent = "#6DD3C4" });
         Laid(new Window { Content = kit.Page, Width = 900, Height = 700 });
+        var swatches = kit.Page.GetVisualDescendants().OfType<RadioButton>().Where(r => r.Classes.Contains("swatch")).ToList();
+        var selected = swatches.Single(r => r.IsChecked == true);
 
-        var selected = kit.Page.GetVisualDescendants().OfType<RadioButton>().Single(r => r.Classes.Contains("swatch") && r.IsChecked == true);
-        var check = selected.GetVisualDescendants().OfType<AppIcon>().Single(i => i.Name == "Check");
-
-        Assert.Equal(1, check.Opacity);
+        Assert.Empty(selected.GetVisualDescendants().OfType<AppIcon>());
+        var ellipses = selected.GetVisualDescendants().OfType<Avalonia.Controls.Shapes.Ellipse>().ToList();
+        var ring = ellipses.Single(e => e.Name == "SelectionRing");
+        var fill = ellipses.Single(e => e.Fill is not null);
+        Assert.Equal(1, ring.Opacity);
+        Avalonia.Point Center(Avalonia.Visual v) => v.TranslatePoint(new Avalonia.Point(v.Bounds.Width / 2, v.Bounds.Height / 2), selected)!.Value;
+        Assert.Equal(Center(fill), Center(ring));
+        Assert.True((ring.Bounds.Width - 2 * ring.StrokeThickness - fill.Bounds.Width) / 2 >= 4, "ring clears the color by 4 px");
+        Assert.Equal(8, selected.FindAncestorOfType<StackPanel>()!.Spacing);
     });
 
     // Main's type ramp: page titles 28 semibold (Title), group titles 14 semibold (BodyStrong).
