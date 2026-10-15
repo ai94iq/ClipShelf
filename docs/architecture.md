@@ -7,15 +7,15 @@ Desktop depends on Presentation, Core and Data. Presentation depends on Core and
 - **ClipShelf.Core** (net10.0): models, interfaces, text helpers, layout logic. Never UI or SQL.
 - **ClipShelf.Data** (net10.0): SQLite + Dapper repositories, migrations, backups. Never UI.
 - **ClipShelf.Presentation** (net10.0): view models, portable services, settings, localization and the platform interfaces. No UI framework types.
-- **ClipShelf.Desktop** (net10.0): Avalonia views, the platform implementations of the Presentation interfaces (Windows today, under `Platform/Windows`), startup and resources. See ADR 0006 and DESIGN.md.
+- **ClipShelf.Desktop** (net10.0): Avalonia views, the platform implementations of the Presentation interfaces (`Platform/Windows` and `Platform/Linux`, chosen at startup in `Hosting/ServiceRegistration.cs`), startup and resources. See ADR 0006, ADR 0007 and DESIGN.md.
 
 ## Startup flow
 
-Settings, culture, logging, single instance (named pipe; a second launch sends `--toggle` or `--history` and exits), host, backup and migrate, startup registration and saved shortcut applied, tray icon and clipboard watcher (no window opens at startup). Pages load their own data when navigated to.
+Settings, culture, logging, single instance (named pipe, plus a lock file off Windows; a second launch sends `--toggle` or `--history` and exits), host, backup and migrate, startup registration and saved shortcut applied, tray icon and clipboard watcher (no window opens at startup, except History on a desktop with no tray). Pages load their own data when navigated to.
 
 ## Data flow
 
-ViewModel, repository (Task.Run + Dapper), SQLite (SQLCipher-encrypted; the key is protected with Windows DPAPI). Writes send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
+ViewModel, repository (Task.Run + Dapper), SQLite (SQLCipher-encrypted; the key is protected with Windows DPAPI, or kept in the Secret Service keyring on Linux). Writes send `DataChanged`; open pages reload. The clipboard panel refreshes quietly after appearing and reconciles rows in place to avoid a loading flash or full-list redraw. Retention is enforced on launch, after each capture, and whenever the setting changes.
 
 ## Loading states
 
@@ -30,10 +30,11 @@ No app-level cache yet: the history is small, repositories read SQLite directly,
 | Feature | Folder | Notes |
 |---|---|---|
 | Clipboard history storage | src/ClipShelf.Data/Repositories/ClipRepository.cs | Text clips in SQLite; upsert by SHA-256 hash; keyset paging, search, pin, prune |
-| Clipboard capture | src/ClipShelf.Desktop/Platform/Windows/ClipboardService.cs | Win32 clipboard listener; ignores the app's own writes; stores text and images with the source app name |
+| Clipboard capture | src/ClipShelf.Desktop/Platform/ClipboardService.cs | Shared capture rules over a per-OS backend (`Windows/Win32ClipboardBackend.cs`, `Linux/X11ClipboardBackend.cs`); ignores the app's own writes; stores text and images with the source app name |
 | Tray icon and lifetime | src/ClipShelf.Desktop/Shell/AppShellService.cs | Avalonia tray icon and menu, click and double-click; the hotkey; closing a window hides it until the user exits |
 | Clipboard history panel | src/ClipShelf.Desktop/Shell/FlyoutWindow.axaml | Flyout next to the pointer (placement in Presentation `Platform/PanelPlacement.cs`); the hotkey or a tray click toggles it; search, pin, delete, clear, paste on select; history rows update in place |
 | App shell | src/ClipShelf.Desktop/Shell/MainWindow.axaml | Content runs into the title bar; a compact rail switches History and Settings; closing only hides it |
 | History page | src/ClipShelf.Desktop/Features/HistoryPage.axaml | Full list grouped into Pinned and Recent, search, category filter, clip count, clear all with a confirmation |
 | Settings page | src/ClipShelf.Desktop/Features/SettingsPage.axaml | Appearance, tray, behavior, history, export, categories and updates, with a search box in the title bar |
+| Linux platform | src/ClipShelf.Desktop/Platform/Linux | One X11 connection on its own thread (XFixes, key grabs, XTest), libsecret key store, XDG autostart, SIGTERM session end; Wayland sessions run through XWayland with copy-only paste (ADR 0007) |
 | Dialogs | src/ClipShelf.Desktop/Controls/InlineDialog.axaml | Dialogs drawn inside their window (the flyout must keep focus); password prompts in `Features/PasswordPrompt.cs` |
