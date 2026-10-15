@@ -9,8 +9,9 @@ public static class ClipText
     // Very large pastes (for example a whole document) are ignored rather than bloat the database.
     public const int MaxLength = 100_000;
 
+    // A NUL marks binary data offered as text (WSLg's bridge sends bitmaps that way); real text has none.
     public static bool IsUsable(string? text) =>
-        !string.IsNullOrWhiteSpace(text) && text.Length <= MaxLength;
+        !string.IsNullOrWhiteSpace(text) && text.Length <= MaxLength && !text.Contains('\0');
 
     public static string Hash(string text) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text.ReplaceLineEndings("\n").Trim())));
