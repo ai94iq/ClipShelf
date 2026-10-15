@@ -47,29 +47,6 @@ public sealed class DateFormatterTests
     }
 
     [Fact]
-    public void Configure_leaves_the_cultures_calendar_alone()
-    {
-        var culture = CultureInfo.CurrentCulture;
-        var uiCulture = CultureInfo.CurrentUICulture;
-        var defaultCulture = CultureInfo.DefaultThreadCurrentCulture;
-        var defaultUiCulture = CultureInfo.DefaultThreadCurrentUICulture;
-        try
-        {
-            Culture.Configure(new AppSettings { Language = "ar-SA" });
-
-            // The OS data picks the default: Umm al-Qura on Windows (NLS), Gregorian on Linux (ICU).
-            Assert.IsType(new CultureInfo("ar-SA").Calendar.GetType(), CultureInfo.CurrentCulture.DateTimeFormat.Calendar);
-        }
-        finally
-        {
-            CultureInfo.CurrentCulture = culture;
-            CultureInfo.CurrentUICulture = uiCulture;
-            CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
-            CultureInfo.DefaultThreadCurrentUICulture = defaultUiCulture;
-        }
-    }
-
-    [Fact]
     public void Approximate_years_follow_the_culture_calendar_too()
     {
         var original = CultureInfo.CurrentCulture;
@@ -94,5 +71,37 @@ public sealed class DateFormatterTests
         var culture = new CultureInfo("ar-SA");
         culture.DateTimeFormat.Calendar = new UmAlQuraCalendar();
         return culture;
+    }
+}
+
+// Culture.Configure sets the process-wide default culture, which every thread without its own
+// culture reads; run in parallel, other tests (the settings search) would see Arabic strings.
+[CollectionDefinition(nameof(ProcessCulture), DisableParallelization = true)]
+public sealed class ProcessCulture;
+
+[Collection(nameof(ProcessCulture))]
+public sealed class CultureConfigureTests
+{
+    [Fact]
+    public void Configure_leaves_the_cultures_calendar_alone()
+    {
+        var culture = CultureInfo.CurrentCulture;
+        var uiCulture = CultureInfo.CurrentUICulture;
+        var defaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+        var defaultUiCulture = CultureInfo.DefaultThreadCurrentUICulture;
+        try
+        {
+            Culture.Configure(new AppSettings { Language = "ar-SA" });
+
+            // The OS data picks the default: Umm al-Qura on Windows (NLS), Gregorian on Linux (ICU).
+            Assert.IsType(new CultureInfo("ar-SA").Calendar.GetType(), CultureInfo.CurrentCulture.DateTimeFormat.Calendar);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = uiCulture;
+            CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = defaultUiCulture;
+        }
     }
 }

@@ -59,6 +59,7 @@ jobs:
           xvfb-run -a ./test.sh > test.log 2>&1 && exit 0
           tail -5 test.log
           # The failed tests, or the end of the log when the run died before reporting any.
+          sed -i 's/\x1b\[[0-9;]*m//g' test.log     # color codes would hide line starts from grep
           { grep -E -A8 '^failed' test.log || tail -40 test.log; } | head -80 > failures.txt
           details=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' failures.txt)
           echo "::error title=Test failures::$details"
