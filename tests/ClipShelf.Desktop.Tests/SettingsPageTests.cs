@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClipShelf.Core.Models;
 using ClipShelf.Presentation.Hosting;
 using ClipShelf.Desktop.Features;
@@ -149,5 +150,46 @@ public sealed class SettingsPageTests
 
         Assert.Single(kit.ViewModel.CategoryRows);
         Assert.False(kit.Page.FindControl<Control>("CategoriesEmpty")!.IsVisible);
+    });
+
+    // Seen on Windows: Set password, Remove, Check for updates, Export and the category actions
+    // were taller than their rows with the label off center; Export stood taller than its combo.
+    [Fact]
+    public Task Settings_buttons_fit_their_rows() => Ui.Run(async () =>
+    {
+        var kit = new SettingsKit(passwordSet: true);
+        kit.StoredCategories.Add(new Category(1, "Work"));
+        var window = Host(kit.Page);
+        await kit.Page.LoadAsync();
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+
+        var named = new[] { "PasswordButton", "RemovePasswordButton", "CheckUpdatesButton", "ExportButton" }
+            .Select(n => kit.Page.FindControl<Button>(n)!);
+        var rename = kit.Page.GetVisualDescendants().OfType<Button>().First(b => b.Classes.Contains("rename"));
+        foreach (var button in named.Append(rename))
+        {
+            Assert.Equal(32, button.Bounds.Height);
+            Assert.Equal(Avalonia.Layout.VerticalAlignment.Center, button.VerticalContentAlignment);
+        }
+        var export = kit.Page.FindControl<Button>("ExportButton")!;
+        var format = ((Panel)export.Parent!).Children.OfType<ComboBox>().Single();
+        Assert.Equal(export.Bounds.Height, format.Bounds.Height);
+    });
+
+    [Fact]
+    public Task A_successful_export_says_so_in_green() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit();
+        Host(kit.Page);
+
+        kit.ViewModel.ExportStatus = "Exported 3 clips";
+        Dispatcher.UIThread.RunJobs();
+
+        var status = kit.Page.FindControl<TextBlock>("ExportStatus")!;
+        Assert.True(status.IsVisible);
+        Avalonia.Application.Current!.TryGetResource("ClipShelfSuccessBrush", status.ActualThemeVariant, out var green);
+        Assert.NotNull(green);
+        Assert.Same(green, status.Foreground);
     });
 }

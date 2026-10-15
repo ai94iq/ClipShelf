@@ -38,8 +38,16 @@
       <Setter Property="Height" Value="1" />
       <Setter Property="Background" Value="{DynamicResource SystemControlTransientBorderBrush}" />
     </Style>
+    <!-- Every control in a card row is 32 high with its label centered (buttons stood 36 high
+         with the label off center, taller than the combo beside them). -->
     <Style Selector="ComboBox, NumericUpDown, DropDownButton">
-      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="Height" Value="32" />
+    </Style>
+    <Style Selector="controls|SettingsCard Button">
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="ComboBox">
       <Setter Property="MinWidth" Value="240" />
@@ -49,6 +57,9 @@
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="Margin" Value="16,0,16,12" />
       <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
+    </Style>
+    <Style Selector="TextBlock.status.success">
+      <Setter Property="Foreground" Value="{DynamicResource ClipShelfSuccessBrush}" />
     </Style>
     <Style Selector="TextBlock.status.error">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
@@ -206,7 +217,7 @@
             </controls:SettingsCard>
             <Border Classes="divider" />
             <controls:SettingsCard x:Name="HotkeyCard" Header="{l:Tr Key=Settings_Hotkey}" Description="{l:Tr Key=Settings_HotkeyHint}">
-              <Button x:Name="HotkeyButton" MinWidth="160" MinHeight="36" HorizontalContentAlignment="Center"
+              <Button x:Name="HotkeyButton" MinWidth="160" HorizontalContentAlignment="Center"
                       AutomationProperties.Name="{l:Tr Key=Settings_Hotkey}">
                 <Panel>
                   <TextBlock x:Name="HotkeyText" Text="{Binding HotkeyDisplay}" />
@@ -300,14 +311,14 @@
                           ItemsSource="{Binding ExportFormatOptions}"
                           SelectedItem="{Binding SelectedExportFormat}"
                           DisplayMemberBinding="{ReflectionBinding Label}" />
-                <Button x:Name="ExportButton" Classes="accent" MinHeight="36"
+                <Button x:Name="ExportButton" Classes="accent"
                         Content="{l:Tr Key=Common_Export}"
                         AutomationProperties.Name="{l:Tr Key=Common_Export}"
                         IsEnabled="{Binding CanExport}"
                         Click="OnExportClick" />
               </StackPanel>
             </controls:SettingsCard>
-            <TextBlock x:Name="ExportStatus" Classes="status" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportStatus}" />
+            <TextBlock x:Name="ExportStatus" Classes="status success" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportStatus}" />
             <TextBlock x:Name="ExportError" Classes="status error" Text="{Binding ExportStatus}" IsVisible="{Binding ShowExportError}" />
           </StackPanel>
         </Border>
@@ -320,9 +331,9 @@
           <StackPanel>
             <controls:SettingsCard Header="{l:Tr Key=Settings_LockPassword}" Description="{l:Tr Key=Settings_LockPasswordHint}">
               <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button x:Name="PasswordButton" MinHeight="36" Content="{Binding PasswordButtonText}"
+                <Button x:Name="PasswordButton" Content="{Binding PasswordButtonText}"
                         Click="OnPasswordClick" />
-                <Button x:Name="RemovePasswordButton" MinHeight="36" Content="{l:Tr Key=Common_Remove}"
+                <Button x:Name="RemovePasswordButton" Content="{l:Tr Key=Common_Remove}"
                         IsVisible="{Binding HasLockPassword}" Click="OnRemovePasswordClick" />
               </StackPanel>
             </controls:SettingsCard>
@@ -350,15 +361,15 @@
                     <Border Classes="divider" />
                     <controls:SettingsCard Header="{Binding Name}">
                       <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="lock" MinHeight="36" Content="{l:Tr Key=Settings_LockCategory}"
+                        <Button Classes="lock" Content="{l:Tr Key=Settings_LockCategory}"
                                 IsVisible="{Binding ShowLock}" Click="OnCategoryActionClick" />
-                        <Button Classes="unlock" MinHeight="36" Content="{l:Tr Key=Settings_UnlockCategory}"
+                        <Button Classes="unlock" Content="{l:Tr Key=Settings_UnlockCategory}"
                                 IsVisible="{Binding ShowUnlock}" Click="OnCategoryActionClick" />
-                        <Button Classes="locknow" MinHeight="36" Content="{l:Tr Key=Settings_LockNow}"
+                        <Button Classes="locknow" Content="{l:Tr Key=Settings_LockNow}"
                                 IsVisible="{Binding ShowLockNow}" Click="OnCategoryActionClick" />
-                        <Button Classes="rename" MinHeight="36" Content="{l:Tr Key=Settings_RenameCategory}"
+                        <Button Classes="rename" Content="{l:Tr Key=Settings_RenameCategory}"
                                 Click="OnCategoryActionClick" />
-                        <Button Classes="delete" MinHeight="36" Content="{l:Tr Key=Common_Delete}"
+                        <Button Classes="delete" Content="{l:Tr Key=Common_Delete}"
                                 Click="OnCategoryActionClick" />
                       </StackPanel>
                     </controls:SettingsCard>
@@ -376,7 +387,7 @@
         <Border Classes="group">
           <StackPanel>
             <controls:SettingsCard Header="{l:Tr Key=Settings_CheckUpdates}" Description="{l:Tr Key=Settings_CheckUpdatesHint}">
-              <Button x:Name="CheckUpdatesButton" MinHeight="36"
+              <Button x:Name="CheckUpdatesButton"
                       Content="{l:Tr Key=Settings_CheckUpdatesButton}"
                       IsEnabled="{Binding CanCheckUpdates}" Click="OnCheckUpdatesClick" />
             </controls:SettingsCard>
