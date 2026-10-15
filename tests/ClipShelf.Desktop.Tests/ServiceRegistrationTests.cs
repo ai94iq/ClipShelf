@@ -24,7 +24,7 @@ public sealed class ServiceRegistrationTests
     [InlineData(typeof(IThemeService))]
     public void The_head_registers_every_platform_service(Type service)
     {
-        Assert.SkipUnless(OperatingSystem.IsWindows(), "Windows implementations");
+        Assert.SkipUnless(OperatingSystem.IsWindows() || OperatingSystem.IsLinux(), "Windows and Linux implementations");
 
         var services = new ServiceCollection().AddPlatformServices();
 

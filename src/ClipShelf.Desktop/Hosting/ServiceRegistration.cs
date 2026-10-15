@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using ClipShelf.Desktop.Features;
 using ClipShelf.Desktop.Platform;
+using ClipShelf.Desktop.Platform.Linux;
 using ClipShelf.Desktop.Platform.Windows;
 using ClipShelf.Desktop.Shell;
 
@@ -20,9 +21,32 @@ public static class ServiceRegistration
         services.AddSingleton<IClipboardWriter>(sp => sp.GetRequiredService<ClipboardService>());
         services.AddSingleton<IClipboardMonitor>(sp => sp.GetRequiredService<ClipboardService>());
 
-        if (!OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException("ClipShelf runs on Windows until the Linux phase.");
-        return services.AddWindows();
+        if (OperatingSystem.IsWindows()) return services.AddWindows();
+        if (OperatingSystem.IsLinux()) return services.AddLinux();
+        throw new PlatformNotSupportedException("ClipShelf runs on Windows and Linux.");
+    }
+
+    // X11 (and XWayland); native Wayland sessions get their own services later.
+    [SupportedOSPlatform("linux")]
+    private static IServiceCollection AddLinux(this IServiceCollection services)
+    {
+        services.AddSingleton<ISecretKeyring, LibSecretKeyring>();
+        services.AddSingleton<IKeyStore, LinuxKeyStore>();
+        services.AddSingleton<X11Connection>();
+        services.AddSingleton<IClipboardBackend>(sp => new X11ClipboardBackend(
+            sp.GetRequiredService<X11Connection>(),
+            sp.GetRequiredService<IUiDispatcher>(),
+            () => sp.GetRequiredService<FlyoutWindow>().Clipboard));
+        services.AddSingleton<IGlobalHotkey, X11GlobalHotkey>();
+        services.AddSingleton<X11Desktop>();
+        services.AddSingleton<IPasteBack>(sp => sp.GetRequiredService<X11Desktop>());
+        services.AddSingleton<IForegroundApp>(sp => sp.GetRequiredService<X11Desktop>());
+        services.AddSingleton<IFlyoutPlatform>(sp => sp.GetRequiredService<X11Desktop>());
+        services.AddSingleton<IStartupRegistration>(sp => new AutostartRegistration(
+            sp.GetRequiredService<ILogger<AutostartRegistration>>()));
+        services.AddSingleton<ISystemTheme, PlatformSystemTheme>();
+        services.AddSingleton<ISessionEnd, LinuxSessionEnd>();
+        return services;
     }
 
     [SupportedOSPlatform("windows")]
