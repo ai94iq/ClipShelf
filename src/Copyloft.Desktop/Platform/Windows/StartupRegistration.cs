@@ -23,15 +23,23 @@ public sealed class StartupRegistration(ILogger<StartupRegistration> log) : ISta
                 return;
             }
 
-            key.DeleteValue(LegacyValueName, throwOnMissingValue: false);
-            if (enabled)
-                key.SetValue(ValueName, $"\"{Environment.ProcessPath}\"");
-            else
-                key.DeleteValue(ValueName, throwOnMissingValue: false);
+            Apply(enabled, Environment.ProcessPath,
+                (name, value) => key.SetValue(name, value),
+                name => key.DeleteValue(name, throwOnMissingValue: false));
         }
         catch (Exception ex)
         {
             log.LogError(ex, "Applying the startup setting failed");
         }
+    }
+
+    // The Run key's values, apart from the registry so tests can check them.
+    internal static void Apply(bool enabled, string? executable, Action<string, string> set, Action<string> delete)
+    {
+        delete(LegacyValueName);
+        if (enabled)
+            set(ValueName, $"\"{executable}\"");
+        else
+            delete(ValueName);
     }
 }
