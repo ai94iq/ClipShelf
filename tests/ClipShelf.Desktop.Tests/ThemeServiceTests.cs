@@ -81,7 +81,8 @@ public sealed class ThemeServiceTests
         Assert.All(ThemeService.OnAccentKeys, key => Assert.False(Application.Current!.Resources.ContainsKey(key)));
     });
 
-    // A pastel accent is too light for text on a light surface; Light uses its darker shade.
+    // A pastel accent is too light for text on a light surface, and a deep one too dark on a dark
+    // surface: Light uses the Dark2 shade, Dark the Light3 shade (WinUI's AccentTextFillColorPrimary).
     [Fact]
     public Task Accent_text_on_light_surfaces_uses_the_darker_shade() => Ui.Run(() =>
     {
@@ -92,6 +93,6 @@ public sealed class ThemeServiceTests
         Application.Current!.TryGetResource("SystemControlForegroundAccentBrush", ThemeVariant.Dark, out var dark);
 
         Assert.Equal(Color.Parse(shades.Dark2), Assert.IsType<ISolidColorBrush>(light, exactMatch: false).Color);
-        Assert.Equal(Color.Parse(shades.Base), Assert.IsType<ISolidColorBrush>(dark, exactMatch: false).Color);
+        Assert.Equal(Color.Parse(shades.Light3), Assert.IsType<ISolidColorBrush>(dark, exactMatch: false).Color);
     });
 }

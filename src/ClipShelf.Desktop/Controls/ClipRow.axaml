@@ -16,9 +16,9 @@
       <Setter Property="Focusable" Value="False" />
     </Style>
     <!-- AppIcon styles as PathIcon (its style key), so selectors name PathIcon. Row actions are
-         secondary: small gray glyphs, so the clip text leads. -->
+         small accent glyphs (the owner's call), kept 12 px clear of the clip text. -->
     <Style Selector="Button.row PathIcon">
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundAccentBrush}" />
       <Setter Property="Width" Value="16" />
       <Setter Property="Height" Value="16" />
     </Style>
@@ -29,7 +29,7 @@
     <CheckBox IsVisible="{Binding ShowSelection}" IsChecked="{Binding IsSelected}"
               IsHitTestVisible="False" Focusable="False" MinWidth="0" Margin="0,0,6,0"
               VerticalAlignment="Center" />
-    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
       <Image IsVisible="{Binding HasImage}"
              Source="{Binding ThumbnailBytes, Converter={x:Static controls:BytesToBitmapConverter.Instance}}"
              MaxWidth="160" MaxHeight="72" Stretch="Uniform"

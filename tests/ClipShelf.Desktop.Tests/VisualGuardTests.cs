@@ -48,8 +48,8 @@ public sealed class VisualGuardTests
         var icon = kit.Window.FindControl<Button>("OpenHistoryButton")!.GetVisualDescendants().OfType<AppIcon>().Single();
 
         Assert.Equal((16, 16), (icon.Bounds.Width, icon.Bounds.Height));
-        Avalonia.Application.Current!.TryGetResource("SystemControlForegroundBaseMediumBrush", kit.Window.ActualThemeVariant, out var medium);
-        Assert.Same(medium, icon.Foreground);
+        Avalonia.Application.Current!.TryGetResource("SystemControlForegroundAccentBrush", kit.Window.ActualThemeVariant, out var accent);
+        Assert.Same(accent, icon.Foreground);     // action glyphs wear the accent, as the row actions do
     });
 
     [Fact]
@@ -60,23 +60,6 @@ public sealed class VisualGuardTests
         var icon = window.FindControl<RadioButton>("HistoryButton")!.GetVisualDescendants().OfType<AppIcon>().Single();
 
         Assert.Equal((20, 20), (icon.Bounds.Width, icon.Bounds.Height));
-    });
-
-    // Main's row actions are secondary: gray glyphs, so the clip text leads.
-    [Fact]
-    public Task Row_action_icons_are_secondary_gray() => Ui.Run(async () =>
-    {
-        var kit = new ViewModelKit();
-        kit.StoreClip("one");
-        var page = new HistoryPage(kit.ViewModel);
-        Laid(new Window { Content = page, Width = 800, Height = 600 });
-        await page.LoadAsync();
-        Dispatcher.UIThread.RunJobs();
-        Avalonia.Application.Current!.TryGetResource("SystemControlForegroundBaseMediumBrush", page.ActualThemeVariant, out var medium);
-
-        var icon = page.GetVisualDescendants().OfType<AppIcon>().First(i => i.FindAncestorOfType<ClipRow>() is not null);
-
-        Assert.Same(medium, icon.Foreground);
     });
 
     [Fact]

@@ -80,7 +80,8 @@
             BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1"
             BoxShadow="{DynamicResource ClipShelfCardShadow}"
             IsVisible="{Binding HasItems}">
-      <ListBox x:Name="ClipList" Background="Transparent" SelectionMode="Single">
+      <!-- The end padding keeps the overlay scroll bar off the row actions. -->
+      <ListBox x:Name="ClipList" Background="Transparent" SelectionMode="Single" Padding="0,0,12,0">
         <ListBox.DataTemplates>
           <DataTemplate x:DataType="vm:ClipGroup">
             <!-- Main's group header: the title ruled off from its rows. -->
