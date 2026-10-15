@@ -72,7 +72,8 @@
     <Grid x:Name="TitleBar" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto" Background="Transparent"
           chrome:WindowDecorationProperties.ElementRole="TitleBar">
       <StackPanel x:Name="AppTitle" Orientation="Horizontal" Spacing="12" Margin="16,0,0,0" VerticalAlignment="Center">
-        <Image x:Name="TitleIcon" Source="/Assets/app.ico" Width="16" Height="16" />
+        <!-- app.ico decodes at its largest frame; an unfiltered downscale to 16 px looked pixelated. -->
+        <Image x:Name="TitleIcon" Source="/Assets/app.ico" Width="16" Height="16" RenderOptions.BitmapInterpolationMode="HighQuality" />
         <TextBlock Text="{l:Tr Key=App_Name}" FontSize="12" VerticalAlignment="Center" />
       </StackPanel>
       <!-- Spans the bar so it centers on the window; the side margins keep it off the title and the

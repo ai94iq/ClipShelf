@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Chrome;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClipShelf.Desktop.Shell;
@@ -64,6 +65,18 @@ public sealed class MainChromeTests
         var left = search.TranslatePoint(new Avalonia.Point(0, 0), window)!.Value.X;
         Assert.Equal(window.Bounds.Width / 2, left + search.Bounds.Width / 2, 1.0);
         Assert.Equal(360, search.Bounds.Width);
+    });
+
+    // Seen on Windows: the title icon came from app.ico's first frame (16 px) and was stretched
+    // on a scaled display. It needs pixels for 300% and a smooth downscale.
+    [Fact]
+    public Task The_title_icon_stays_sharp_on_scaled_displays() => Ui.Run(() =>
+    {
+        var icon = Shown().FindControl<Image>("TitleIcon")!;
+
+        var bitmap = Assert.IsAssignableFrom<Avalonia.Media.Imaging.Bitmap>(icon.Source);
+        Assert.True(bitmap.PixelSize.Width >= 48, $"title icon is {bitmap.PixelSize.Width} px");
+        Assert.Equal(Avalonia.Media.Imaging.BitmapInterpolationMode.HighQuality, RenderOptions.GetBitmapInterpolationMode(icon));
     });
 
     [Fact]
