@@ -15,3 +15,5 @@
 *.msi   binary
 .githooks/* text eol=lf
 *.sh    text eol=lf
+*.desktop text eol=lf
+*.spec  text eol=lf
