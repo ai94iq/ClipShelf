@@ -2,6 +2,7 @@ using System.Runtime.Versioning;
 using ClipShelf.Desktop.Features;
 using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Platform.Linux;
+using ClipShelf.Desktop.Platform.MacOS;
 using ClipShelf.Desktop.Platform.Windows;
 using ClipShelf.Desktop.Shell;
 
@@ -9,8 +10,7 @@ namespace ClipShelf.Desktop.Hosting;
 
 public static class ServiceRegistration
 {
-    // The OS implementations of the presentation's platform interfaces. Windows only for now;
-    // Linux and macOS register theirs here after the swap.
+    // The OS implementations of the presentation's platform interfaces.
     public static IServiceCollection AddPlatformServices(this IServiceCollection services)
     {
         services.AddSingleton<IUiDispatcher, AvaloniaUiDispatcher>();
@@ -23,7 +23,8 @@ public static class ServiceRegistration
 
         if (OperatingSystem.IsWindows()) return services.AddWindows();
         if (OperatingSystem.IsLinux()) return services.AddLinux();
-        throw new PlatformNotSupportedException("ClipShelf runs on Windows and Linux.");
+        if (OperatingSystem.IsMacOS()) return services.AddMacOS();
+        throw new PlatformNotSupportedException("ClipShelf runs on Windows, Linux and macOS.");
     }
 
     // X11 (and XWayland); native Wayland sessions get their own services later.
@@ -52,6 +53,30 @@ public static class ServiceRegistration
         return services;
     }
 
+    // Avalonia's native macOS backend plus Carbon, CoreGraphics and the Keychain.
+    [SupportedOSPlatform("macos")]
+    private static IServiceCollection AddMacOS(this IServiceCollection services)
+    {
+        services.AddSingleton<ISecretKeyring, MacKeychain>();
+        services.AddSingleton<IKeyStore, KeyringKeyStore>();
+        services.AddSingleton<PasteboardWatcher>();
+        services.AddSingleton<IClipboardBackend>(sp =>
+        {
+            var backend = new AvaloniaClipboardBackend(() => sp.GetRequiredService<FlyoutWindow>().Clipboard, "public.png");
+            sp.GetRequiredService<PasteboardWatcher>().Changed += backend.NotifyChanged;
+            return backend;
+        });
+        services.AddSingleton<IGlobalHotkey, MacGlobalHotkey>();
+        services.AddSingleton<MacDesktop>();
+        services.AddSingleton<IPasteBack>(sp => sp.GetRequiredService<MacDesktop>());
+        services.AddSingleton<IForegroundApp>(sp => sp.GetRequiredService<MacDesktop>());
+        services.AddSingleton<IFlyoutPlatform>(sp => sp.GetRequiredService<MacDesktop>());
+        services.AddSingleton<IStartupRegistration>(sp => new LaunchAgentRegistration(
+            sp.GetRequiredService<ILogger<LaunchAgentRegistration>>()));
+        services.AddSingleton<ISystemTheme, PlatformSystemTheme>();
+        services.AddSingleton<ISessionEnd, PosixSessionEnd>();
+        return services;
+    }
     [SupportedOSPlatform("windows")]
     private static IServiceCollection AddWindows(this IServiceCollection services)
     {
