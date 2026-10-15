@@ -90,6 +90,8 @@ internal static class MacNative
     [DllImport(CoreGraphics)] internal static extern IntPtr CGEventCreateKeyboardEvent(IntPtr source, ushort keyCode, [MarshalAs(UnmanagedType.I1)] bool keyDown);
     [DllImport(CoreGraphics)] internal static extern void CGEventSetFlags(IntPtr evt, ulong flags);
     [DllImport(CoreGraphics)] internal static extern void CGEventPost(uint tap, IntPtr evt);
+    [DllImport(CoreGraphics)] internal static extern uint CGMainDisplayID();
+    [DllImport(CoreGraphics)] internal static extern int CGDisplayIsAsleep(uint display);   // boolean_t
 
     [DllImport(ApplicationServices)]
     [return: MarshalAs(UnmanagedType.I1)]

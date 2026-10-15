@@ -14,6 +14,12 @@ internal static class Program
         var settings = new FileSettingsStore().Load();
         Culture.Configure(settings);             // before any window or Tr call
         AppLogging.Configure();
+        // A crash otherwise ends the process before the async log sink writes anything.
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception");
+            Log.CloseAndFlush();
+        };
 
         var command = StartupCommand.Parse(Environment.GetCommandLineArgs());
         using var singleInstance = new SingleInstanceService(SingleInstanceService.DefaultName);
@@ -29,6 +35,7 @@ internal static class Program
         }
 
         App.Launch = new LaunchContext(settings, singleInstance, command);
+        if (OperatingSystem.IsMacOS()) WaitForDisplay();
         try
         {
             // Tray-first: closing every window must not end the process, only Exit does.
@@ -39,6 +46,17 @@ internal static class Program
             if (App.RestartOnExit) StartNewInstance(singleInstance);
             Log.CloseAndFlush();
         }
+    }
+
+    // Avalonia's render timer needs an awake display: started while it slept (a locked VM, a
+    // launch over SSH) the app aborted with "not able to start the RenderTimer" (CVReturn -6661).
+    [System.Runtime.Versioning.SupportedOSPlatform("macos")]
+    private static void WaitForDisplay()
+    {
+        if (Platform.MacOS.MacNative.CGDisplayIsAsleep(Platform.MacOS.MacNative.CGMainDisplayID()) == 0) return;
+        Log.Information("The display is asleep; waiting for it before starting the UI");
+        while (Platform.MacOS.MacNative.CGDisplayIsAsleep(Platform.MacOS.MacNative.CGMainDisplayID()) != 0)
+            Thread.Sleep(TimeSpan.FromSeconds(2));
     }
 
     // The pipe goes first, or the new process would find this one and hand itself over.
