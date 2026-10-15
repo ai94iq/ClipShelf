@@ -1,6 +1,6 @@
 # Database
 
-File: `data.db` in the app data folder (`%LOCALAPPDATA%\ClipShelf` on Windows, `~/.local/share/ClipShelf` on Linux, `~/Library/Application Support/ClipShelf` on macOS). WAL mode. Per-connection settings: synchronous=NORMAL, busy_timeout=5000, cache_size=-20000, foreign_keys=ON.
+File: `data.db` in the app data folder (`%LOCALAPPDATA%\Copyloft` on Windows, `~/.local/share/Copyloft` on Linux, `~/Library/Application Support/Copyloft` on macOS). WAL mode. Per-connection settings: synchronous=NORMAL, busy_timeout=5000, cache_size=-20000, foreign_keys=ON.
 
 ## Encryption
 

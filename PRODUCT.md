@@ -33,7 +33,7 @@ Native desktop application on Windows, Linux and macOS, one visual identity acro
 
 ## Brand Commitments
 
-- The name Copyloft (formerly ClipShelf, renamed because other clipboard apps use that name) stays everywhere users look. The old name survives only in identifiers on disk (exe and bundle names, data folder, keychain entry, winget id), so existing installs keep their history.
+- The name Copyloft stays everywhere. It was ClipShelf up to 0.4.1, renamed because other clipboard apps use that name; the app moves an old ClipShelf install over on its first start.
 - Quiet and out of the way: nothing opens unless asked, no nagging, no interruptions. The app earns attention only when invoked.
 - MIT license.
 

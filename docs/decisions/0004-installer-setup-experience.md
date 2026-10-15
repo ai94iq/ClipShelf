@@ -13,9 +13,9 @@ visible installation folder, a desktop shortcut and the option to start the app 
 ## Decision
 
 Keep the per-machine WiX v6 MSI and the `WixUI_InstallDir` dialog set, and customise it:
-`en-US` culture and language 1033, the MIT license in `License.rtf`, ClipShelf-branded dialog and
+`en-US` culture and language 1033, the MIT license in `License.rtf`, Copyloft-branded dialog and
 banner bitmaps (icon taken from the 256 px frame), an announced advertised shortcut in the exe's
-component, a desktop shortcut, and a "Run ClipShelf" checkbox on the finish page that launches the
+component, a desktop shortcut, and a "Run Copyloft" checkbox on the finish page that launches the
 app through a one-line custom action. `MajorUpgrade` allows same-version upgrades, so installing a
 rebuilt MSI replaces the previous installation instead of adding another entry.
 

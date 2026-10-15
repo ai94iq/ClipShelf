@@ -13,7 +13,7 @@ sign-out without changing the storage engine.
 ## Decision
 
 Use `SQLitePCLRaw.bundle_e_sqlcipher` with `Microsoft.Data.Sqlite.Core`, so every database file is
-SQLCipher-encrypted with a 32-byte random key. The key is stored in `%LOCALAPPDATA%\ClipShelf\key.bin`,
+SQLCipher-encrypted with a 32-byte random key. The key is stored in `%LOCALAPPDATA%\Copyloft\key.bin`,
 protected with Windows DPAPI (`DataProtectionScope.CurrentUser`), and passed to the factory through
 `DataOptions.EncryptionKey`. An existing plaintext `data.db` is re-written through
 `sqlcipher_export()` on the next launch, keeping the original until the export succeeds.

@@ -105,23 +105,23 @@ Load-tested through the real encrypted storage pipeline; details and numbers in 
 
 Download from the [releases](https://github.com/ai94iq/Copyloft/releases):
 
-- Debian and Ubuntu: `sudo apt install ./clipshelf_<version>_amd64.deb`
-- Fedora and openSUSE: `sudo dnf install ./clipshelf-<version>-1.x86_64.rpm`
-- Anything else: unpack `clipshelf-<version>-linux-x64.tar.gz` and run `ClipShelf` from it
+- Debian and Ubuntu: `sudo apt install ./copyloft_<version>_amd64.deb`
+- Fedora and openSUSE: `sudo dnf install ./copyloft-<version>-1.x86_64.rpm`
+- Anything else: unpack `copyloft-<version>-linux-x64.tar.gz` and run `Copyloft` from it
 
-The packages install to `/opt/clipshelf` with a `clipshelf` command and a menu entry.
+The packages install to `/opt/copyloft` with a `copyloft` command and a menu entry.
 
 Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and [ADR 0007](docs/decisions/0007-linux-platform.md)):
 
-- Wayland sessions: the shortcut only works while Copyloft has focus, so bind a system shortcut to `clipshelf --toggle`; a picked clip is copied and you press Ctrl+V yourself.
+- Wayland sessions: the shortcut only works while Copyloft has focus, so bind a system shortcut to `copyloft --toggle`; a picked clip is copied and you press Ctrl+V yourself.
 - GNOME shows the tray icon only with the AppIndicator extension; without a tray, History opens at launch.
 - Without a keyring service the database key is kept in a file only your user can read.
 
 ## Installing on macOS
 
-Download `ClipShelf-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/Copyloft/releases) and drag Copyloft to Applications.
+Download `Copyloft-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/Copyloft/releases) and drag Copyloft to Applications.
 
-The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for Copyloft, or run `xattr -dr com.apple.quarantine /Applications/ClipShelf.app` once.
+The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for Copyloft, or run `xattr -dr com.apple.quarantine /Applications/Copyloft.app` once.
 
 Copyloft lives in the menu bar. While its History or Settings window is open it also shows its own menu next to the Apple menu and a Dock icon, like any app. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V.
 
@@ -132,27 +132,27 @@ After an update macOS asks again for the login keychain password and for the Acc
 | Script | Purpose |
 |---|---|
 | `run.bat` | Run the app in Debug (it starts in the notification area) |
-| `build.bat` | Publish `ClipShelf.exe` to `artifacts\publish\win-x64` |
+| `build.bat` | Publish `Copyloft.exe` to `artifacts\publish\win-x64` |
 | `test.bat` | Run all tests |
 | `package.bat` | Test, build and create the MSI in `artifacts\installer` |
 | `clean.bat` | Remove all build output |
 | `build.sh`, `run.sh`, `clean.sh` | Linux and macOS twins of the .bat scripts (`build.sh` publishes for this machine's OS and CPU) |
 | `test.sh` | Linux and macOS: run all tests (the X11 tests need a display; CI uses `xvfb-run`) |
 | `package.sh` | Linux: tarball, `.deb` and `.rpm` in `artifacts/linux` (needs `dpkg-deb` and `rpmbuild`) |
-| `package-macos.sh` | macOS: `ClipShelf.app` and a `.dmg` per architecture in `artifacts/macos` |
+| `package-macos.sh` | macOS: `Copyloft.app` and a `.dmg` per architecture in `artifacts/macos` |
 
 Pass `--no-pause` to skip the final key press (used by automation).
 
-A second launch never starts a second copy: `ClipShelf.exe --toggle` (`clipshelf --toggle` on Linux) toggles the flyout in the running instance and `--history` opens its history window.
+A second launch never starts a second copy: `Copyloft.exe --toggle` (`copyloft --toggle` on Linux) toggles the flyout in the running instance and `--history` opens its history window.
 
 ## Project structure
 
 | Project | Responsibility |
 |---|---|
-| `src/ClipShelf.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows, Linux and macOS platform layers, and app startup |
-| `src/ClipShelf.Presentation` | View models, portable services and the platform interfaces (net10.0) |
-| `src/ClipShelf.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
-| `src/ClipShelf.Data` | SQLite + Dapper repositories and numbered SQL migrations |
+| `src/Copyloft.Desktop` | Avalonia 12 UI (Fluent theme), tray, clipboard flyout, the Windows, Linux and macOS platform layers, and app startup |
+| `src/Copyloft.Presentation` | View models, portable services and the platform interfaces (net10.0) |
+| `src/Copyloft.Core` | Domain models, interfaces, pure logic (no UI, no SQL) |
+| `src/Copyloft.Data` | SQLite + Dapper repositories and numbered SQL migrations |
 | `tests/*` | xUnit v3 tests per project |
 | `installer` | WiX v6 MSI |
 | `packaging/linux` | Desktop entry, icon and RPM spec for the Linux packages |
@@ -162,7 +162,7 @@ Details: [docs/architecture.md](docs/architecture.md), the storage in [docs/data
 
 ## Data locations
 
-All user data is in `%LOCALAPPDATA%\ClipShelf\` on Windows, `~/.local/share/ClipShelf/` on Linux and `~/Library/Application Support/ClipShelf/` on macOS:
+All user data is in `%LOCALAPPDATA%\Copyloft\` on Windows, `~/.local/share/Copyloft/` on Linux and `~/Library/Application Support/Copyloft/` on macOS (an install from before the rename keeps its data: the first start moves the old `ClipShelf` folder here):
 
 | Path | Contents |
 |---|---|
@@ -196,4 +196,4 @@ This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill),
 
 ## License
 
-MIT; see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/ClipShelf.Desktop/Assets/Fonts/OFL.txt`).
+MIT; see [LICENSE](LICENSE). Bundled fonts are under the SIL Open Font License (`src/Copyloft.Desktop/Assets/Fonts/OFL.txt`).

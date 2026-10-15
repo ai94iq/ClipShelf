@@ -9,7 +9,7 @@ older version. The flow:
 2. If the repository secret `WINGET_TOKEN` exists, it installs `wingetcreate` and opens a pull
    request against [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs).
 3. winget's validation runs on the pull request; once it is merged,
-   `winget install ai94iq.ClipShelf` works.
+   `winget install ai94iq.Copyloft` works.
 
 ## One-time setup
 
@@ -28,8 +28,8 @@ When the secret is not set (or the submission needs a retry):
 4. Submit, either with [wingetcreate](https://github.com/microsoft/winget-create):
 
    ```
-   wingetcreate submit --prtitle "New version: ai94iq.ClipShelf version X.Y.Z" --token <GitHub token> packaging\winget
+   wingetcreate submit --prtitle "New version: ai94iq.Copyloft version X.Y.Z" --token <GitHub token> packaging\winget
    ```
 
    or by hand: fork the repository, copy the three files into
-   `manifests/a/ai94iq/ClipShelf/<version>/` and open a pull request.
+   `manifests/a/ai94iq/Copyloft/<version>/` and open a pull request.

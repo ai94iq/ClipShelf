@@ -22,7 +22,7 @@ notarize with.
   window closes. The bundle sets no LSUIElement: with it, macOS ignored the policy switch.
 - Single instance: the socket file is a short hashed path, since macOS caps socket paths at 104
   characters and its per-user temp directory is long.
-- Packages: an ad-hoc-signed ClipShelf.app and a .dmg per architecture (arm64, x64), minimum
+- Packages: an ad-hoc-signed Copyloft.app and a .dmg per architecture (arm64, x64), minimum
   macOS 15 (the oldest the .NET 10 supported-OS list still supports).
 
 ## Consequences

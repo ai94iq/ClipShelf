@@ -4,7 +4,7 @@ Date: 2026-10-15
 Status: Accepted
 
 ## Context
-ClipShelf runs on Avalonia (ADR 0006), so Linux needs only the platform services: clipboard
+Copyloft runs on Avalonia (ADR 0006), so Linux needs only the platform services: clipboard
 watch, global hotkey, paste-back, the active app, the database key, autostart, session end and
 the tray. Linux desktops split into X11 and Wayland sessions, and Wayland has no shared protocol
 for a global hotkey, for sending keys to another app, or (on GNOME) for watching the clipboard.
@@ -17,7 +17,7 @@ Wayland:
   On Wayland the XWayland bridge mirrors Wayland-side copies to X (seen in WSLg); no separate
   `wl-paste` watcher. This settles the GNOME clipboard question in favor of the bridge.
 - Hotkey: XGrabKey on the root window. On Wayland it only fires while an X window has focus, so
-  Settings and the welcome window explain binding a system shortcut to `clipshelf --toggle`.
+  Settings and the welcome window explain binding a system shortcut to `copyloft --toggle`.
   The GlobalShortcuts portal is left for later.
 - Paste-back: XTest Ctrl+V on X11; on Wayland the pick is copied and a hint says to press Ctrl+V.
 - Key: Secret Service through libsecret; without a keyring a 0600 key file and a warning. A key
