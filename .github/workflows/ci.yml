@@ -94,3 +94,8 @@ jobs:
           details=$(sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\r//g' -e 's/\n/%0A/g' failures.txt)
           echo "::error title=Test failures::$details"
           exit 1
+
+      # The spec's macOS acceptance: the bundle is produced and structurally valid (plist, ad-hoc
+      # signature, executable), for Apple Silicon and Intel.
+      - name: Package
+        run: ./package-macos.sh

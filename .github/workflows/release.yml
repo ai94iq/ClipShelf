@@ -120,3 +120,24 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$GITHUB_REF_NAME" artifacts/linux/*.tar.gz artifacts/linux/*.deb artifacts/linux/*.rpm --clobber
+
+  # The macOS app, unsigned by Apple (ad-hoc only), added to the same release.
+  release-macos:
+    needs: release
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Package
+        run: ./package-macos.sh
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" artifacts/macos/*.dmg --clobber
