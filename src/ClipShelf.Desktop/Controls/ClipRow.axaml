@@ -39,7 +39,7 @@
                  FontSize="13" TextTrimming="CharacterEllipsis" />
       <TextBlock Text="{Binding SourceText}"
                  FontSize="11" TextTrimming="CharacterEllipsis"
-                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
     </StackPanel>
     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
       <Button Classes="row"

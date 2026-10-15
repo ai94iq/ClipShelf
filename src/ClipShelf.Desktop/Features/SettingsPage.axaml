@@ -15,7 +15,7 @@
             <StackPanel VerticalAlignment="Center" Margin="0,0,16,0" Spacing="4">
               <TextBlock Text="{TemplateBinding Header}" TextWrapping="Wrap" />
               <TextBlock Text="{TemplateBinding Description}" TextWrapping="Wrap" FontSize="12"
-                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
                          IsVisible="{TemplateBinding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
             <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" VerticalAlignment="Center" />
@@ -48,7 +48,7 @@
       <Setter Property="FontSize" Value="12" />
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="Margin" Value="16,0,16,12" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
     </Style>
     <Style Selector="TextBlock.status.error">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
@@ -230,7 +230,7 @@
               <TextBlock Text="{Binding HotkeyConflictDetail}" TextWrapping="Wrap" />
               <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
                 <TextBlock Text="{l:Tr Key=Settings_HotkeyAlternatives}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
                 <ItemsControl x:Name="HotkeyAlternatives" ItemsSource="{Binding HotkeyAlternatives}">
                   <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -341,7 +341,7 @@
             </controls:SettingsCard>
             <Border Classes="divider" IsVisible="{Binding ShowCategoriesEmpty}" />
             <TextBlock x:Name="CategoriesEmpty" Text="{l:Tr Key=Settings_CategoriesEmpty}" TextWrapping="Wrap" Margin="16"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
                        IsVisible="{Binding ShowCategoriesEmpty}" />
             <ItemsControl x:Name="CategoryList" ItemsSource="{Binding CategoryRows}">
               <ItemsControl.ItemTemplate>
@@ -398,7 +398,7 @@
       </Border>
 
       <TextBlock x:Name="NoMatches" Text="{l:Tr Key=Settings_NoMatches}" Margin="0,26,0,0"
-                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                 Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
                  IsVisible="{Binding ShowNoMatches}" />
     </StackPanel>
   </ScrollViewer>

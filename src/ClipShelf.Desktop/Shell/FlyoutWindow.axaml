@@ -81,9 +81,9 @@
                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
         <StackPanel Spacing="4">
           <TextBlock x:Name="EmptyTitle" Text="{Binding EmptyTitle}" TextAlignment="Center" TextWrapping="Wrap"
-                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
           <TextBlock Text="{Binding EmptyHint}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
-                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}" />
         </StackPanel>
       </StackPanel>
       <StackPanel x:Name="ErrorState" Grid.Row="1" Spacing="12"

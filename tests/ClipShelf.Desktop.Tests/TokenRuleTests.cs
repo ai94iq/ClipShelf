@@ -53,6 +53,21 @@ public sealed class TokenRuleTests
         Assert.Empty(offenders);
     }
 
+    // BaseMedium is 60% ink: hints and counts read as half transparent, worst in Arabic's thin
+    // strokes (seen on Windows). Text takes BaseMediumHigh; icons may still use BaseMedium.
+    [Fact]
+    public void Secondary_text_is_not_the_faint_60_percent_ink()
+    {
+        const string faint = "SystemControlForegroundBaseMediumBrush";
+        var offenders = Directory.EnumerateFiles(Src, "*.axaml", SearchOption.AllDirectories)
+            .SelectMany(f => Regex.Matches(File.ReadAllText(f),
+                    @"<TextBlock\b[^>]*" + faint + @"|<Style Selector=""TextBlock[^""]*"">(?:(?!</Style>).)*" + faint +
+                    @"|<ControlTemplate>(?:(?!</ControlTemplate>).)*<TextBlock\b[^>]*" + faint,
+                    RegexOptions.Singleline)
+                .Select(_ => Path.GetFileName(f)));
+        Assert.Empty(offenders);
+    }
+
     // AppIcon styles as PathIcon, so a selector naming AppIcon never matches and its setters are
     // silently dropped (row icons once rendered at 20 px instead of 16).
     [Fact]
