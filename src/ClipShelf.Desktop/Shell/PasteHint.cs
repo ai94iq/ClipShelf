@@ -21,11 +21,16 @@ public sealed class PasteHint : Window
         ShowInTaskbar = false;
         CanResize = false;
         SizeToContent = SizeToContent.WidthAndHeight;
-        Content = new Border
+        // The edge keeps the note readable over a window of the same color (seen on macOS over a
+        // white Terminal).
+        var frame = new Border
         {
             Padding = new Thickness(16, 10),
+            BorderThickness = new Thickness(1),
             Child = new TextBlock { Text = Text, VerticalAlignment = VerticalAlignment.Center },
         };
+        frame[!Border.BorderBrushProperty] = frame.GetResourceObservable("SystemControlTransientBorderBrush").ToBinding();
+        Content = frame;
         this[!BackgroundProperty] = this.GetResourceObservable("ClipShelfCardBrush").ToBinding();
         _timer = new DispatcherTimer { Interval = Duration };
         _timer.Tick += (_, _) =>

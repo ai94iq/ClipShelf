@@ -68,6 +68,8 @@ public sealed class FlyoutListTests
         Assert.False(kit.Window.IsOpen);
         Assert.True(kit.Window.Hint?.IsVisible);
         Assert.Contains(OperatingSystem.IsMacOS() ? "Cmd+V" : "Ctrl+V", kit.Window.Hint!.Text);
+        var frame = Assert.IsType<Border>(kit.Window.Hint.Content);
+        Assert.True(frame.BorderThickness.Left > 0 && frame.BorderBrush is not null, "the hint needs a visible edge");
     });
 
     [Fact]
