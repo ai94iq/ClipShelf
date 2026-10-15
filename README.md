@@ -1,8 +1,8 @@
-# ClipShelf
+# Copyloft
 
-[![CI](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml/badge.svg)](https://github.com/ai94iq/ClipShelf/actions/workflows/ci.yml)
+[![CI](https://github.com/ai94iq/Copyloft/actions/workflows/ci.yml/badge.svg)](https://github.com/ai94iq/Copyloft/actions/workflows/ci.yml)
 
-ClipShelf is a clipboard-history app for Windows, Linux and macOS that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
+Copyloft is a clipboard-history app for Windows, Linux and macOS that keeps recently copied text searchable and ready to paste from a floating flyout or the system tray.
 
 ## Contents
 
@@ -75,8 +75,8 @@ The installer wizard, with the MIT license, install location and finish-page opt
 - Filled or outline tray icon, hide the tray icon, and choose whether a tray double-click opens the full history.
 - Record a new global shortcut, run at startup (sign-in on Linux, login on macOS), cap the history size, and set retention (1 day, 7 days, 30 days or forever).
 - Optionally clear unpinned history when you sign out or shut down; a search box in the title bar finds any setting.
-- Check for a newer release from Settings; ClipShelf looks once per run and links to the download.
-- A welcome window on the first run explains the hotkey and that ClipShelf lives in the tray.
+- Check for a newer release from Settings; Copyloft looks once per run and links to the download.
+- A welcome window on the first run explains the hotkey and that Copyloft lives in the tray.
 - A start that fails (for example a denied keyring or Keychain request) says why in a small window and names the log folder.
 
 **Privacy**
@@ -103,7 +103,7 @@ Load-tested through the real encrypted storage pipeline; details and numbers in 
 
 ## Installing on Linux
 
-Download from the [releases](https://github.com/ai94iq/ClipShelf/releases):
+Download from the [releases](https://github.com/ai94iq/Copyloft/releases):
 
 - Debian and Ubuntu: `sudo apt install ./clipshelf_<version>_amd64.deb`
 - Fedora and openSUSE: `sudo dnf install ./clipshelf-<version>-1.x86_64.rpm`
@@ -113,17 +113,17 @@ The packages install to `/opt/clipshelf` with a `clipshelf` command and a menu e
 
 Desktop differences (details in [docs/known-issues.md](docs/known-issues.md) and [ADR 0007](docs/decisions/0007-linux-platform.md)):
 
-- Wayland sessions: the shortcut only works while ClipShelf has focus, so bind a system shortcut to `clipshelf --toggle`; a picked clip is copied and you press Ctrl+V yourself.
+- Wayland sessions: the shortcut only works while Copyloft has focus, so bind a system shortcut to `clipshelf --toggle`; a picked clip is copied and you press Ctrl+V yourself.
 - GNOME shows the tray icon only with the AppIndicator extension; without a tray, History opens at launch.
 - Without a keyring service the database key is kept in a file only your user can read.
 
 ## Installing on macOS
 
-Download `ClipShelf-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/ClipShelf/releases) and drag ClipShelf to Applications.
+Download `ClipShelf-<version>-macos-arm64.dmg` (Apple Silicon) or `-macos-x64.dmg` (Intel) from the [releases](https://github.com/ai94iq/Copyloft/releases) and drag Copyloft to Applications.
 
-The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for ClipShelf, or run `xattr -dr com.apple.quarantine /Applications/ClipShelf.app` once.
+The app is not notarized (there is no Apple Developer ID), so macOS blocks the first launch. Open System Settings > Privacy & Security and choose Open Anyway for Copyloft, or run `xattr -dr com.apple.quarantine /Applications/ClipShelf.app` once.
 
-ClipShelf lives in the menu bar. While its History or Settings window is open it also shows its own menu next to the Apple menu and a Dock icon, like any app. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V.
+Copyloft lives in the menu bar. While its History or Settings window is open it also shows its own menu next to the Apple menu and a Dock icon, like any app. The shortcut is Cmd+Shift+V. To paste a picked clip for you it needs the Accessibility permission, which macOS asks for the first time; without it a pick is copied and you press Cmd+V.
 
 After an update macOS asks again for the login keychain password and for the Accessibility permission, because each release is signed ad hoc. Details: [docs/known-issues.md](docs/known-issues.md) and [ADR 0008](docs/decisions/0008-macos-platform.md).
 
@@ -192,7 +192,7 @@ Version is set in `Directory.Build.props`. Process: [docs/release.md](docs/relea
 
 ## Built with
 
-This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill), the agent skill that fixed the original stack (.NET 10, SQLite, WiX), the project layout and the UI rules. The UI moved from WinUI 3 to Avalonia 12 in October 2026 so ClipShelf can follow to Linux and macOS.
+This app follows [wpf-fluent-skill](https://github.com/ai94iq/wpf-fluent-skill), the agent skill that fixed the original stack (.NET 10, SQLite, WiX), the project layout and the UI rules. The UI moved from WinUI 3 to Avalonia 12 in October 2026 so Copyloft can follow to Linux and macOS.
 
 ## License
 

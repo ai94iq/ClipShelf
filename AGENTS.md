@@ -1,4 +1,4 @@
-# Agent instructions (ClipShelf)
+# Agent instructions (Copyloft)
 
 ## Hard rules
 

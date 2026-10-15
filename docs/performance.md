@@ -1,6 +1,6 @@
 # Performance
 
-How ClipShelf behaves as the clipboard history grows. The numbers come from a load harness that
+How Copyloft behaves as the clipboard history grows. The numbers come from a load harness that
 drives the real storage path (SQLCipher-encrypted SQLite through the Dapper repositories,
 including the trim that runs on every copy) with warm pooled connections on a Windows 11 x64
 machine (.NET 10). Each size starts from a fresh encrypted database, so the rows are independent.

@@ -12,7 +12,7 @@ Public desktop users who discover the app through package managers (winget) and 
 
 ## Product Purpose
 
-Keep recently copied content (text and images) findable and re-pastable with zero ceremony. ClipShelf exists so the clipboard stops being a single slot. Success means public adoption on all three platforms: installs that people keep running.
+Keep recently copied content (text and images) findable and re-pastable with zero ceremony. Copyloft exists so the clipboard stops being a single slot. Success means public adoption on all three platforms: installs that people keep running.
 
 ## Positioning
 
@@ -33,7 +33,7 @@ Native desktop application on Windows, Linux and macOS, one visual identity acro
 
 ## Brand Commitments
 
-- The name ClipShelf stays everywhere.
+- The name Copyloft (formerly ClipShelf, renamed because other clipboard apps use that name) stays everywhere users look. The old name survives only in identifiers on disk (exe and bundle names, data folder, keychain entry, winget id), so existing installs keep their history.
 - Quiet and out of the way: nothing opens unless asked, no nagging, no interruptions. The app earns attention only when invoked.
 - MIT license.
 

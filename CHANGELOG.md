@@ -15,6 +15,10 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+### Changed
+- ClipShelf is now Copyloft: window titles, the tray, the installer, the macOS menu bar and the Linux menu entry show the new name, and the repository moved to github.com/ai94iq/Copyloft. Other clipboard apps already use the name ClipShelf.
+- Existing installs keep their history and settings: the exe, the data folder, the keychain entry and the winget id keep the old name.
+
 ## [0.4.1] - 2026-10-15
 
 ### Changed
