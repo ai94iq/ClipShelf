@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Chrome;
@@ -46,7 +47,23 @@ public sealed class MainChromeTests
         Assert.Equal(WindowDecorations.Full, window.WindowDecorations);
         Assert.True(window.ExtendClientAreaToDecorationsHint);
         Assert.False(window.FindControl<Control>("CaptionButtons")!.IsVisible);
-        Assert.True(window.FindControl<Control>("AppTitle")!.Margin.Left >= 72, "the title clears the traffic lights");
+        Assert.False(window.FindControl<Control>("AppTitle")!.IsVisible, "a mac title bar shows no app name or icon");
+    });
+
+    // Seen on a Mac: the Settings search sat right of center, pushed by the title.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task The_settings_search_is_centered_on_the_window(bool nativeCaption) => Ui.Run(() =>
+    {
+        var window = new MainWindow(new AppLifetime(), nativeCaption: nativeCaption);
+        window.ShowSettings();
+        window.UpdateLayout();
+
+        var search = window.FindControl<TextBox>("SearchBox")!;
+        var left = search.TranslatePoint(new Avalonia.Point(0, 0), window)!.Value.X;
+        Assert.Equal(window.Bounds.Width / 2, left + search.Bounds.Width / 2, 1.0);
+        Assert.Equal(360, search.Bounds.Width);
     });
 
     [Fact]

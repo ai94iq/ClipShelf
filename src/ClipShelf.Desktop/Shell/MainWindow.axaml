@@ -72,11 +72,13 @@
     <Grid x:Name="TitleBar" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto" Background="Transparent"
           chrome:WindowDecorationProperties.ElementRole="TitleBar">
       <StackPanel x:Name="AppTitle" Orientation="Horizontal" Spacing="12" Margin="16,0,0,0" VerticalAlignment="Center">
-        <Image Source="/Assets/app.ico" Width="16" Height="16" />
+        <Image x:Name="TitleIcon" Source="/Assets/app.ico" Width="16" Height="16" />
         <TextBlock Text="{l:Tr Key=App_Name}" FontSize="12" VerticalAlignment="Center" />
       </StackPanel>
-      <TextBox x:Name="SearchBox" Grid.Column="1"
-               Width="360" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center"
+      <!-- Spans the bar so it centers on the window; the side margins keep it off the title and the
+           caption buttons, and a narrow window shrinks it. -->
+      <TextBox x:Name="SearchBox" Grid.ColumnSpan="3" Margin="160,0"
+               MaxWidth="360" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"
                chrome:WindowDecorationProperties.ElementRole="User"
                PlaceholderText="{l:Tr Key=Settings_SearchPlaceholder}"
                AutomationProperties.Name="{l:Tr Key=Settings_SearchPlaceholder}"

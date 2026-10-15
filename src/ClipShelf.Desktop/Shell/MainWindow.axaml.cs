@@ -19,12 +19,13 @@ public sealed partial class MainWindow : Window
         WindowSurface.Attach(this, "ClipShelfCanvasBrush");
 
         // macOS keeps its own traffic lights (top left) over the extended title row; ours are the
-        // Windows-style buttons and would be a second, foreign set there.
+        // Windows-style buttons and would be a second, foreign set there. The app's name lives in
+        // the menu bar on a Mac (MacAppPresence), so the title bar shows neither name nor icon.
         if (nativeCaption ?? OperatingSystem.IsMacOS())
         {
             WindowDecorations = WindowDecorations.Full;
             CaptionButtons.IsVisible = false;
-            AppTitle.Margin = new Avalonia.Thickness(80, 0, 0, 0);
+            AppTitle.IsVisible = false;
         }
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
 
