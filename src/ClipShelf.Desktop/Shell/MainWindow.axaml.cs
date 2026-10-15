@@ -10,13 +10,22 @@ public sealed partial class MainWindow : Window
     private readonly Lazy<HistoryPage>? _history;
     private readonly Lazy<SettingsPage>? _settings;
 
-    public MainWindow(AppLifetime lifetime, Lazy<HistoryPage>? history = null, Lazy<SettingsPage>? settings = null)
+    public MainWindow(AppLifetime lifetime, Lazy<HistoryPage>? history = null, Lazy<SettingsPage>? settings = null, bool? nativeCaption = null)
     {
         _lifetime = lifetime;
         _history = history;
         _settings = settings;
         InitializeComponent();
         WindowSurface.Attach(this, "ClipShelfCanvasBrush");
+
+        // macOS keeps its own traffic lights (top left) over the extended title row; ours are the
+        // Windows-style buttons and would be a second, foreign set there.
+        if (nativeCaption ?? OperatingSystem.IsMacOS())
+        {
+            WindowDecorations = WindowDecorations.Full;
+            CaptionButtons.IsVisible = false;
+            AppTitle.Margin = new Avalonia.Thickness(80, 0, 0, 0);
+        }
         FlowDirection = Culture.IsRtl ? Avalonia.Media.FlowDirection.RightToLeft : Avalonia.Media.FlowDirection.LeftToRight;
 
         HistoryButton.IsCheckedChanged += (_, _) => { if (HistoryButton.IsChecked == true) Select(settings: false); };

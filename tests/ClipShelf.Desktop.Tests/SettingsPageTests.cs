@@ -44,6 +44,18 @@ public sealed class SettingsPageTests
         Assert.Contains("clipshelf --toggle", ClipShelf.Presentation.Localization.Tr.Get("Settings_HotkeyWayland"));
     });
 
+    // Seen on macOS: a Mica setting and "Ctrl, Alt, Shift or Win". Each OS's CI checks its own case.
+    [Fact]
+    public Task Settings_offer_only_what_this_os_has() => Ui.Run(() =>
+    {
+        var kit = new SettingsKit();
+        Host(kit.Page);
+
+        Assert.Equal(OperatingSystem.IsWindows(), kit.Page.FindControl<Control>("BackdropCard")!.IsVisible);
+        var hint = kit.Page.FindControl<ClipShelf.Desktop.Controls.SettingsCard>("HotkeyCard")!.Description!;
+        Assert.Contains(OperatingSystem.IsMacOS() ? "Cmd" : "Win", hint);
+    });
+
     [Fact]
     public Task A_filter_keeps_only_the_matching_groups() => Ui.Run(() =>
     {

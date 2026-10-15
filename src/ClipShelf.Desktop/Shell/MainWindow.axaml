@@ -71,7 +71,7 @@
   <Grid RowDefinitions="48,*" ColumnDefinitions="48,*">
     <Grid x:Name="TitleBar" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto" Background="Transparent"
           chrome:WindowDecorationProperties.ElementRole="TitleBar">
-      <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0" VerticalAlignment="Center">
+      <StackPanel x:Name="AppTitle" Orientation="Horizontal" Spacing="12" Margin="16,0,0,0" VerticalAlignment="Center">
         <Image Source="/Assets/app.ico" Width="16" Height="16" />
         <TextBlock Text="{l:Tr Key=App_Name}" FontSize="12" VerticalAlignment="Center" />
       </StackPanel>
@@ -81,7 +81,7 @@
                PlaceholderText="{l:Tr Key=Settings_SearchPlaceholder}"
                AutomationProperties.Name="{l:Tr Key=Settings_SearchPlaceholder}"
                IsVisible="False" />
-      <StackPanel Grid.Column="2" Orientation="Horizontal">
+      <StackPanel x:Name="CaptionButtons" Grid.Column="2" Orientation="Horizontal">
         <Button x:Name="MinimizeButton" Classes="caption"
                 chrome:WindowDecorationProperties.ElementRole="MinimizeButton"
                 AutomationProperties.Name="{l:Tr Key=Window_Minimize}">

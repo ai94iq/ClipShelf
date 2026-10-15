@@ -134,8 +134,8 @@
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
             </controls:SettingsCard>
-            <Border Classes="divider" />
-            <controls:SettingsCard Header="{l:Tr Key=Settings_Backdrop}">
+            <Border x:Name="BackdropDivider" Classes="divider" />
+            <controls:SettingsCard x:Name="BackdropCard" Header="{l:Tr Key=Settings_Backdrop}">
               <ComboBox x:Name="BackdropCombo"
                         AutomationProperties.Name="{l:Tr Key=Settings_Backdrop}"
                         ItemsSource="{Binding BackdropOptions}"
@@ -205,7 +205,7 @@
                             IsChecked="{Binding RunAtStartup}" />
             </controls:SettingsCard>
             <Border Classes="divider" />
-            <controls:SettingsCard Header="{l:Tr Key=Settings_Hotkey}" Description="{l:Tr Key=Settings_HotkeyHint}">
+            <controls:SettingsCard x:Name="HotkeyCard" Header="{l:Tr Key=Settings_Hotkey}" Description="{l:Tr Key=Settings_HotkeyHint}">
               <Button x:Name="HotkeyButton" MinWidth="160" MinHeight="36" HorizontalContentAlignment="Center"
                       AutomationProperties.Name="{l:Tr Key=Settings_Hotkey}">
                 <Panel>

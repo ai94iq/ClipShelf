@@ -138,6 +138,7 @@
   <data name="Settings_HotkeyAlternatives" xml:space="preserve"><value>Try one of these:</value></data>
   <data name="Settings_HotkeyConflict" xml:space="preserve"><value>This shortcut is already used by another app.</value></data>
   <data name="Settings_HotkeyHint" xml:space="preserve"><value>Click the shortcut, then press a key combination with Ctrl, Alt, Shift or Win. Esc cancels.</value></data>
+  <data name="Settings_HotkeyHintMac" xml:space="preserve"><value>Click the shortcut, then press a key combination with Control, Option, Shift or Cmd. Esc cancels.</value></data>
   <data name="Settings_HotkeyNoShortcut" xml:space="preserve"><value>ClipShelf has no global shortcut until you pick a working one.</value></data>
   <data name="Settings_HotkeyPrompt" xml:space="preserve"><value>Press a key combination</value></data>
   <data name="Settings_HotkeyStillUsing" xml:space="preserve"><value>ClipShelf is still using {0}.</value></data>

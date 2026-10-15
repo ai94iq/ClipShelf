@@ -25,6 +25,10 @@ public sealed partial class SettingsPage : UserControl
         DataContext = viewModel;
         WaylandHotkeyNote.IsVisible = DesktopSession.IsWayland;
 
+        // Mica and Acrylic are Windows materials; elsewhere the choice would change nothing.
+        BackdropCard.IsVisible = BackdropDivider.IsVisible = OperatingSystem.IsWindows();
+        if (OperatingSystem.IsMacOS()) HotkeyCard.Description = Tr.Get("Settings_HotkeyHintMac");
+
         // Tunnel: the button must not turn Space or Enter into a click while recording.
         HotkeyButton.Click += (_, _) => StartRecording();
         HotkeyButton.AddHandler(KeyDownEvent, OnHotkeyKeyDown, RoutingStrategies.Tunnel);

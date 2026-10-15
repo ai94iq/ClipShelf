@@ -16,7 +16,7 @@ public sealed class MainChromeTests
 {
     private static MainWindow Shown()
     {
-        var window = new MainWindow(new AppLifetime());
+        var window = new MainWindow(new AppLifetime(), nativeCaption: false);
         window.ShowHistory();
         Dispatcher.UIThread.RunJobs();
         window.UpdateLayout();
@@ -33,6 +33,20 @@ public sealed class MainChromeTests
 
         Assert.True(window.ExtendClientAreaToDecorationsHint);
         Assert.Equal(WindowDecorations.BorderOnly, window.WindowDecorations);
+    });
+
+    // macOS: the system's traffic lights, not Windows-style buttons (seen drawn on a Mac in a VM).
+    [Fact]
+    public Task On_a_mac_the_system_draws_the_window_buttons() => Ui.Run(() =>
+    {
+        var window = new MainWindow(new AppLifetime(), nativeCaption: true);
+        window.ShowHistory();
+        window.UpdateLayout();
+
+        Assert.Equal(WindowDecorations.Full, window.WindowDecorations);
+        Assert.True(window.ExtendClientAreaToDecorationsHint);
+        Assert.False(window.FindControl<Control>("CaptionButtons")!.IsVisible);
+        Assert.True(window.FindControl<Control>("AppTitle")!.Margin.Left >= 72, "the title clears the traffic lights");
     });
 
     [Fact]
