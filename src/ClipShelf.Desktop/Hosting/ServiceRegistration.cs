@@ -31,12 +31,15 @@ public static class ServiceRegistration
     private static IServiceCollection AddLinux(this IServiceCollection services)
     {
         services.AddSingleton<ISecretKeyring, LibSecretKeyring>();
-        services.AddSingleton<IKeyStore, LinuxKeyStore>();
+        services.AddSingleton<IKeyStore, KeyringKeyStore>();
         services.AddSingleton<X11Connection>();
-        services.AddSingleton<IClipboardBackend>(sp => new X11ClipboardBackend(
-            sp.GetRequiredService<X11Connection>(),
-            sp.GetRequiredService<IUiDispatcher>(),
-            () => sp.GetRequiredService<FlyoutWindow>().Clipboard));
+        services.AddSingleton<IClipboardBackend>(sp =>
+        {
+            var backend = new AvaloniaClipboardBackend(() => sp.GetRequiredService<FlyoutWindow>().Clipboard, "image/png");
+            var ui = sp.GetRequiredService<IUiDispatcher>();
+            sp.GetRequiredService<X11Connection>().SelectionChanged += () => ui.Post(backend.NotifyChanged);
+            return backend;
+        });
         services.AddSingleton<IGlobalHotkey, X11GlobalHotkey>();
         services.AddSingleton<X11Desktop>();
         services.AddSingleton<IPasteBack>(sp => sp.GetRequiredService<X11Desktop>());
@@ -45,7 +48,7 @@ public static class ServiceRegistration
         services.AddSingleton<IStartupRegistration>(sp => new AutostartRegistration(
             sp.GetRequiredService<ILogger<AutostartRegistration>>()));
         services.AddSingleton<ISystemTheme, PlatformSystemTheme>();
-        services.AddSingleton<ISessionEnd, LinuxSessionEnd>();
+        services.AddSingleton<ISessionEnd, PosixSessionEnd>();
         return services;
     }
 

@@ -1,17 +1,18 @@
+using ClipShelf.Desktop.Platform;
 using ClipShelf.Desktop.Platform.Linux;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ClipShelf.Desktop.Tests;
 
 // The keyring is faked; the file rules are what keep an existing history readable.
-public sealed class LinuxKeyStoreTests : IDisposable
+public sealed class KeyringKeyStoreTests : IDisposable
 {
     private readonly string _dir = Directory.CreateTempSubdirectory("clipshelf-key").FullName;
     private string KeyPath => Path.Combine(_dir, "db.key");
 
     public void Dispose() => Directory.Delete(_dir, recursive: true);
 
-    private LinuxKeyStore Store(FakeKeyring keyring) => new(keyring, NullLogger<LinuxKeyStore>.Instance);
+    private KeyringKeyStore Store(FakeKeyring keyring) => new(keyring, NullLogger<KeyringKeyStore>.Instance);
 
     [Fact]
     public void A_new_key_goes_to_the_keyring_and_the_file_only_marks_it()
@@ -22,7 +23,7 @@ public sealed class LinuxKeyStoreTests : IDisposable
 
         Assert.Equal(64, key.Length);
         Assert.Equal(key, keyring.Secret);
-        Assert.Equal(LinuxKeyStore.KeyringMarker, File.ReadAllText(KeyPath));
+        Assert.Equal(KeyringKeyStore.KeyringMarker, File.ReadAllText(KeyPath));
         Assert.Equal(key, Store(keyring).LoadOrCreate(KeyPath));
     }
 
@@ -42,11 +43,11 @@ public sealed class LinuxKeyStoreTests : IDisposable
     [Fact]
     public void A_marked_key_the_keyring_cannot_give_back_is_an_error_not_a_new_key()
     {
-        File.WriteAllText(KeyPath, LinuxKeyStore.KeyringMarker);
+        File.WriteAllText(KeyPath, KeyringKeyStore.KeyringMarker);
 
         Assert.Throws<InvalidOperationException>(() => Store(new FakeKeyring { Available = false }).LoadOrCreate(KeyPath));
         Assert.Throws<InvalidOperationException>(() => Store(new FakeKeyring()).LoadOrCreate(KeyPath));
-        Assert.Equal(LinuxKeyStore.KeyringMarker, File.ReadAllText(KeyPath));
+        Assert.Equal(KeyringKeyStore.KeyringMarker, File.ReadAllText(KeyPath));
     }
 
     // The real binding against whatever the machine has: answers either way, never crashes.

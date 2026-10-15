@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
 
-namespace ClipShelf.Desktop.Platform.Linux;
+namespace ClipShelf.Desktop.Platform;
 
-// The SQLCipher key for the history database, kept in the Secret Service keyring. The file at
-// the key path always exists once a key does: it holds the marker when the keyring has the key,
-// or the key itself (0600) when no keyring was there to take it. A marked key the keyring cannot
-// give back is an error, never a new key: a new key would make the existing history unreadable.
-public sealed class LinuxKeyStore(ISecretKeyring keyring, ILogger<LinuxKeyStore> log) : IKeyStore
+// The SQLCipher key for the history database, kept in the system keyring (Secret Service on Linux,
+// the Keychain on macOS). The file at the key path always exists once a key does: it holds the
+// marker when the keyring has the key, or the key itself (0600) when no keyring was there to take
+// it. A marked key the keyring cannot give back is an error, never a new key: a new key would make
+// the existing history unreadable.
+public sealed class KeyringKeyStore(ISecretKeyring keyring, ILogger<KeyringKeyStore> log) : IKeyStore
 {
     internal const string KeyringMarker = "keyring";
 
