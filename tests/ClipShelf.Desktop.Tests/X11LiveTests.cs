@@ -42,6 +42,9 @@ public sealed class X11LiveTests
     public async Task A_grabbed_combination_fires_once_per_press()
     {
         SkipWithoutX();
+        // XWayland (WSLg too) passes keys to X clients only while an X window has focus, the same
+        // limit ADR 0007 records for Wayland; a plain X server (Xvfb in CI) delivers them always.
+        Assert.SkipWhen(ClipShelf.Desktop.Platform.DesktopSession.IsWayland, "XWayland routes keys only to a focused X window");
         using var hotkey = new X11GlobalHotkey(new X11Connection(), new InlineUi(), NullLogger<X11GlobalHotkey>.Instance);
         var presses = 0;
         hotkey.Pressed += (_, _) => Interlocked.Increment(ref presses);
