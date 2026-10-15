@@ -385,7 +385,7 @@ public sealed class SettingsViewModelTests
     public void Filtering_matches_the_description_text_too()
     {
         var viewModel = Create();
-        viewModel.Filter = "notification area";
+        viewModel.Filter = "starts hidden";
 
         Assert.True(viewModel.IsGroupVisible(viewModel.Filter, 2));
     }

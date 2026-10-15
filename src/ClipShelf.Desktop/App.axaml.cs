@@ -90,7 +90,8 @@ public sealed partial class App : Application
             WelcomeWindow.ShowOnFirstRun(
                 host.Services.GetRequiredService<SettingsService>(),
                 () => new WelcomeWindow(
-                    host.Services.GetRequiredService<SettingsService>(), hasTray, globalHotkey: !DesktopSession.IsWayland));
+                    host.Services.GetRequiredService<SettingsService>(), hasTray, globalHotkey: !DesktopSession.IsWayland,
+                    explainAccessibility: OperatingSystem.IsMacOS()));
 
             // Rewrites the startup entry with the current path, so a moved install keeps working.
             host.Services.GetRequiredService<IStartupRegistration>().Apply(launch.Settings.RunAtStartup);

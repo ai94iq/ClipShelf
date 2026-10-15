@@ -11,7 +11,7 @@
   <data name="Accent_Purple" xml:space="preserve"><value>بنفسجي</value></data>
   <data name="Accent_Rose" xml:space="preserve"><value>وردي</value></data>
   <data name="Accent_Teal" xml:space="preserve"><value>أزرق مخضر</value></data>
-  <data name="Accent_Windows" xml:space="preserve"><value>لون Windows</value></data>
+  <data name="Accent_Windows" xml:space="preserve"><value>لون النظام</value></data>
   <data name="App_AlreadyRunning" xml:space="preserve"><value>التطبيق يعمل بالفعل.</value></data>
   <data name="App_Name" xml:space="preserve"><value>ClipShelf</value></data>
   <data name="App_Welcome" xml:space="preserve"><value>مرحبًا بك في ClipShelf</value></data>
@@ -54,6 +54,8 @@
   <data name="Export_Json" xml:space="preserve"><value>JSON</value></data>
   <data name="History_Copied" xml:space="preserve"><value>تم النسخ</value></data>
   <data name="Flyout_PasteHint" xml:space="preserve"><value>تم النسخ، اضغط Ctrl+V للصق</value></data>
+  <data name="Flyout_PasteHintMac" xml:space="preserve"><value>تم النسخ، اضغط Cmd+V للصق</value></data>
+  <data name="Welcome_Accessibility" xml:space="preserve"><value>ليلصق ClipShelf المقطع الذي تختاره نيابةً عنك، يحتاج إلى إذن تسهيلات الاستخدام؛ يطلبه macOS في المرة الأولى. بدونه يُنسخ المقطع وتضغط Cmd+V بنفسك.</value></data>
   <data name="Settings_HotkeyWayland" xml:space="preserve"><value>في Wayland لا تصل المفاتيح المضغوطة في التطبيقات الأخرى إلى ClipShelf. اربط اختصارًا في إعدادات النظام بالأمر: clipshelf --toggle</value></data>
   <data name="History_Count_few" xml:space="preserve"><value>{0} عناصر</value></data>
   <data name="History_Count_many" xml:space="preserve"><value>{0} عنصرًا</value></data>
@@ -157,8 +159,8 @@
   <data name="Settings_RestartNow" xml:space="preserve"><value>إعادة التشغيل الآن</value></data>
   <data name="Settings_Retention" xml:space="preserve"><value>الاحتفاظ بالعناصر لمدة</value></data>
   <data name="Settings_RetentionHint" xml:space="preserve"><value>لا تُزال العناصر المثبَّتة أو الموجودة في تصنيف أبدًا.</value></data>
-  <data name="Settings_RunAtStartup" xml:space="preserve"><value>التشغيل مع بدء Windows</value></data>
-  <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>يبدأ مخفيًا في منطقة الإشعارات.</value></data>
+  <data name="Settings_RunAtStartup" xml:space="preserve"><value>التشغيل عند تسجيل الدخول</value></data>
+  <data name="Settings_RunAtStartupHint" xml:space="preserve"><value>يبدأ مخفيًا في شريط النظام.</value></data>
   <data name="Settings_SearchPlaceholder" xml:space="preserve"><value>ابحث في الإعدادات</value></data>
   <data name="Settings_SetPassword" xml:space="preserve"><value>تعيين كلمة المرور…</value></data>
   <data name="Settings_ShowTrayIcon" xml:space="preserve"><value>إظهار أيقونة الشريط</value></data>
@@ -181,7 +183,7 @@
   <data name="Tray_Settings" xml:space="preserve"><value>الإعدادات</value></data>
   <data name="Welcome_Hotkey" xml:space="preserve"><value>اضغط {0} في أي مكان لفتح النافذة العائمة، ثم اختر عنصرًا للصقه في التطبيق الذي كنت فيه.</value></data>
   <data name="Welcome_Ok" xml:space="preserve"><value>فهمت</value></data>
-  <data name="Welcome_Tray" xml:space="preserve"><value>يبقى ClipShelf يعمل في منطقة الإشعارات — افتح الإعدادات أو اخرج من أيقونته.</value></data>
+  <data name="Welcome_Tray" xml:space="preserve"><value>يبقى ClipShelf يعمل في شريط النظام (شريط القوائم في Mac)؛ افتح الإعدادات أو اخرج من أيقونته.</value></data>
   <data name="Welcome_NoTray" xml:space="preserve"><value>لا يعرض سطح المكتب هذا أيقونة في شريط النظام، لذا يفتح ClipShelf السجل عند بدء تشغيله. يمكنك فتحه لاحقًا بالأمر clipshelf --history، وفي GNOME تضيف إضافة AppIndicator أيقونة شريط النظام.</value></data>
   <data name="Window_Minimize" xml:space="preserve"><value>تصغير</value></data>
   <data name="Window_Maximize" xml:space="preserve"><value>تكبير</value></data>

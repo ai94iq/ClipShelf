@@ -44,6 +44,18 @@ public sealed class WelcomeWindowTests
         Assert.Contains("clipshelf --toggle", text);
     });
 
+    // macOS: pasting for the user needs the Accessibility permission, which macOS asks for once.
+    [Fact]
+    public Task On_a_mac_the_welcome_explains_the_accessibility_prompt() => Ui.Run(() =>
+    {
+        var plain = new WelcomeWindow(Settings()).FindControl<TextBlock>("AccessibilityText")!;
+        var mac = new WelcomeWindow(Settings(), explainAccessibility: true).FindControl<TextBlock>("AccessibilityText")!;
+
+        Assert.False(plain.IsVisible);
+        Assert.True(mac.IsVisible);
+        Assert.Contains("Accessibility", mac.Text);
+    });
+
     [Fact]
     public Task Got_it_closes_the_window() => Ui.Run(() =>
     {

@@ -35,7 +35,7 @@ public sealed class PasteHint : Window
         };
     }
 
-    public string Text { get; } = Tr.Get("Flyout_PasteHint");
+    public string Text { get; } = Tr.Get(OperatingSystem.IsMacOS() ? "Flyout_PasteHintMac" : "Flyout_PasteHint");
 
     public void ShowAt(PixelPoint position)
     {
